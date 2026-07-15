@@ -1,0 +1,90 @@
+/* Configuración General y Paleta de Colores de LockerHub */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f7f9fc; /* Fondo gris claro e interfaz limpia */
+    color: #4a5568;
+}
+
+.text-navy {
+    color: #0d2344; /* Azul oscuro predominante en títulos */
+}
+
+.text-micro {
+    font-size: 0.75rem;
+}
+
+.style-micro {
+    font-size: 0.65rem;
+}
+
+.main-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Tarjetas Personalizadas */
+.card-custom {
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    background-color: #ffffff;
+}
+
+.card-action {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: #ffffff;
+}
+
+.card-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Badges y estados personalizados */
+.bg-light-blue {
+    background-color: #e6f0fa;
+}
+
+.bg-light-purple {
+    background-color: #f0effc;
+}
+
+.bg-success-light {
+    background-color: #e6f7ed;
+}
+
+.bg-light-danger {
+    background-color: #fdeeee;
+}
+
+.text-purple {
+    color: #5c59e8;
+}
+
+.text-danger {
+    color: #eb5757;
+}
+
+/* Tablas estilizadas */
+.table-custom thead th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #a0aec0;
+    font-weight: 600;
+    border-bottom: 1px solid #edf2f7;
+    padding-bottom: 1rem;
+}
+
+.table-custom tbody td {
+    padding: 1.2rem 0.5rem;
+    border-bottom: 1px solid #edf2f7;
+    font-size: 0.9rem;
+}
+
+.table-custom tbody tr:last-child td {
+    border-bottom: none;
+}

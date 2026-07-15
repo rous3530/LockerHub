@@ -1,0 +1,300 @@
+/* ==========================================================================
+   1. VARIABLES GLOBALES (:root) - ¡Tus variables intactas!
+   ========================================================================== */
+:root {
+    /* Colores Principales (Navy) */
+    --color-navy-dark: #1a365d;
+    --color-navy-medium: #1a3c73;
+    --color-navy-hover: #112952;
+
+    /* Colores de Alerta y Validation */
+    --color-danger: #d93025;
+    --color-danger-shadow: rgba(217, 48, 37, 0.25);
+
+    /* Colores Neutros y Bordes */
+    --color-border-light: #e2e8f0;
+    --color-border-focus: #dee2e6;
+    --color-text-muted: #94a3b8;
+    --color-bg-white: #ffffff;
+
+    /* Colores para Componentes Específicos */
+    --color-step-icon-bg: #e0e7ff;
+    --color-step-icon-text: #4f46e5;
+    --color-bg-light-blue: #f0f4ff;
+
+    /* Estructura y Bordes */
+    --radius-container: 16px;
+    --radius-input: 8px;
+    --radius-pill: 50%;
+    --container-max-width: 440px;
+}
+
+/* ==========================================================================
+   2. ESTILOS GENERALES / COMPARTIDOS
+   ========================================================================== */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+.bg-navy {
+    background-color: var(--color-navy-dark);
+}
+
+.text-navy {
+    color: var(--color-navy-dark);
+}
+
+.btn-navy {
+    background-color: var(--color-navy-medium);
+    color: var(--color-bg-white);
+}
+
+.btn-navy:hover {
+    background-color: var(--color-navy-hover);
+    color: var(--color-bg-white);
+}
+
+.line-under {
+    border-bottom: 3px solid var(--color-navy-dark);
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+/* ==========================================================================
+   3. CONTENEDORES DE FORMULARIOS (Login, Registro, Recuperacion)
+   ========================================================================== */
+.login-container,
+.recover-container,
+.register-container {
+    max-width: var(--container-max-width);
+    width: 100%;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-container);
+    background-color: var(--color-bg-white);
+}
+
+.small-link {
+    font-size: 0.75rem;
+    color: var(--color-navy-dark);
+    font-weight: 600;
+}
+
+.back-link {
+    font-size: 0.85rem;
+    color: var(--color-navy-dark);
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   4. INPUT GROUPS PERSONALIZADOS (Diseño Base)
+   ========================================================================== */
+.custom-input-group .input-group-text {
+    background-color: var(--color-bg-white);
+    color: var(--color-text-muted);
+    border-right: none;
+    border-radius: var(--radius-input) 0 0 var(--radius-input);
+}
+
+.custom-input-group .form-control {
+    border-left: none;
+    font-size: 0.95rem;
+}
+
+.custom-input-group .form-control:not(.has-end-icon) {
+    border-radius: 0 var(--radius-input) var(--radius-input) 0;
+}
+
+.custom-input-group .form-control.has-end-icon {
+    border-right: none;
+}
+
+.custom-input-group .input-group-text.end-icon {
+    border-left: none;
+    border-radius: 0 var(--radius-input) var(--radius-input) 0;
+    cursor: pointer;
+}
+
+.custom-input-group .form-control:focus {
+    box-shadow: none;
+    border-color: var(--color-border-focus);
+}
+
+/* ==========================================================================
+   5. VALIDACIÓN DE FORMULARIOS (Bootstrap overrides)
+   ========================================================================== */
+.custom-input-group .invalid-feedback {
+    display: none;
+    flex-basis: 100%;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-danger) !important;
+    margin-top: 0.4rem;
+}
+
+.was-validated .custom-input-group :invalid ~ .invalid-feedback,
+.custom-input-group .form-control.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+
+.custom-input-group .form-control.is-invalid,
+.was-validated .custom-input-group .form-control:invalid {
+    background-image: none !important;
+    padding-right: 0.75rem !important;
+}
+
+.custom-input-group:has(.form-control.is-invalid) .input-group-text,
+.custom-input-group:has(.form-control.is-invalid) .form-control,
+.was-validated .custom-input-group:has(:invalid) .input-group-text,
+.was-validated .custom-input-group:has(:invalid) .form-control {
+    border-top: 1px solid var(--color-danger) !important;
+    border-bottom: 1px solid var(--color-danger) !important;
+}
+
+.custom-input-group:has(.form-control.is-invalid) .input-group-text:first-child,
+.was-validated .custom-input-group:has(:invalid) .input-group-text:first-child {
+    border-left: 1px solid var(--color-danger) !important;
+    border-radius: var(--radius-input) 0 0 var(--radius-input) !important;
+}
+
+.custom-input-group:has(.form-control.is-invalid) .form-control:not(.has-end-icon),
+.was-validated .custom-input-group:has(:invalid) .form-control:not(.has-end-icon) {
+    border-right: 1px solid var(--color-danger) !important;
+    border-radius: 0 var(--radius-input) var(--radius-input) 0 !important;
+}
+
+.custom-input-group:has(.form-control.is-invalid) .form-control.has-end-icon,
+.was-validated .custom-input-group:has(:invalid) .form-control.has-end-icon {
+    border-right: none !important;
+    border-radius: 0 !important;
+}
+
+.custom-input-group:has(.form-control.is-invalid) .input-group-text.end-icon,
+.was-validated .custom-input-group:has(:invalid) .input-group-text.end-icon {
+    border-right: 1px solid var(--color-danger) !important;
+    border-radius: 0 var(--radius-input) var(--radius-input) 0 !important;
+}
+
+.custom-input-group .form-control.is-invalid:focus {
+    box-shadow: none !important;
+}
+
+.custom-input-group:has(.form-control.is-invalid):focus-within .input-group-text,
+.custom-input-group:has(.form-control.is-invalid):focus-within .form-control,
+.was-validated .custom-input-group:has(:invalid):focus-within .input-group-text,
+.was-validated .custom-input-group:has(:invalid):focus-within .form-control {
+    box-shadow: 0 0 0 0.25rem var(--color-danger-shadow) !important;
+}
+
+/* ==========================================================================
+   6. COMPONENTES ADICIONALES (Pasos / Steps)
+   ========================================================================== */
+.step-card {
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-input);
+    background-color: var(--color-bg-white);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.step-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.step-icon {
+    width: 44px;
+    height: 44px;
+    background-color: var(--color-step-icon-bg);
+    color: var(--color-step-icon-text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-pill);
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.bg-light-blue {
+    background-color: var(--color-bg-light-blue);
+    border-radius: 12px;
+}
+
+/* ==========================================================================
+   7. INTEGRACIÓN Y DETALLES DE LA INTERFAZ (Fondos, Contornos y Tablas)
+   ========================================================================== */
+.bg-page {
+    background-color: #f8fafc; /* El color exacto de fondo gris claro de la mockup */
+}
+
+.main-layout {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.card-custom {
+    background-color: var(--color-bg-white);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-container);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.01);
+}
+
+/* Ajustes finos de fuentes micro */
+.text-micro {
+    font-size: 0.72rem;
+    font-weight: 500;
+}
+.style-micro {
+    font-size: 0.65rem;
+}
+.text-muted-row {
+    color: #64748b;
+}
+.text-border {
+    color: var(--color-border-light);
+}
+.border-light-custom {
+    border-color: #e2e8f0 !important;
+}
+
+/* Badges personalizados de la interfaz */
+.badge-custom {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+}
+.badge-status {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.35rem 0.6rem;
+    letter-spacing: 0.04em;
+    border-radius: 4px;
+}
+
+/* Colores de Badges pasados por estados */
+.bg-badge-blue { background-color: #e0e7ff; }
+.bg-badge-purple { background-color: #f3f0ff; .text-purple { color: #6366f1; } }
+.text-purple { color: #4f46e5; }
+.bg-badge-success { background-color: #dcfce7; }
+.bg-badge-gray { background-color: #f1f5f9; }
+.bg-badge-danger { background-color: #fee2e2; }
+
+/* Tabla Estilizada respetando tus contornos */
+.table-custom thead th {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    border-bottom: 1px solid var(--color-border-light);
+    padding-bottom: 0.8rem;
+}
+.table-custom tbody td {
+    padding: 1rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.88rem;
+}
+.table-custom tbody tr:last-child td {
+    border-bottom: none;
+}

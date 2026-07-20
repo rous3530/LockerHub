@@ -44,7 +44,7 @@
             </div>
             <div class="col-md-6">
                 <h1 class="display-5 fw-bold text-navy mb-3">
-                    Simplifica tu vida Universitaria con <span class="text-primary">LockerHub</span>
+                    Simplifica tu vida Universitaria con LockerHub
                 </h1>
                 <p class="text-muted mb-4 lead fs-6">
                     La solución inteligente para el resguardo de tus pertenencias. Gestiona tu espacio personal de forma rápida, segura y 100% digital.

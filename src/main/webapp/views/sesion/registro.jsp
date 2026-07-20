@@ -1,3 +1,4 @@
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -14,7 +15,7 @@
     <div class="container">
         <a class="navbar-brand fw-bold fs-4" href="#">LockerHub</a>
         <div class="d-flex gap-3">
-            <a href="${pageContext.request.contextPath}/inicio" class="text-white text-decoration-none small opacity-75">Inicio</a>
+            <a href="${pageContext.request.contextPath}/index.jsp" class="text-white text-decoration-none small opacity-75">Inicio</a>
             <a href="#" class="text-white text-decoration-underline small fw-bold">Registro</a>
         </div>
     </div>
@@ -63,7 +64,7 @@
             <hr class="text-muted opacity-25 my-4">
 
             <p class="mb-0 small text-secondary">
-                ¿Ya tienes una cuenta? <a href="${pageContext.request.contextPath}/login" class="text-navy fw-bold text-decoration-none">Inicia sesión aquí</a>
+                ¿Ya tienes una cuenta? <a href="${pageContext.request.contextPath}/views/sesion/IniciarSesion.jsp" class="text-navy fw-bold text-decoration-none">Inicia sesión aquí</a>
             </p>
         </form>
 

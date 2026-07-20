@@ -13,7 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LockerHub - Portal Universitario</title>
     <link href="${pageContext.request.contextPath}/css/bootstrap.css" rel="stylesheet">
-    <link href="${pageContext.request.contextPath}/css/bootstrap-icons-1.13.1" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/customerAlumno.css">
 </head>
@@ -21,23 +21,32 @@
 
 <nav class="navbar navbar-expand-lg bg-white border-bottom py-2 mb-4">
     <div class="container-fluid px-4">
-        <div class="d-flex align-items-center">
-            <a class="navbar-brand d-flex align-items-center fw-bold text-navy-brand m-0" href="#">
-                <i class="bi bi-shield-lock-fill text-navy-brand me-2 fs-4"></i> LockerHub
-            </a>
-            <span class="text-muted d-none d-md-inline border-start ps-3 ms-3 small">Bienvenido, Estudiante</span>
-        </div>
+        <div class="row w-100 align-items-center m-0" style="justify-content: space-between;">
 
-        <div class="ms-auto d-flex align-items-center gap-3">
-            <button class="btn btn-link text-muted p-1"><i class="bi bi-gear fs-5"></i></button>
-            <button class="btn btn-link text-muted p-1 border-end pe-3"><i class="bi bi-box-arrow-right fs-5"></i></button>
-            <div class="d-flex align-items-center gap-2 ps-2">
-                <div class="text-end d-none d-sm-block lh-1">
-                    <div class="fw-bold text-dark small mb-1">Carlos Mendoza</div>
-                    <span class="text-muted text-micro">ID: 2023-0452</span>
-                </div>
-                <img src="https://ui-avatars.com/api/?name=Carlos+Mendoza&background=1a365d&color=fff&size=100" class="rounded-circle border" width="36" height="36" alt="Avatar">
+            <!-- Columna Izquierda: Logo y Mensaje de Bienvenida -->
+            <div class="col-4 d-flex justify-content-start align-items-center p-0">
+                <a class="navbar-brand d-flex align-items-center fw-bold text-navy-brand m-0" href="#">
+                    LockerHub
+                </a>
+                <span class="text-muted d-none d-md-inline border-start ps-3 ms-3 small">Bienvenido, Estudiante</span>
             </div>
+
+            <!-- Columna Derecha: Configuración, Salida y Perfil -->
+            <div class="col-4 d-flex justify-content-end align-items-center gap-3 p-0">
+                <!-- Reemplaza el botón de la tuerca en tu navbar por este enlace -->
+                <a href="${pageContext.request.contextPath}/views/alumno/editarPerfil.jsp" class="btn btn-link text-muted p-1">
+                    <i class="bi bi-gear fs-5"></i>
+                </a>
+                <button class="btn btn-link text-muted p-1 border-end pe-3" onclick="location.href='${pageContext.request.contextPath}/logout'"><i class="bi bi-box-arrow-right fs-5"></i></button>
+                <div class="d-flex align-items-center gap-2 ps-2">
+                    <div class="text-end d-none d-sm-block lh-1">
+                        <div class="fw-bold text-dark small mb-1">Carlos Mendoza</div>
+                        <span class="text-muted text-micro">ID: 2023-0452</span>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Carlos+Mendoza&background=1a365d&color=fff&size=100" class="rounded-circle border" width="36" height="36" alt="Avatar">
+                </div>
+            </div>
+
         </div>
     </div>
 </nav>
@@ -49,9 +58,11 @@
             <div class="d-flex flex-column flex-md-row align-items-center gap-4">
                 <div class="position-relative">
                     <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150" class="rounded-circle border border-2 border-white shadow-sm" width="100" height="100" alt="Avatar Alumna">
-                    <button class="btn btn-navy position-absolute bottom-0 end-0 rounded-circle edit-avatar-btn">
-                        <i class="bi bi-pencil-fill text-white"></i>
-                    </button>
+                    <a href="${pageContext.request.contextPath}/views/alumno/editarPerfil.jsp"
+                       class="btn btn-navy position-absolute bottom-0 end-0 rounded-circle edit-avatar-btn d-inline-flex align-items-center justify-content-center"
+                       style="width: 32px; height: 32px; padding: 0;">
+                        <i class="bi bi-pencil-fill text-white" style="font-size: 0.85rem;"></i>
+                    </a>
                 </div>
                 <div class="text-center text-md-start">
                     <h2 class="fw-bold text-navy-title mb-1">Carlos Enrique Mendoza Ruiz</h2>
@@ -76,7 +87,7 @@
 
                         <div class="d-flex align-items-center gap-3 mb-4">
                             <div class="bg-icon-box rounded-3 text-navy-brand icon-container-box">
-                                <i class="bi bi-lock-fill fs-2"></i>
+                                <i class="bi bi-lock-fill fs-1 text-primary" style="color: #1a365d !important;"></i>
                             </div>
                             <div>
                                 <span class="text-muted-light text-micro text-uppercase d-block fw-semibold tracking-wider mb-1">ID DEL LOCKER</span>
@@ -110,7 +121,7 @@
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h4 class="fw-bold text-navy-title m-0 fs-5">Mis Solicitudes</h4>
-                            <a href="#" class="small-link text-decoration-none fw-bold text-navy-link">Ver Historial Completo</a>
+                            <a href="${pageContext.request.contextPath}/views/alumno/HistorialSolicitud.jsp" class="small-link text-decoration-none fw-bold text-navy-link">Ver Historial Completo</a>
                         </div>
 
                         <div class="table-responsive">
@@ -193,7 +204,7 @@
 
             <!-- Botón 3: Reglamento de Uso -->
             <div class="col-md-4">
-                <a href="${pageContext.request.contextPath}/alumno/reglamento.jsp" class="step-card text-decoration-none">
+                <a href="${pageContext.request.contextPath}/views/alumno/reglamento.jsp" class="step-card text-decoration-none">
                     <div class="step-icon bg-status-danger-light">
                         <i class="bi bi-shield-exclamation"></i>
                     </div>

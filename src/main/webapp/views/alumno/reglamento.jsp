@@ -176,30 +176,39 @@
 <body class="bg-page">
 
 <!-- Navbar adaptada de image_574848.png -->
+<!-- Navbar Corregida y Perfectamente Centrada -->
 <nav class="navbar navbar-expand-lg bg-white border-bottom py-2 mb-4">
     <div class="container-fluid px-4">
-        <div class="d-flex align-items-center">
-            <a class="navbar-brand d-flex align-items-center fw-bold text-navy-brand m-0" href="#">
-                <i class="bi bi-shield-lock-fill text-navy-brand me-2 fs-4"></i> LockerHub
-            </a>
-        </div>
+        <div class="row w-100 align-items-center m-0">
 
-        <!-- Links de navegación centrales como en el mock -->
-        <div class="mx-auto d-none d-lg-flex gap-2">
-            <a href="${pageContext.request.contextPath}/alumno/dashboard.jsp" class="nav-link-custom">Inicio</a>
-            <a href="${pageContext.request.contextPath}/alumno/reglamento.jsp" class="nav-link-custom active">Reglamento</a>
-        </div>
-
-        <div class="ms-auto d-flex align-items-center gap-3">
-            <button class="btn btn-link text-muted p-1"><i class="bi bi-gear fs-5"></i></button>
-            <button class="btn btn-link text-muted p-1 border-end pe-3" onclick="location.href='${pageContext.request.contextPath}/logout'"><i class="bi bi-box-arrow-right fs-5"></i></button>
-            <div class="d-flex align-items-center gap-2 ps-2">
-                <div class="text-end d-none d-sm-block lh-1">
-                    <div class="fw-bold text-dark small mb-1">Carlos Mendoza</div>
-                    <span class="text-muted text-micro">ID: 2023-0452</span>
-                </div>
-                <img src="https://ui-avatars.com/api/?name=Carlos+Mendoza&background=1a365d&color=fff&size=100" class="rounded-circle border" width="36" height="36" alt="Avatar">
+            <!-- Columna Izquierda: Logo -->
+            <div class="col-4 d-flex justify-content-start p-0">
+                <a class="navbar-brand d-flex align-items-center fw-bold text-navy-brand m-0" href="#">
+                    LockerHub
+                </a>
             </div>
+
+            <!-- Columna Central: Menú de Navegación Absolutamente Centrado -->
+            <div class="col-4 d-flex justify-content-center p-0">
+                <div class="d-none d-lg-flex gap-2">
+                    <a href="${pageContext.request.contextPath}/views/alumno/inicio.jsp" class="nav-link-custom">Inicio</a>
+                    <a href="${pageContext.request.contextPath}/views/alumno/reglamento.jsp" class="nav-link-custom active">Reglamento</a>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Opciones y Perfil del Usuario -->
+            <div class="col-4 d-flex justify-content-end align-items-center gap-3 p-0">
+                <button class="btn btn-link text-muted p-1"><i class="bi bi-gear fs-5"></i></button>
+                <button class="btn btn-link text-muted p-1 border-end pe-3" onclick="location.href='${pageContext.request.contextPath}/logout'"><i class="bi bi-box-arrow-right fs-5"></i></button>
+                <div class="d-flex align-items-center gap-2 ps-2">
+                    <div class="text-end d-none d-sm-block lh-1">
+                        <div class="fw-bold text-dark small mb-1">Carlos Mendoza</div>
+                        <span class="text-muted text-micro">ID: 2023-0452</span>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Carlos+Mendoza&background=1a365d&color=fff&size=100" class="rounded-circle border" width="36" height="36" alt="Avatar">
+                </div>
+            </div>
+
         </div>
     </div>
 </nav>
@@ -298,7 +307,7 @@
             <div class="col-lg-6">
                 <div class="card card-main-regulation p-4 h-100">
                     <div class="d-flex align-items-center gap-2 mb-4 border-bottom pb-3">
-                        <i class="bi bi-exclamation-triangle text-warning fs-4"></i>
+                        <i class="bi bi-exclamation-triangle text-navy-brand fs-4"></i>
                         <h3 class="fw-bold text-navy-brand m-0 fs-4">Régimen de Sanciones</h3>
                     </div>
 
@@ -309,14 +318,14 @@
                     </div>
 
                     <!-- Falta Grave -->
-                    <div class="sanction-subcard grave">
-                        <div class="fw-bold text-warning mb-1" style="font-size: 0.9rem;">Faltas Graves</div>
+                    <div class="sanction-subcard">
+                        <div class="fw-bold text-danger mb-1" style="font-size: 0.9rem;">Faltas Graves</div>
                         <p class="text-muted mb-0 small">Pérdida definitiva del derecho de uso del locker y reporte al expediente académico.</p>
                     </div>
 
                     <!-- Daño Material -->
-                    <div class="sanction-subcard material">
-                        <div class="fw-bold text-secondary mb-1" style="font-size: 0.9rem;">Daños Materiales</div>
+                    <div class="sanction-subcard">
+                        <div class="fw-bold text-danger mb-1" style="font-size: 0.9rem;">Daños Materiales</div>
                         <p class="text-muted mb-0 small">El estudiante deberá cubrir el costo total de la reparación o reposición del bien dañado.</p>
                     </div>
                 </div>
@@ -334,16 +343,9 @@
                 </div>
                 <div class="col-md-5">
                     <!-- Imagen de casilleros / pasillo moderno -->
-                    <img src="https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&q=80&w=600" class="privacy-image" alt="Pasillo de casilleros universitarios">
+                    <img src="${pageContext.request.contextPath}/img/lockers.png" class="privacy-image" alt="Pasillo de casilleros universitarios">
                 </div>
             </div>
-        </div>
-
-        <!-- Botón de retorno al panel principal -->
-        <div class="text-center my-5">
-            <a href="${pageContext.request.contextPath}/alumno/dashboard.jsp" class="btn btn-navy px-4 py-2 fw-medium rounded-pill shadow-sm">
-                <i class="bi bi-arrow-left me-2"></i> Volver al Portal Alumno
-            </a>
         </div>
 
     </div>
@@ -363,14 +365,3 @@
 <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-```eof
-
-He diseñado esta vista de acuerdo con las siguientes características para asegurar la compatibilidad total y una perfecta integración:
-
-1. **Estructura JSP Integrada:** Mantiene la sintaxis `<%@ page ... %>`, el formato de layout y el uso de `${pageContext.request.contextPath}/` para jalar los recursos locales de CSS y JS tal como en tu portal alumno.
-2. **Fidelidad al mockup (`image_574848.png`):**
-- El navbar central cuenta con el link "Reglamento" activo y con la pestaña marcada.
-- La cabecera incluye el título limpio "Reglamento de Uso" con el cuadro azul decorativo y dinámico en la parte derecha para simular el recurso visual.
-- Distribuye las secciones de **Obligaciones**, **Prohibiciones** (con sus íconos de color de prohibido) y **Sanciones** con los bordes de color correspondientes (*Faltas Leves*, *Faltas Graves* y *Daños Materiales*).
-- El banner inferior de **Privacidad y Seguridad** utiliza colores celestes suaves y una imagen moderna de casilleros de alta definición.
-3. **Botón de retorno:** He agregado un botón inferior muy amigable para que el estudiante pueda regresar fluidamente a su dashboard principal.

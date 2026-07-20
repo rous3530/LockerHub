@@ -23,7 +23,7 @@
             </div>
 
             <div class="d-flex gap-3 align-items-center">
-                <a href="${pageContext.request.contextPath}/alumno/dashboard.jsp" class="nav-link-custom">Inicio</a>
+                <a href="${pageContext.request.contextPath}/views/alumno/inicio.jsp" class="nav-link-custom">Inicio</a>
                 <a href="#" class="nav-link-custom active">Calendario</a>
             </div>
 
@@ -47,7 +47,7 @@
     <main class="container main-layout flex-grow-1 d-flex flex-column justify-content-center align-items-center py-5">
 
         <div class="w-100 max-container-width mb-4">
-            <a href="${pageContext.request.contextPath}/alumno/dashboard.jsp" class="text-navy-link d-inline-flex align-items-center gap-2">
+            <a href="${pageContext.request.contextPath}/views/alumno/inicio.jsp" class="text-navy-link d-inline-flex align-items-center gap-2">
                 <i class="bi bi-arrow-left"></i> Volver
             </a>
         </div>

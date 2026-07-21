@@ -178,7 +178,7 @@
         <div class="row g-3">
             <!-- Botón 1: Solicitar Locker -->
             <div class="col-md-4">
-                <a href="${pageContext.request.contextPath}/alumno/solicitarLocker.jsp" class="step-card text-decoration-none">
+                <a href="${pageContext.request.contextPath}/views/alumno/solicitarLocker.jsp" class="step-card text-decoration-none">
                     <div class="step-icon">
                         <i class="bi bi-plus-circle"></i>
                     </div>

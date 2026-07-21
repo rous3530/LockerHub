@@ -256,7 +256,7 @@
             <!-- Columna Izquierda: Logo -->
             <div class="col-4 d-flex justify-content-start p-0">
                 <a class="navbar-brand d-flex align-items-center fw-bold text-navy-brand m-0" href="#">
-                    <i class="bi bi-shield-lock-fill text-navy-brand me-2 fs-4"></i> LockerHub
+                     LockerHub
                 </a>
             </div>
 
@@ -271,7 +271,7 @@
             <!-- Columna Derecha: Notificación, Configuración y Perfil -->
             <div class="col-4 d-flex justify-content-end align-items-center gap-3 p-0">
                 <button class="btn btn-link text-muted p-1"><i class="bi bi-bell fs-5"></i></button>
-                <a href="${pageContext.request.contextPath}/views/alumno/Solicitud.jsp" class="btn btn-link text-muted p-1">
+                <a href="${pageContext.request.contextPath}/views/alumno/solicitarLocker.jsp" class="btn btn-link text-muted p-1">
                     <i class="bi bi-gear fs-5"></i>
                 </a>
                 <button class="btn btn-link text-muted p-1 border-end pe-3" onclick="location.href='${pageContext.request.contextPath}/logout'"><i class="bi bi-box-arrow-right fs-5"></i></button>
@@ -301,7 +301,7 @@
                 <p class="text-muted mb-0 small">Consulta el estado y los detalles de todas tus solicitudes de casilleros.</p>
             </div>
             <div>
-                <a href="${pageContext.request.contextPath}/alumno/solicitarLocker.jsp" class="btn btn-navy-primary d-inline-flex align-items-center gap-2">
+                <a href="${pageContext.request.contextPath}/views/alumno/solicitarLocker.jsp" class="btn btn-navy-primary d-inline-flex align-items-center gap-2">
                     <i class="bi bi-plus-lg"></i> Nueva Solicitud
                 </a>
             </div>

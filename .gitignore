@@ -1,0 +1,11 @@
+# IDE
+.idea/
+*.iml
+out/
+
+# Compilación de Maven
+target/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

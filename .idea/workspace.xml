@@ -9,7 +9,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6e3a30cd-90d3-4b00-9fe4-ded8c356d096" name="Changes" comment="" />
+    <list default="true" id="6e3a30cd-90d3-4b00-9fe4-ded8c356d096" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -56,6 +58,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "Tomcat Server.Tomcat 10.1.56.executor": "Run",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/josef/OneDrive/Escritorio/LockerHub/Locker",
@@ -88,10 +91,16 @@
   </component>
   <component name="RunManager">
     <configuration name="Tomcat 10.1.56" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 10.1.56" ALTERNATIVE_JRE_ENABLED="true" ALTERNATIVE_JRE_PATH="21">
+      <option name="UPDATING_POLICY" value="restart-server" />
       <deployment>
         <artifact name="Locker:war exploded">
           <settings>
             <option name="CONTEXT_PATH" value="/Locker_war_exploded" />
+          </settings>
+        </artifact>
+        <artifact name="Locker:war">
+          <settings>
+            <option name="CONTEXT_PATH" value="/Locker_war" />
           </settings>
         </artifact>
       </deployment>
@@ -170,6 +179,7 @@
         <option name="Make" enabled="true" />
         <option name="BuildArtifacts" enabled="true">
           <artifact name="Locker:war exploded" />
+          <artifact name="Locker:war" />
         </option>
       </method>
     </configuration>
@@ -192,11 +202,20 @@
       <workItem from="1784050332120" duration="884000" />
       <workItem from="1784151436447" duration="636000" />
       <workItem from="1784213606418" duration="9251000" />
-      <workItem from="1784570693688" duration="15310000" />
+      <workItem from="1784570693688" duration="17037000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="java:jakarta.enterprise:jakarta.enterprise.cdi-api" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.validation:jakarta.validation-api" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.persistence:jakarta.persistence-api" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.ejb:jakarta.ejb-api" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.ws.rs:jakarta.ws.rs-api" />
+    <option featureType="dependencySupport" implementationName="maven-packaging:war" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.faces:jakarta.faces-api" />
   </component>
 </project>

@@ -1,0 +1,295 @@
+/* ==========================================================================
+   LockerHub - Portal del Alumno (custumerAlumno.css)
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --color-navy-dark: #1a365d;
+    --color-navy-medium: #1e3a8a;
+    --color-navy-hover: #172554;
+
+    /* Paleta de grises y contornos sutiles de Figma */
+    --color-border-light: #e2e8f0;
+    --color-text-muted: #94a3b8;        /* Gris claro para textos secundarios */
+    --color-text-secondary: #64748b;    /* Gris medio para descripciones */
+
+    --color-bg-white: #ffffff;
+    --radius-container: 16px;
+    --radius-input: 12px;
+}
+
+/* Aplicación global de la fuente Inter para quitar la rigidez del navegador */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8fafc; /* Fondo gris azulado ultra claro */
+    color: #1e293b;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Layout Principal */
+.main-layout {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Tarjetas con sombras finas y bordes discretos de Figma */
+.card-custom {
+    background-color: var(--color-bg-white);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-container);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+}
+
+.text-navy-brand, .text-navy-title {
+    color: var(--color-navy-dark) !important;
+    font-weight: 700;
+}
+
+/* Banner de Perfil Principal */
+.bg-gradient-profile {
+    background: linear-gradient(90deg, #f0f4ff 0%, #f8fafc 100%);
+    border: 1px solid var(--color-border-light) !important;
+}
+
+/* Botón de edición del avatar */
+.edit-avatar-btn {
+    width: 28px;
+    height: 28px;
+    background-color: var(--color-navy-dark) !important;
+    border: 2px solid var(--color-bg-white) !important;
+    font-size: 11px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Tonos de texto secundarios aclarados */
+.text-micro {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--color-text-muted) !important;
+    letter-spacing: 0.05em;
+}
+
+.text-muted-light {
+    color: var(--color-text-muted) !important;
+}
+
+.text-muted-dark {
+    color: var(--color-text-secondary) !important;
+}
+
+.text-muted-row {
+    color: var(--color-text-secondary);
+}
+
+.border-light-divider {
+    border-color: #f1f5f9 !important;
+}
+
+/* Caja de ícono del casillero actual */
+.icon-container-box {
+    width: 56px;
+    height: 56px;
+    background-color: #eff6ff;
+    border-radius: 12px;
+    flex-shrink: 0;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    color: #3b82f6 !important;
+}
+
+/* ==========================================================================
+   BADGES DE PERFIL (Cápsulas Gris-Azuladas Sutiles)
+   ========================================================================== */
+.badge-pill-custom {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.4rem 0.9rem !important;
+    border-radius: 9999px !important;
+    border: none !important;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+
+/* Fondo gris azulado suave idéntico a Figma */
+.bg-pill-blue,
+.bg-pill-indigo {
+    background-color: #e0ebf7 !important;
+}
+
+/* Color de texto en azul pizarra oscuro de alta legibilidad */
+.text-pill-blue,
+.text-pill-indigo {
+    color: #334e68 !important;
+}
+.text-pill-indigo{
+    color: var(--color-navy-dark) !important
+}
+
+/* ==========================================================================
+   TABLA DE SOLICITUDES
+   ========================================================================== */
+.table-custom thead th {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 0.75rem;
+}
+
+.table-custom tbody td {
+    padding: 0.85rem 0;
+    border-bottom: 1px solid #f8fafc;
+    font-size: 0.85rem;
+}
+
+.table-custom tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.text-navy-link {
+    color: var(--color-navy-dark) !important;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.text-navy-link:hover {
+    text-decoration: underline !important;
+}
+
+/* Badges de Estado en la Tabla */
+.badge-status {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.25rem 0.5rem;
+    letter-spacing: 0.05em;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.bg-status-success {
+    background-color: #dcfce7 !important;
+}
+
+.text-status-success {
+    color: #16a34a !important;
+}
+
+.bg-status-gray {
+    background-color: #f1f5f9 !important;
+}
+
+.text-status-gray {
+    color: #475569 !important;
+}
+
+.bg-status-indigo {
+    background-color: #e0f2fe !important;
+}
+
+.text-status-indigo {
+    color: #0369a1 !important;
+}
+
+/* ==========================================================================
+   TARJETAS INFERIORES (Botones Rápidos / Squircle Icon Containers)
+   ========================================================================== */
+.step-card {
+    border: 1px solid var(--color-border-light) !important;
+    border-radius: 16px !important;
+    background-color: var(--color-bg-white);
+    padding: 1.25rem 1.25rem !important;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02) !important;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.step-card:hover {
+    transform: translateY(-2px);
+    border-color: #cbd5e1 !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -4px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Contenedor del Icono: Cuadrado con esquinas redondeadas suaves */
+.step-icon {
+    width: 48px;
+    height: 48px;
+    background-color: #f0f4f9; /* Fondo gris azulado muy claro */
+    color: #1a365d;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;       /* Esquinas redondeadas suaves (Squircle) */
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    margin-right: 16px;
+}
+
+/* Contenedor de Icono en variante roja (Reglamento de Uso) */
+.bg-status-danger-light {
+    background-color: #fff1f2 !important; /* Rojo ultra sutil de Figma */
+    color: #991b1b !important;            /* Icono rojo quemado elegante */
+}
+
+/* Textos de las Tarjetas Inferiores */
+.step-text-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.small-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a365d;
+    margin-bottom: 3px;
+}
+
+.step-desc {
+    font-size: 0.78rem;
+    color: var(--color-text-secondary); /* Tono claro para las descripciones de abajo */
+    margin: 0;
+    line-height: 1.25;
+}
+
+/* Contenedores de información del casillero actual */
+.bg-light-blue {
+    background-color: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 12px;
+}
+
+/* ==========================================================================
+   FOOTER (Firma y Soporte)
+   ========================================================================== */
+footer {
+    background-color: var(--color-bg-white);
+}
+
+footer span {
+    color: var(--color-text-muted) !important; /* Texto claro de Figma */
+    font-size: 0.75rem;
+}
+
+footer a {
+    color: var(--color-text-secondary) !important;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: color 0.15s ease;
+}
+
+footer a:hover {
+    color: var(--color-navy-dark) !important;
+    text-decoration: underline !important;
+}

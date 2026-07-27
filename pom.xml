@@ -23,9 +23,17 @@
             <version>10.0.0</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Soporte para JSTL en Jakarta EE 10 -->
+        <dependency>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>
+        <!-- Fuerza a que el artifact generado en target sea siempre Locker.war / Locker -->
         <finalName>Locker</finalName>
     </build>
 </project>

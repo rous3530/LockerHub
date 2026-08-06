@@ -1,32 +1,62 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: josef
-  Date: 7/2/2026
-  Time: 11:48 a. m.
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="mx.edu.utez.locker.model.SolicitudDto" %>
+<%@ page import="mx.edu.utez.locker.model.Administrador" %>
+<%
+    HttpSession sesion = request.getSession(false);
+    Administrador admin = (sesion != null) ? (Administrador) sesion.getAttribute("usuario") : null;
+
+    if (admin == null || !"ADMIN".equalsIgnoreCase(admin.getRol())) {
+        response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp");
+        return;
+    }
+
+    List<SolicitudDto> solicitudes = (List<SolicitudDto>) request.getAttribute("solicitudes");
+    Integer totalLockers = (Integer) request.getAttribute("totalLockers");
+    Integer disponibles = (Integer) request.getAttribute("lockersDisponibles");
+    Integer pendientes = (Integer) request.getAttribute("pendientesCount");
+
+    if (totalLockers == null) totalLockers = 1000;
+    if (disponibles == null) disponibles = 50;
+    if (pendientes == null) pendientes = (solicitudes != null) ? solicitudes.size() : 0;
+
+    double porcentajeDisponible = (totalLockers > 0) ? ((double) disponibles / totalLockers) * 100 : 0;
+    boolean bajoInventario = porcentajeDisponible <= 10.0;
+%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LockerHub - Panel de Administración</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>LockerHub - Solicitudes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <style>
-        /* Estilos personalizados para el Dashboard */
-        .bg-navy { background-color: #1a365d; }
-        .text-navy { color: #1a365d; }
-        .bg-navy-dark { background-color: #112952; }
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/customer.css">
 
-        /* Ajustes de navegación activa */
+    <style>
+        :root {
+            --lh-navy: #1b365d;
+            --lh-navy-dark: #112440;
+            --lh-green: #086328;
+            --lh-red: #8b0000;
+            --lh-bg-light: #f4f6fb;
+            --lh-table-header: #eef2ff;
+            --lh-badge-blue: #e0e7ff;
+            --lh-badge-text: #3730a3;
+        }
+
+        body {
+            background-color: var(--lh-bg-light);
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        }
+
+        .bg-navy { background-color: var(--lh-navy) !important; }
         .nav-link-custom {
             color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
             font-size: 0.85rem;
             font-weight: 600;
-            text-transform: uppercase;
+            letter-spacing: 0.03em;
             padding-bottom: 4px;
         }
         .nav-link-custom:hover { color: #fff; }
@@ -35,19 +65,18 @@
             border-bottom: 2px solid #fff;
         }
 
-        /* Tarjetas de métricas */
         .metric-card {
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             background-color: #ffffff;
-            transition: transform 0.2s;
         }
-        .metric-icon {
-            color: #1a365d;
-            font-size: 1.25rem;
+        .metric-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: #64748b;
         }
 
-        /* Contenedor Principal de la Tabla */
         .table-container {
             border: 1px solid #e2e8f0;
             border-radius: 12px;
@@ -55,79 +84,143 @@
             overflow: hidden;
         }
         .table-header-bg {
-            background-color: #eef2ff;
+            background-color: var(--lh-table-header);
+            border-bottom: 1px solid #e2e8f0;
         }
         .table-th {
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: #64748b;
+            color: #475569;
             font-weight: 700;
-            padding: 15px 20px;
+            padding: 14px 20px;
         }
-        .empty-state {
-            padding: 60px 20px;
-            color: #64748b;
-        }
-        .table-footer-bg {
-            background-color: #eef2ff;
-            border-top: 1px solid #e2e8f0;
-            padding: 15px 20px;
+        .table-row {
+            border-bottom: 1px solid #f1f5f9;
+            padding: 14px 20px;
+            align-items: center;
         }
 
-        /* Buscador */
-        .search-input-group {
-            max-width: 280px;
-        }
-        .search-input-group .form-control {
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-
-        /* Ajuste de avatar de usuario */
-        .avatar-circle {
-            width: 32px;
-            height: 32px;
-            background-color: #475569;
+        .avatar-initials {
+            width: 36px;
+            height: 36px;
+            background-color: #dbeafe;
+            color: #1e40af;
+            font-weight: 700;
+            font-size: 0.85rem;
             border-radius: 50%;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
+        }
+        .badge-cuatri {
+            background-color: var(--lh-badge-blue);
+            color: var(--lh-badge-text);
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .btn-preaprobar {
+            background-color: var(--lh-green);
             color: white;
-            font-size: 0.85rem;
+            font-weight: 600;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            border: none;
+            padding: 6px 14px;
+        }
+        .btn-preaprobar:hover { background-color: #064e1e; color: white; }
+
+        .btn-rechazar {
+            background-color: var(--lh-red);
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            border: none;
+            padding: 6px 14px;
+        }
+        .btn-rechazar:hover { background-color: #6a0000; color: white; }
+
+        .search-box {
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 6px 12px;
+            max-width: 300px;
+            background-color: #fff;
+        }
+        .search-box input {
+            border: none;
+            outline: none;
+            font-size: 0.875rem;
+            width: 100%;
         }
     </style>
 </head>
-<body class="bg-light" style="min-height: 100vh; display: flex; flex-direction: column;">
+<body class="d-flex flex-column min-vh-100">
 
+<!-- Header / Navigation -->
 <nav class="navbar navbar-dark bg-navy py-3 shadow-sm">
     <div class="container-fluid px-4">
         <a class="navbar-brand fw-bold fs-4 m-0" href="#">LockerHub</a>
 
         <div class="d-flex gap-4 mx-auto">
-            <a href="#" class="nav-link-custom active">Solicitudes</a>
-            <a href="#" class="nav-link-custom">Pre-Aceptados</a>
-            <a href="#" class="nav-link-custom">Aceptados</a>
+            <a href="${pageContext.request.contextPath}/admin/solicitudes" class="nav-link-custom active">SOLICITUDES</a>
+            <a href="${pageContext.request.contextPath}/views/admin/pre-aceptacion.jsp" class="nav-link-custom">PRE-ACEPTADOS</a>
+            <a href="${pageContext.request.contextPath}/views/admin/aceptados.jsp" class="nav-link-custom">ACEPTADOS</a>
         </div>
 
         <div class="d-flex align-items-center gap-3">
-            <a href="#" class="text-white opacity-75"><i class="bi bi-bell fs-5"></i></a>
-            <a href="#" class="text-white opacity-75"><i class="bi bi-gear fs-5"></i></a>
-            <div class="avatar-circle fw-bold">U</div>
+            <span class="text-white small me-2"><%= admin.getNombres() %></span>
+            <a href="${pageContext.request.contextPath}/cerrar-sesion" class="text-white opacity-75" title="Cerrar Sesión">
+                <i class="bi bi-box-arrow-right fs-5"></i>
+            </a>
         </div>
     </div>
 </nav>
 
+<!-- Main Container -->
 <div class="container-fluid px-4 py-4 flex-grow-1">
 
+    <!-- BANNER DE NOTIFICACIÓN ÉXITO -->
+    <% if ("success".equals(request.getParameter("status"))) { %>
+    <div class="alert alert-success d-flex align-items-center alert-dismissible fade show mb-4" role="alert">
+        <i class="bi bi-check-circle-fill fs-5 me-2"></i>
+        <div>
+            <% if ("preaprobar".equals(request.getParameter("action"))) { %>
+            Estudiante pre-aprobado exitosamente.
+            <% } else { %>
+            La solicitud ha sido rechazada.
+            <% } %>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <% } %>
+
+    <!-- BANNER DE ADVERTENCIA INVENTARIO BAJO -->
+    <% if (bajoInventario) { %>
+    <div class="alert alert-primary border-0 mb-4" style="background-color: #dbeafe; color: #1e3a8a; border-radius: 8px;">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-exclamation-triangle-fill fs-5 me-3 text-primary"></i>
+            <div>
+                <strong>¡Atención!</strong><br>
+                <span class="small">El inventario de casilleros disponibles es bajo (<%= String.format("%.1f", porcentajeDisponible) %>%). Por favor, revise las asignaciones.</span>
+            </div>
+        </div>
+    </div>
+    <% } %>
+
+    <!-- TARJETAS DE MÉTRICAS -->
     <div class="row g-4 mb-4">
         <div class="col-md-4">
             <div class="p-4 metric-card shadow-sm h-100">
                 <div class="d-flex justify-content-between align-items-start mb-2">
-                    <span class="text-muted fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em;">Total de Lockers</span>
-                    <i class="bi bi-lock metric-icon"></i>
+                    <span class="metric-title text-uppercase">TOTAL DE LOCKERS</span>
+                    <i class="bi bi-lock text-navy fs-5"></i>
                 </div>
-                <h2 class="display-6 fw-bold text-navy m-0">1,000</h2>
+                <h2 class="display-6 fw-bold text-navy mb-1"><%= totalLockers %></h2>
                 <p class="text-muted small mb-3">Capacidad total instalada</p>
                 <div class="progress" style="height: 6px;">
                     <div class="progress-bar bg-navy" role="progressbar" style="width: 100%;"></div>
@@ -138,14 +231,13 @@
         <div class="col-md-4">
             <div class="p-4 metric-card shadow-sm h-100">
                 <div class="d-flex justify-content-between align-items-start mb-2">
-                    <span class="text-muted fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em;">Disponibles</span>
-                    <i class="bi bi-check-circle metric-icon"></i>
+                    <span class="metric-title text-uppercase">DISPONIBLES</span>
+                    <i class="bi bi-exclamation-triangle <%= bajoInventario ? "text-danger" : "text-success" %> fs-5"></i>
                 </div>
-                <h2 class="display-6 fw-bold text-navy m-0">120</h2>
-                <p class="text-muted small mb-3">Disponibilidad inmediata (12%)</p>
+                <h2 class="display-6 fw-bold text-navy mb-1"><%= disponibles %></h2>
+                <p class="text-muted small mb-3">Disponibilidad (<%= String.format("%.1f", porcentajeDisponible) %>%)</p>
                 <div class="progress" style="height: 6px;">
-                    <div class="progress-bar bg-navy" role="progressbar" style="width: 12%;"></div>
-                    <div class="progress-bar bg-light" role="progressbar" style="width: 88%;"></div>
+                    <div class="progress-bar <%= bajoInventario ? "bg-danger" : "bg-success" %>" role="progressbar" style="width: <%= porcentajeDisponible %>%;"></div>
                 </div>
             </div>
         </div>
@@ -153,82 +245,119 @@
         <div class="col-md-4">
             <div class="p-4 metric-card shadow-sm h-100">
                 <div class="d-flex justify-content-between align-items-start mb-2">
-                    <span class="text-muted fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em;">Solicitudes Pendientes</span>
-                    <i class="bi bi-clipboard-check metric-icon"></i>
+                    <span class="metric-title text-uppercase">SOLICITUDES PENDIENTES</span>
+                    <i class="bi bi-journal-check text-navy fs-5"></i>
                 </div>
-                <h2 class="display-6 fw-bold text-navy m-0">0</h2>
+                <h2 class="display-6 fw-bold text-navy mb-1"><%= pendientes %></h2>
                 <p class="text-muted small mb-3">Requieren revisión administrativa</p>
                 <div class="progress" style="height: 6px;">
-                    <div class="progress-bar bg-navy" role="progressbar" style="width: 30%;"></div>
-                    <div class="progress-bar bg-light" role="progressbar" style="width: 70%;"></div>
+                    <div class="progress-bar bg-navy" role="progressbar" style="width: <%= Math.min(pendientes * 5, 100) %>%;"></div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- CONTENEDOR PRINCIPAL DE TABLA -->
     <div class="table-container shadow-sm mb-4">
         <div class="p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
                 <h3 class="h5 fw-bold text-navy mb-1">Listado de Solicitudes</h3>
                 <p class="text-muted small mb-0">Gestión de trámites pendientes de asignación</p>
             </div>
-            <div class="search-input-group">
-                <div class="input-group">
-                    <span class="input-group-text bg-white text-muted border-end-0"><i class="bi bi-person-search"></i></span>
-                    <input type="text" class="form-control border-start-0 ps-0" placeholder="Buscar estudiante...">
+            <div class="search-box d-flex align-items-center gap-2">
+                <i class="bi bi-search text-muted"></i>
+                <input type="text" id="searchInput" placeholder="Buscar estudiante..." onkeyup="filtrarTabla()">
+            </div>
+        </div>
+
+        <!-- ENCABEZADO TABLA -->
+        <div class="table-header-bg">
+            <div class="row m-0">
+                <div class="col-3 table-th">ESTUDIANTE</div>
+                <div class="col-2 table-th text-center">MATRÍCULA</div>
+                <div class="col-3 table-th text-center">CUATRIMESTRE</div>
+                <div class="col-2 table-th text-center">GRUPO</div>
+                <div class="col-2 table-th text-center">ACCIONES</div>
+            </div>
+        </div>
+
+        <!-- LISTA DE FILAS DINÁMICAS -->
+        <div id="tableBody">
+            <% if (solicitudes != null && !solicitudes.isEmpty()) {
+                for (SolicitudDto sol : solicitudes) { %>
+            <div class="row m-0 table-row align-items-center item-row" id="row-<%= sol.getMatricula() %>">
+                <div class="col-3 d-flex align-items-center gap-3">
+                    <div class="avatar-initials"><%= sol.getIniciales() %></div>
+                    <div>
+                        <div class="fw-bold text-dark small student-name"><%= sol.getNombreCompleto() %></div>
+                        <div class="text-muted" style="font-size: 0.75rem;"><%= sol.getCarrera() %></div>
+                    </div>
+                </div>
+                <div class="col-2 text-center text-secondary small font-monospace student-matricula"><%= sol.getMatricula() %></div>
+                <div class="col-3 text-center">
+                    <span class="badge badge-cuatri"><%= sol.getCuatrimestre() %></span>
+                </div>
+                <div class="col-2 text-center text-secondary small fw-semibold"><%= sol.getGrupo() %></div>
+                <div class="col-2 text-center d-flex justify-content-center gap-2">
+                    <button class="btn btn-preaprobar d-flex align-items-center gap-1" onclick="ejecutarAccion('<%= sol.getMatricula() %>', 'preaprobar')">
+                        <i class="bi bi-check-circle"></i> Pre-aprobar
+                    </button>
+                    <button class="btn btn-rechazar d-flex align-items-center gap-1" onclick="abrirModalRechazo('<%= sol.getMatricula() %>', '<%= sol.getNombreCompleto() %>')">
+                        <i class="bi bi-x-circle"></i> Rechazar
+                    </button>
                 </div>
             </div>
+            <%   }
+            } %>
         </div>
 
-        <div class="table-header-bg border-top border-bottom">
-            <div class="row m-0">
-                <div class="col-3 table-th">Estudiante</div>
-                <div class="col-2 table-th text-center">Matrícula</div>
-                <div class="col-3 table-th text-center">Cuatrimestre</div>
-                <div class="col-2 table-th text-center">Grupo</div>
-                <div class="col-2 table-th text-end">Acciones</div>
-            </div>
-        </div>
-
-        <div class="empty-state text-center">
+        <!-- ESTADO VACÍO -->
+        <div id="emptyState" class="text-center py-5 <%= (solicitudes != null && !solicitudes.isEmpty()) ? "d-none" : "" %>">
             <div class="mb-2">
-                <i class="bi bi-check-circle text-muted" style="font-size: 1.5rem;"></i>
+                <i class="bi bi-check-circle text-secondary fs-2"></i>
             </div>
-            <p class="mb-0 small text-secondary fw-semibold">Ya no tiene pendientes de pre-aceptados</p>
+            <p class="mb-0 text-secondary fw-semibold small">Ya no tiene pendientes de pre-aceptados</p>
         </div>
 
-        <div class="table-footer-bg d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <span class="text-muted small fw-semibold">Mostrando 3 de 45 solicitudes</span>
-
-            <nav>
-                <ul class="pagination pagination-sm m-0 gap-1">
-                    <li class="page-item">
-                        <a class="page-link rounded text-dark border-0 bg-light" href="#"><i class="bi bi-chevron-left"></i></a>
-                    </li>
-                    <li class="page-item active">
-                        <a class="page-link rounded border-0 bg-navy text-white" href="#">1</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link rounded text-dark border-0 bg-light" href="#">2</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link rounded text-dark border-0 bg-light" href="#">3</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link rounded text-dark border-0 bg-light" href="#"><i class="bi bi-chevron-right"></i></a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
     </div>
 
 </div>
 
-<footer class="bg-white py-4 border-top mt-auto">
+<!-- FORMULARIO OCULTO PARA ENVIAR ACCIONES POST -->
+<form id="actionForm" action="${pageContext.request.contextPath}/admin/solicitudes" method="POST" class="d-none">
+    <input type="hidden" name="accion" id="formAccion">
+    <input type="hidden" name="matricula" id="formMatricula">
+</form>
+
+<!-- MODAL DE CONFIRMACIÓN DE RECHAZO -->
+<div class="modal fade" id="modalRechazar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+            <div class="modal-body text-center p-4">
+                <h4 class="fw-bold text-navy mb-3 px-2" id="modalRechazarTitle">
+                    ¿Estás seguro de RECHAZAR esta solicitud?
+                </h4>
+                <p class="text-muted small mb-4">
+                    Al rechazar esta solicitud ya no se visualizará en el listado de solicitudes pendientes.
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="button" class="btn btn-navy px-4 py-2 text-white fw-semibold" style="background-color: var(--lh-navy); border-radius: 8px;" data-bs-dismiss="modal">
+                        REGRESAR
+                    </button>
+                    <button type="button" class="btn btn-danger px-4 py-2 fw-semibold" style="background-color: var(--lh-red); border-radius: 8px;" id="btnConfirmarRechazo">
+                        RECHAZAR
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="bg-white py-3 border-top mt-auto">
     <div class="container-fluid px-4 text-muted" style="font-size: 0.75rem;">
         <div class="row align-items-center">
             <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
-                © 2024 LockerHub Administrative Management System. Universidad Politécnica.
+                © 2026 LockerHub Administrative Management System.
             </div>
             <div class="col-md-6 text-center text-md-end">
                 <a href="#" class="text-muted text-decoration-none mx-2">Términos y Condiciones</a>
@@ -238,6 +367,54 @@
     </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    let matriculaSeleccionada = null;
+
+    function ejecutarAccion(matricula, accion) {
+        document.getElementById('formMatricula').value = matricula;
+        document.getElementById('formAccion').value = accion;
+        document.getElementById('actionForm').submit();
+    }
+
+    function abrirModalRechazo(matricula, nombre) {
+        matriculaSeleccionada = matricula;
+        document.getElementById('modalRechazarTitle').innerText = '¿Estás seguro de RECHAZAR a ' + nombre + '?';
+        const modal = new bootstrap.Modal(document.getElementById('modalRechazar'));
+        modal.show();
+    }
+
+    document.getElementById('btnConfirmarRechazo').addEventListener('click', function() {
+        if (matriculaSeleccionada) {
+            ejecutarAccion(matriculaSeleccionada, 'rechazar');
+        }
+    });
+
+    function filtrarTabla() {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        const rows = document.querySelectorAll('.item-row');
+        let visibles = 0;
+
+        rows.forEach(row => {
+            const nombre = row.querySelector('.student-name').innerText.toLowerCase();
+            const matricula = row.querySelector('.student-matricula').innerText.toLowerCase();
+
+            if (nombre.includes(input) || matricula.includes(input)) {
+                row.style.display = 'flex';
+                visibles++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        const emptyState = document.getElementById('emptyState');
+        if (visibles === 0) {
+            emptyState.classList.remove('d-none');
+        } else {
+            emptyState.classList.add('d-none');
+        }
+    }
+</script>
 </body>
 </html>

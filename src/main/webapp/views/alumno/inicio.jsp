@@ -1,11 +1,24 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: josef
-  Date: 7/2/2026
-  Time: 11:49 a. m.
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="mx.edu.utez.locker.model.Alumno" %>
+<%@ page import="mx.edu.utez.locker.model.AlumnoDashboardDto" %>
+<%@ page import="mx.edu.utez.locker.model.SolicitudDto" %>
+<%@ page import="java.util.List" %>
+<%
+    HttpSession sesion = request.getSession(false);
+    Alumno alumnoSesion = (sesion != null) ? (Alumno) sesion.getAttribute("usuario") : null;
+
+    if (alumnoSesion == null) {
+        response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp");
+        return;
+    }
+
+    AlumnoDashboardDto dashboard = (AlumnoDashboardDto) request.getAttribute("dashboard");
+    List<SolicitudDto> historial = (List<SolicitudDto>) request.getAttribute("historial");
+
+    String nombre = (dashboard != null && dashboard.getNombreCompleto() != null) ? dashboard.getNombreCompleto() : alumnoSesion.getNombres();
+    String matricula = (dashboard != null && dashboard.getMatricula() != null) ? dashboard.getMatricula() : alumnoSesion.getMatricula();
+    String carrera = (dashboard != null && dashboard.getCarrera() != null) ? dashboard.getCarrera() : "Carrera no asignada";
+%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -19,34 +32,30 @@
 </head>
 <body class="bg-page">
 
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg bg-white border-bottom py-2 mb-4">
     <div class="container-fluid px-4">
         <div class="row w-100 align-items-center m-0" style="justify-content: space-between;">
-
-            <!-- Columna Izquierda: Logo y Mensaje de Bienvenida -->
             <div class="col-4 d-flex justify-content-start align-items-center p-0">
-                <a class="navbar-brand d-flex align-items-center fw-bold text-navy-brand m-0" href="#">
-                    LockerHub
-                </a>
+                <a class="navbar-brand d-flex align-items-center fw-bold text-navy-brand m-0" href="#">LockerHub</a>
                 <span class="text-muted d-none d-md-inline border-start ps-3 ms-3 small">Bienvenido, Estudiante</span>
             </div>
 
-            <!-- Columna Derecha: Configuración, Salida y Perfil -->
             <div class="col-4 d-flex justify-content-end align-items-center gap-3 p-0">
-                <!-- Reemplaza el botón de la tuerca en tu navbar por este enlace -->
                 <a href="${pageContext.request.contextPath}/views/alumno/editarPerfil.jsp" class="btn btn-link text-muted p-1">
                     <i class="bi bi-gear fs-5"></i>
                 </a>
-                <button class="btn btn-link text-muted p-1 border-end pe-3" onclick="location.href='${pageContext.request.contextPath}/logout'"><i class="bi bi-box-arrow-right fs-5"></i></button>
+                <a href="${pageContext.request.contextPath}/cerrar-sesion" class="btn btn-link text-muted p-1 border-end pe-3">
+                    <i class="bi bi-box-arrow-right fs-5"></i>
+                </a>
                 <div class="d-flex align-items-center gap-2 ps-2">
                     <div class="text-end d-none d-sm-block lh-1">
-                        <div class="fw-bold text-dark small mb-1">Carlos Mendoza</div>
-                        <span class="text-muted text-micro">ID: 2023-0452</span>
+                        <div class="fw-bold text-dark small mb-1"><%= nombre %></div>
+                        <span class="text-muted text-micro">ID: <%= matricula %></span>
                     </div>
-                    <img src="https://ui-avatars.com/api/?name=Carlos+Mendoza&background=1a365d&color=fff&size=100" class="rounded-circle border" width="36" height="36" alt="Avatar">
+                    <img src="https://ui-avatars.com/api/?name=<%= nombre.replace(" ", "+") %>&background=1a365d&color=fff&size=100" class="rounded-circle border" width="36" height="36" alt="Avatar">
                 </div>
             </div>
-
         </div>
     </div>
 </nav>
@@ -54,10 +63,11 @@
 <div class="content-wrapper">
     <div class="container-fluid px-4 main-layout">
 
+        <!-- Banner de Perfil -->
         <div class="card card-custom p-4 mb-3 bg-gradient-profile">
             <div class="d-flex flex-column flex-md-row align-items-center gap-4">
                 <div class="position-relative">
-                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150" class="rounded-circle border border-2 border-white shadow-sm" width="100" height="100" alt="Avatar Alumna">
+                    <img src="https://ui-avatars.com/api/?name=<%= nombre.replace(" ", "+") %>&background=1a365d&color=fff&size=150" class="rounded-circle border border-2 border-white shadow-sm" width="100" height="100" alt="Avatar Alumno">
                     <a href="${pageContext.request.contextPath}/views/alumno/editarPerfil.jsp"
                        class="btn btn-navy position-absolute bottom-0 end-0 rounded-circle edit-avatar-btn d-inline-flex align-items-center justify-content-center"
                        style="width: 32px; height: 32px; padding: 0;">
@@ -65,11 +75,11 @@
                     </a>
                 </div>
                 <div class="text-center text-md-start">
-                    <h2 class="fw-bold text-navy-title mb-1">Carlos Enrique Mendoza Ruiz</h2>
-                    <p class="text-muted-dark mb-3 fw-medium">Matrícula: 2023-0452 <span class="mx-1 text-muted-light">•</span> Ingeniería en Software</p>
+                    <h2 class="fw-bold text-navy-title mb-1"><%= nombre %></h2>
+                    <p class="text-muted-dark mb-3 fw-medium">Matrícula: <%= matricula %> <span class="mx-1 text-muted-light">•</span> <%= carrera %></p>
                     <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-2">
                         <span class="badge-pill-custom bg-pill-blue text-pill-blue"><i class="bi bi-shield-check"></i> Cuenta Activa</span>
-                        <span class="badge-pill-custom bg-pill-indigo text-pill-indigo"><i class="bi bi-calendar-event"></i> Cuatrimestre: Mayo - Agosto</span>
+                        <span class="badge-pill-custom bg-pill-indigo text-pill-indigo"><i class="bi bi-calendar-event"></i> Cuatrimestre: <%= (dashboard != null && dashboard.getCuatrimestreActual() != null) ? dashboard.getCuatrimestreActual() : "Vigente" %></span>
                     </div>
                 </div>
             </div>
@@ -77,12 +87,15 @@
 
         <div class="row g-3 mb-3">
 
+            <!-- Card: Mi Locker Actual -->
             <div class="col-lg-4">
                 <div class="card card-custom p-4 h-100 d-flex flex-column justify-content-between">
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4 class="fw-bold text-navy-title m-0 fs-5">Mi Locker Actual</h4>
-                            <span class="badge badge-status bg-status-success text-status-success">ACTIVO</span>
+                            <span class="badge badge-status <%= (dashboard != null && "ASIGNADO".equalsIgnoreCase(dashboard.getEstatusLocker())) ? "bg-status-success text-status-success" : "bg-status-gray text-status-gray" %>">
+                                <%= (dashboard != null && dashboard.getEstatusLocker() != null) ? dashboard.getEstatusLocker() : "SIN ASIGNAR" %>
+                            </span>
                         </div>
 
                         <div class="d-flex align-items-center gap-3 mb-4">
@@ -91,8 +104,10 @@
                             </div>
                             <div>
                                 <span class="text-muted-light text-micro text-uppercase d-block fw-semibold tracking-wider mb-1">ID DEL LOCKER</span>
-                                <span class="fw-bold text-navy-title fs-4 d-block lh-1 mb-1">Locker D1-13</span>
-                                <span class="text-muted small">Ubicación Estratégica</span>
+                                <span class="fw-bold text-navy-title fs-4 d-block lh-1 mb-1">
+                                    <%= (dashboard != null && dashboard.getIdLocker() != null) ? dashboard.getIdLocker() : "N/A" %>
+                                </span>
+                                <span class="text-muted small">Ubicación Asignada</span>
                             </div>
                         </div>
                     </div>
@@ -101,21 +116,22 @@
                         <div class="row g-2">
                             <div class="col-6 border-end border-light-divider">
                                 <span class="text-muted-light text-micro text-uppercase d-block fw-semibold mb-1">EDIFICIO</span>
-                                <span class="fw-bold text-navy-title small">Docencia 1</span>
+                                <span class="fw-bold text-navy-title small"><%= (dashboard != null && dashboard.getEdificio() != null) ? dashboard.getEdificio() : "-" %></span>
                             </div>
                             <div class="col-6 ps-3">
                                 <span class="text-muted-light text-micro text-uppercase d-block fw-semibold mb-1">PISO</span>
-                                <span class="fw-bold text-navy-title small">2 (Nivel Central)</span>
+                                <span class="fw-bold text-navy-title small"><%= (dashboard != null && dashboard.getPiso() != null) ? dashboard.getPiso() : "-" %></span>
                             </div>
                             <div class="col-12 border-top border-light-divider pt-2 mt-2">
                                 <span class="text-muted-light text-micro text-uppercase d-block fw-semibold mb-1">PERIODO VIGENTE</span>
-                                <span class="fw-bold text-navy-title small">Mayo - Agosto 2024</span>
+                                <span class="fw-bold text-navy-title small"><%= (dashboard != null && dashboard.getPeriodoVigente() != null) ? dashboard.getPeriodoVigente() : "-" %></span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Card: Mis Solicitudes -->
             <div class="col-lg-8">
                 <div class="card card-custom p-4 h-100 d-flex flex-column justify-content-between">
                     <div>
@@ -135,48 +151,40 @@
                                 </tr>
                                 </thead>
                                 <tbody>
+                                <% if (historial != null && !historial.isEmpty()) {
+                                    for (SolicitudDto sol : historial) { %>
                                 <tr>
                                     <td>
-                                        <div class="fw-bold text-navy-title">Solicitud Activa</div>
-                                        <div class="text-muted-light text-micro">Folio: #S-88219</div>
+                                        <div class="fw-bold text-navy-title">Solicitud #<%= sol.getIdSolicitud() %></div>
                                     </td>
-                                    <td class="fw-bold text-navy-title">Locker D1-13</td>
-                                    <td><span class="badge badge-status bg-status-success text-status-success">ASIGNADO</span></td>
-                                    <td class="text-end text-muted-dark small fw-medium">Mayo - Agosto</td>
-                                </tr>
-                                <tr>
+                                    <td class="fw-bold text-navy-title"><%= (sol.getGrupo() != null) ? sol.getGrupo() : "Pendiente" %></td>
                                     <td>
-                                        <div class="fw-bold text-muted-row">Solicitud Pasada</div>
-                                        <div class="text-muted-light text-micro">Folio: #S-44102</div>
+                                        <span class="badge badge-status <%= "ASIGNADO".equalsIgnoreCase(sol.getEstado()) ? "bg-status-success text-status-success" : "bg-status-indigo text-status-indigo" %>">
+                                            <%= sol.getEstado() %>
+                                        </span>
                                     </td>
-                                    <td class="fw-bold text-muted-row">Locker D4-7</td>
-                                    <td><span class="badge badge-status bg-status-gray text-status-gray">EXPIRADO</span></td>
-                                    <td class="text-end text-muted-dark small fw-medium">Enero - Abril</td>
+                                    <td class="text-end text-muted-dark small fw-medium"><%= (sol.getCuatrimestre() != null) ? sol.getCuatrimestre() : "-" %></td>
                                 </tr>
+                                <%   }
+                                } else { %>
                                 <tr>
-                                    <td>
-                                        <div class="fw-bold text-muted-row">Solicitud Pasada</div>
-                                        <div class="text-muted-light text-micro">Folio: #S-12005</div>
-                                    </td>
-                                    <td class="fw-bold text-muted-row">Locker B2-11</td>
-                                    <td><span class="badge badge-status bg-status-indigo text-status-indigo">FINALIZADO</span></td>
-                                    <td class="text-end text-muted-dark small fw-medium">Sept - Dic 2023</td>
+                                    <td colspan="4" class="text-center text-muted py-3">No cuentas con solicitudes registradas.</td>
                                 </tr>
+                                <% } %>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
                     <div class="text-center pt-3 border-top border-light-divider">
-                        <span class="text-muted-light text-micro fw-medium">Mostrando 3 de 8 registros históricos.</span>
+                        <span class="text-muted-light text-micro fw-medium">Historial sincronizado con la base de datos.</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Fila de Accesos Rápidos (Botones Inferiores con Squircle containers) -->
+        <!-- Fila de Accesos Rápidos -->
         <div class="row g-3">
-            <!-- Botón 1: Solicitar Locker -->
             <div class="col-md-4">
                 <a href="${pageContext.request.contextPath}/views/alumno/solicitarLocker.jsp" class="step-card text-decoration-none">
                     <div class="step-icon">
@@ -189,7 +197,6 @@
                 </a>
             </div>
 
-            <!-- Botón 2: Fechas Importantes (Redirecciona a tu nueva vista) -->
             <div class="col-md-4">
                 <a href="${pageContext.request.contextPath}/views/alumno/fechasImportantes.jsp" class="step-card text-decoration-none">
                     <div class="step-icon">
@@ -202,7 +209,6 @@
                 </a>
             </div>
 
-            <!-- Botón 3: Reglamento de Uso -->
             <div class="col-md-4">
                 <a href="${pageContext.request.contextPath}/views/alumno/reglamento.jsp" class="step-card text-decoration-none">
                     <div class="step-icon bg-status-danger-light">
@@ -217,10 +223,10 @@
         </div>
     </div>
 </div>
-<div style="padding: 2.5rem 0rem"></div>
+
 <footer class="bg-white border-top py-3 mt-auto">
     <div class="container-fluid px-4 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
-        <span class="text-muted-light text-micro">© 2024 LockerHub - Portal Universitario</span>
+        <span class="text-muted-light text-micro">© 2026 LockerHub - Portal Universitario</span>
         <div class="d-flex gap-4 text-micro">
             <a href="#" class="text-muted-dark text-decoration-none fw-medium">Términos y Condiciones</a>
             <a href="#" class="text-muted-dark text-decoration-none fw-medium">Política de Privacidad</a>

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LockerHub - Iniciar Sesión</title>
 
-    <!-- Bootstrap 5 CSS CDN para asegurar consistencia total de estilos -->
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/customer.css">
@@ -14,12 +14,12 @@
 <body style="min-height: 100vh; display: flex; flex-direction: column;">
 
 <!-- NAVBAR -->
-<nav class="navbar navbar-dark bg-navy py-3 shadow-sm">
-    <div class="container-fluid px-4">
-        <a class="navbar-brand fw-bold fs-4 d-flex align-items-center gap-2" href="#">
-             LockerHub
+<nav class="navbar navbar-dark bg-navy py-2 shadow-sm">
+    <div class="container d-flex align-items-center justify-content-between">
+        <a class="navbar-brand fw-bold fs-5 mb-0 d-flex align-items-center gap-2" href="#">
+            LockerHub
         </a>
-        <div class="d-flex gap-3">
+        <div class="d-flex align-items-center gap-3">
             <a href="${pageContext.request.contextPath}/index.jsp" class="text-white text-decoration-none small opacity-75">Inicio</a>
             <a href="${pageContext.request.contextPath}/views/sesion/registro.jsp" class="text-white text-decoration-none small opacity-75">Registro</a>
         </div>
@@ -28,23 +28,38 @@
 
 <!-- CONTENEDOR CENTRAL -->
 <div class="container d-flex flex-grow-1 justify-content-center align-items-center py-5">
-    <!-- Usamos 'register-container' para heredar la configuración de 440px y bordes de customer.css -->
     <div class="register-container p-4 p-md-5 shadow-sm">
+
+        <!-- Alertas dinámicas enviadas desde el Servlet / URL -->
+        <% if ("auth_error".equals(request.getParameter("status"))) { %>
+        <div class="alert alert-danger d-flex align-items-center justify-content-center gap-2 p-3 mb-4 rounded-3 small fw-semibold">
+            <i class="bi bi-exclamation-circle-fill fs-6 flex-shrink-0"></i>
+            <span>Correo o contraseña incorrectos. Intenta de nuevo.</span>
+        </div>
+        <% } else if ("success".equals(request.getParameter("status"))) { %>
+        <div class="alert alert-success d-flex align-items-center justify-content-center gap-2 p-3 mb-4 rounded-3 small fw-semibold">
+            <i class="bi bi-check-circle-fill fs-6 flex-shrink-0"></i>
+            <span>¡Cuenta creada con éxito! Inicia sesión.</span>
+        </div>
+        <% } %>
+
+        <!-- Contenedor donde JS insertará alertas de validación local si es necesario -->
+        <div id="alertContainer"></div>
 
         <!-- Sección de Cabecera -->
         <h2 class="fw-bold text-navy h3 mb-2 text-center">Inicio de sesión</h2>
         <p class="text-muted small mb-4 text-center">Accede a tu cuenta de casillero</p>
 
-        <form novalidate id="loginForm">
+        <form action="${pageContext.request.contextPath}/iniciar-sesion" method="POST" id="loginForm" novalidate>
 
             <!-- Input: Correo -->
             <div class="text-start mb-3">
                 <label class="form-label text-secondary small fw-semibold mb-1">Correo</label>
                 <div class="input-group custom-input-group">
                     <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                    <input type="email" class="form-control" placeholder="ejemplo@universidad.edu" required>
-                    <div class="invalid-feedback">Ingresa un correo electrónico válido.</div>
+                    <input type="email" name="correo" id="correo" class="form-control" placeholder="ejemplo@universidad.edu" required>
                 </div>
+                <div class="invalid-feedback">Ingresa un correo electrónico válido.</div>
             </div>
 
             <!-- Input: Contraseña -->
@@ -52,9 +67,9 @@
                 <label class="form-label text-secondary small fw-semibold mb-1">Contraseña</label>
                 <div class="input-group custom-input-group">
                     <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                    <input type="password" class="form-control" placeholder="••••••••" required>
-                    <div class="invalid-feedback">La contraseña es obligatoria.</div>
+                    <input type="password" name="contrasena" id="contrasena" class="form-control" placeholder="••••••••" required>
                 </div>
+                <div class="invalid-feedback">La contraseña es obligatoria.</div>
             </div>
 
             <!-- Enlace Recuperar Contraseña -->
@@ -64,8 +79,8 @@
                 </a>
             </div>
 
-            <!-- Botón Iniciar Sesión con Icono -->
-            <button type="submit" id="btnIniciarSesion" class="btn btn-navy w-100 py-2.5 fw-semibold d-flex align-items-center justify-content-center gap-2 mb-4 rounded-3">
+            <!-- Botón Iniciar Sesión -->
+            <button type="submit" id="btnIniciarSesion" class="btn btn-navy w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 mb-4 rounded-3">
                 Iniciar Sesión <i class="bi bi-box-arrow-in-right fs-5"></i>
             </button>
 
@@ -97,7 +112,7 @@
 </footer>
 
 <!-- Bootstrap Bundle JS -->
-<script src="${pageContext.request.contextPath}/js/sesion/inicioSecion.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="${pageContext.request.contextPath}/js/sesion/inicioSecion.js"></script>
 </body>
 </html>

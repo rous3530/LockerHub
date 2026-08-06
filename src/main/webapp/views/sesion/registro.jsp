@@ -1,4 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %>
+<%@ page import="mx.edu.utez.locker.dao.DaoCarrera" %>
+<%@ page import="mx.edu.utez.locker.model.Carrera" %>
+<%@ page import="java.util.List" %>
+<%
+    DaoCarrera daoCarrera = new DaoCarrera();
+    List<Carrera> listaCarreras = daoCarrera.obtenerTodas();
+%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,48 +18,105 @@
 </head>
 <body class="bg-light" style="min-height: 100vh; display: flex; flex-direction: column;">
 
-<nav class="navbar navbar-dark bg-navy py-3 shadow-sm">
-    <div class="container">
-        <a class="navbar-brand fw-bold fs-4" href="#">LockerHub</a>
-        <div class="d-flex gap-3">
+<nav class="navbar navbar-dark bg-navy py-2 shadow-sm">
+    <div class="container d-flex align-items-center justify-content-between">
+        <a class="navbar-brand fw-bold fs-5 mb-0" href="#">LockerHub</a>
+        <div class="d-flex align-items-center gap-3">
             <a href="${pageContext.request.contextPath}/index.jsp" class="text-white text-decoration-none small opacity-75">Inicio</a>
-            <a href="#" class="text-white text-decoration-underline small fw-bold">Registro</a>
+            <a href="${pageContext.request.contextPath}/views/sesion/registro.jsp" class="text-white text-decoration-underline small fw-bold">Registro</a>
         </div>
     </div>
 </nav>
 
 <div class="container d-flex flex-grow-1 justify-content-center align-items-center py-5">
-    <div class="register-container p-5 shadow-sm text-center">
+    <div class="register-container p-5 shadow-sm text-center" style="max-width: 500px; width: 100%;">
 
         <h2 class="fw-bold text-navy h3 mb-2">Registro</h2>
         <p class="text-muted small mb-4">Crea tu cuenta institucional para gestionar tus lockers.</p>
 
-        <form novalidate>
+        <!-- Mensajes de feedback según status de la URL -->
+        <% if ("error".equals(request.getParameter("status"))) { %>
+        <div class="alert alert-danger d-flex align-items-center justify-content-center gap-2 p-3 mb-4 rounded-3 small fw-semibold">
+            <i class="bi bi-exclamation-circle-fill fs-6"></i>
+            <span>Ocurrió un error al registrar la cuenta. Intenta de nuevo.</span>
+        </div>
+        <% } %>
 
+        <form action="${pageContext.request.contextPath}/registro-alumno" method="POST" novalidate>
+
+            <!-- Matrícula -->
             <div class="text-start mb-3">
-                <label class="form-label text-secondary small fw-semibold mb-1">Nombre completo</label>
+                <label class="form-label text-secondary small fw-semibold mb-1">Matrícula</label>
+                <div class="input-group custom-input-group">
+                    <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+                    <input type="text" name="matricula" class="form-control" placeholder="Ej. 20253ds091" required>
+                    <div class="invalid-feedback">La matrícula es obligatoria.</div>
+                </div>
+            </div>
+
+            <!-- Nombres -->
+            <div class="text-start mb-3">
+                <label class="form-label text-secondary small fw-semibold mb-1">Nombre(s)</label>
                 <div class="input-group custom-input-group">
                     <span class="input-group-text"><i class="bi bi-person"></i></span>
-                    <input type="text" class="form-control" placeholder="Ej. Juan Pérez" required>
+                    <input type="text" name="nombres" class="form-control" placeholder="Ej. Juan" required>
                     <div class="invalid-feedback">Este campo es obligatorio.</div>
                 </div>
             </div>
 
+            <!-- Apellido Paterno -->
+            <div class="text-start mb-3">
+                <label class="form-label text-secondary small fw-semibold mb-1">Apellido Paterno</label>
+                <div class="input-group custom-input-group">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    <input type="text" name="apellidoPaterno" class="form-control" placeholder="Pérez" required>
+                    <div class="invalid-feedback">Este campo es obligatorio.</div>
+                </div>
+            </div>
+
+            <!-- Apellido Materno -->
+            <div class="text-start mb-3">
+                <label class="form-label text-secondary small fw-semibold mb-1">Apellido Materno</label>
+                <div class="input-group custom-input-group">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    <input type="text" name="apellidoMaterno" class="form-control" placeholder="Gómez">
+                </div>
+            </div>
+
+            <!-- Carrera (Cargada dinámicamente desde Oracle) -->
+            <div class="text-start mb-3">
+                <label class="form-label text-secondary small fw-semibold mb-1">Carrera</label>
+                <div class="input-group custom-input-group">
+                    <span class="input-group-text"><i class="bi bi-journal-bookmark"></i></span>
+                    <select name="idCarrera" class="form-select" required>
+                        <option value="" disabled selected>Selecciona tu carrera</option>
+                        <% if (listaCarreras != null) {
+                            for (Carrera carrera : listaCarreras) { %>
+                        <option value="<%= carrera.getIdCarrera() %>"><%= carrera.getNombre() %></option>
+                        <%  }
+                        } %>
+                    </select>
+                    <div class="invalid-feedback">Selecciona una carrera de la lista.</div>
+                </div>
+            </div>
+
+            <!-- Correo Institucional -->
             <div class="text-start mb-3">
                 <label class="form-label text-secondary small fw-semibold mb-1">Correo Institucional</label>
                 <div class="input-group custom-input-group">
                     <span class="input-group-text"><i class="bi bi-at"></i></span>
-                    <input type="email" class="form-control" placeholder="usuario@universidad.edu" required>
-                    <div class="invalid-feedback">Ingresa un correo institucional válido (@universidad.edu).</div>
+                    <input type="email" name="correo" class="form-control" placeholder="usuario@utez.edu.mx" required>
+                    <div class="invalid-feedback">Ingresa un correo institucional válido.</div>
                 </div>
             </div>
 
+            <!-- Contraseña -->
             <div class="text-start mb-4">
                 <label class="form-label text-secondary small fw-semibold mb-1">Contraseña</label>
                 <div class="input-group custom-input-group">
                     <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                    <input type="password" class="form-control has-end-icon" placeholder="••••••••" required minlength="8">
-                    <span class="input-group-text end-icon"><i class="bi bi-eye"></i></span>
+                    <input type="password" name="contrasena" class="form-control has-end-icon" placeholder="••••••••" required minlength="8">
+                    <span class="input-group-text end-icon" style="cursor: pointer;"><i class="bi bi-eye"></i></span>
                     <div class="invalid-feedback">La contraseña debe tener al menos 8 caracteres.</div>
                 </div>
             </div>

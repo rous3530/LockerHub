@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
+      <artifact name="Locker:war" />
       <artifact name="Locker:war exploded" />
     </artifacts-to-build>
   </component>
@@ -10,7 +11,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6e3a30cd-90d3-4b00-9fe4-ded8c356d096" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/ConnectionOracle.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/wallet/README" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/wallet/cwallet.sso" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/wallet/ewallet.p12" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/wallet/ewallet.pem" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/wallet/keystore.jks" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/wallet/ojdbc.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/wallet/sqlnet.ora" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/wallet/tnsnames.ora" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/wallet/truststore.jks" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/js/admin/aceptados.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/js/admin/pre-aceptacion.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/js/admin/solicitudes.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/views/admin/aceptados.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/views/admin/pre-aceptacion.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/css/customer.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/css/customer.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/admin/inicio.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/admin/inicio.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/Locker-1.0-SNAPSHOT/META-INF/MANIFEST.MF" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,8 +40,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Jsp File" />
         <option value="JavaScript File" />
+        <option value="Jsp File" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -53,6 +74,11 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.ConnectionOracle.executor": "Run",
+    "Maven.Locker [clean,install].executor": "Run",
+    "Maven.Locker [clean].executor": "Run",
+    "Maven.Locker [install].executor": "Run",
+    "Maven.Locker [package].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
@@ -62,20 +88,30 @@
     "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/josef/OneDrive/Escritorio/LockerHub/Locker",
+    "last_opened_file_path": "C:/Users/josef/OneDrive/Escritorio/LockerHub/Locker/src/main/resources/wallet",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Facets",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.29655173",
+    "settings.editor.selected.configurable": "MavenSettings",
     "to.speed.mode.migration.done": "true",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\josef\OneDrive\Escritorio\LockerHub\Locker\src\main\resources\wallet" />
       <recent name="C:\Users\josef\OneDrive\Escritorio\LockerHub\Locker\src\main\webapp" />
     </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="mvn clean install" />
+    </option>
   </component>
   <component name="RunDashboard">
     <option name="configurationStatuses">
@@ -83,14 +119,57 @@
         <entry key="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory">
           <value>
             <map>
-              <entry key="Tomcat 10.1.56" value="FAILED" />
+              <entry key="Tomcat 10.1.56" value="STOPPED" />
             </map>
           </value>
         </entry>
       </map>
     </option>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Tomcat Server.Tomcat 10.1.56">
+    <configuration name="ConnectionOracle" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="mx.edu.utez.locker.ConnectionOracle" />
+      <module name="Locker" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="mx.edu.utez.locker.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Locker [clean]" type="MavenRunConfiguration" factoryName="Maven" temporary="true">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="cmdOptions" />
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="clean" />
+              </list>
+            </option>
+            <option name="multimoduleDir" />
+            <option name="pomFileName" value="pom.xml" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="projectsCmdOptionValues">
+              <list />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
     <configuration name="Tomcat 10.1.56" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 10.1.56" ALTERNATIVE_JRE_ENABLED="true" ALTERNATIVE_JRE_PATH="21">
       <option name="UPDATING_POLICY" value="restart-server" />
       <deployment>
@@ -184,6 +263,12 @@
         </option>
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.ConnectionOracle" />
+        <item itemvalue="Maven.Locker [clean]" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -204,7 +289,7 @@
       <workItem from="1784151436447" duration="636000" />
       <workItem from="1784213606418" duration="9251000" />
       <workItem from="1784570693688" duration="17037000" />
-      <workItem from="1785189558108" duration="1238000" />
+      <workItem from="1785189558108" duration="30085000" />
     </task>
     <servers />
   </component>

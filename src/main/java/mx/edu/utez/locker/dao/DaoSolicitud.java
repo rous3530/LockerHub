@@ -188,12 +188,14 @@ public class DaoSolicitud {
         public void setNumeroLocker(String numeroLocker) { this.numeroLocker = numeroLocker; }
     }
 
-    // 7. OBTENER LOCKERS DISPONIBLES POR EDIFICIO
     public List<LockerDto> obtenerLockersDisponiblesPorEdificio(int idEdificio) {
         List<LockerDto> lista = new ArrayList<>();
-        String query = "SELECT id_locker, numero_locker FROM LOCKERS " +
-                "WHERE id_edificio = ? AND UPPER(estatus) = 'DISPONIBLE' " +
-                "ORDER BY numero_locker ASC";
+
+        // Consulta con los nombres REALES de la base de datos (LOCKER, ID_LOCKER, NUMERO)
+        String query = "SELECT ID_LOCKER, NUMERO " +
+                "FROM LOCKER " +
+                "WHERE ID_EDIFICIO = ? AND UPPER(ESTATUS) = 'DISPONIBLE' " +
+                "ORDER BY NUMERO ASC";
 
         try (Connection con = ConnectionOracle.getConnection();
              PreparedStatement ps = con.prepareStatement(query)) {
@@ -201,14 +203,14 @@ public class DaoSolicitud {
             ps.setInt(1, idEdificio);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    LockerDto locker = new LockerDto();
-                    locker.setIdLocker(rs.getInt("id_locker"));
-                    locker.setNumeroLocker(rs.getString("numero_locker"));
-                    lista.add(locker);
+                    LockerDto dto = new LockerDto();
+                    dto.setIdLocker(rs.getInt("ID_LOCKER"));
+                    // Asignamos la columna 'NUMERO' de Oracle al método de tu DTO:
+                    dto.setNumeroLocker(rs.getString("NUMERO"));
+                    lista.add(dto);
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error al obtener lockers disponibles por edificio: " + e.getMessage());
             e.printStackTrace();
         }
         return lista;

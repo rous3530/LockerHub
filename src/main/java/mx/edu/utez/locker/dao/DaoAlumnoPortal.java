@@ -16,17 +16,21 @@ public class DaoAlumnoPortal {
     // 1. OBTENER INFORMACIÓN DEL PERFIL Y LOCKER ACTUAL DEL ALUMNO
     public AlumnoDashboardDto obtenerDashboardAlumno(int idAlumno) {
         AlumnoDashboardDto dto = null;
-        String query = "SELECT a.id_alumno, a.matricula, " +
-                "a.nombres || ' ' || a.primer_apellido || ' ' || NVL(a.segundo_apellido, '') AS nombre_completo, " +
-                "a.carrera, s.CUATRI_ACTUAL, s.GRUPO_ACTUAL, " +
-                "l.CODIGO_LOCKER, e.NOMBRE_EDIFICIO, l.PISO, p.NOMBRE_PERIODO, s.ESTATUS_SOLICITUD " +
-                "FROM ALUMNOS a " +
-                "LEFT JOIN SOLICITUD s ON a.id_alumno = s.ID_ALUMNO AND s.ESTATUS_SOLICITUD IN ('ASIGNADO', 'ACEPTADO', 'PENDIENTE') " +
+
+        // Consulta corregida con la tabla ALUMNO (singular) y JOIN con CARRERA
+        String query = "SELECT a.ID_ALUMNO, a.MATRICULA, " +
+                "a.NOMBRES || ' ' || a.APELLIDO_PATERNO || ' ' || NVL(a.APELLIDO_MATERNO, '') AS NOMBRE_COMPLETO, " +
+                "c.NOMBRE AS NOMBRE_CARRERA, " + // <-- Traemos el nombre real de la carrera
+                "s.CUATRI_ACTUAL, s.GRUPO_ACTUAL, " +
+                "l.NUMERO AS CODIGO_LOCKER, e.NOMBRE_EDIFICIO, l.PLANTA AS PISO, p.NOMBRE_PERIODO, s.ESTATUS_SOLICITUD " +
+                "FROM ALUMNO a " + // <-- Corregido: ALUMNO en singular
+                "LEFT JOIN CARRERA c ON a.ID_CARRERA = c.ID_CARRERA " + // <-- JOIN a la tabla CARRERA
+                "LEFT JOIN SOLICITUD s ON a.ID_ALUMNO = s.ID_ALUMNO AND s.ESTATUS_SOLICITUD IN ('ASIGNADO', 'ACEPTADO', 'PENDIENTE') " +
                 "LEFT JOIN ASIGNACION_LOCKER al ON s.ID_SOLICITUD = al.ID_SOLICITUD " +
-                "LEFT JOIN LOCKERS l ON al.ID_LOCKER = l.ID_LOCKER " +
+                "LEFT JOIN LOCKER l ON al.ID_LOCKER = l.ID_LOCKER " +
                 "LEFT JOIN EDIFICIO e ON s.ID_EDIFICIO = e.ID_EDIFICIO " +
                 "LEFT JOIN PERIODO_CUATRI p ON s.ID_PERIODO_CUATRI = p.ID_PERIODO_CUATRI " +
-                "WHERE a.id_alumno = ?";
+                "WHERE a.ID_ALUMNO = ?";
 
         try (Connection con = ConnectionOracle.getConnection();
              PreparedStatement ps = con.prepareStatement(query)) {
@@ -35,10 +39,10 @@ public class DaoAlumnoPortal {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     dto = new AlumnoDashboardDto();
-                    dto.setIdAlumno(rs.getInt("id_alumno"));
-                    dto.setMatricula(rs.getString("matricula"));
-                    dto.setNombreCompleto(rs.getString("nombre_completo"));
-                    dto.setCarrera(rs.getString("carrera"));
+                    dto.setIdAlumno(rs.getInt("ID_ALUMNO"));
+                    dto.setMatricula(rs.getString("MATRICULA"));
+                    dto.setNombreCompleto(rs.getString("NOMBRE_COMPLETO"));
+                    dto.setCarrera(rs.getString("NOMBRE_CARRERA")); // <-- Mapeamos el alias NOMBRE_CARRERA
                     dto.setCuatrimestreActual(rs.getString("CUATRI_ACTUAL"));
                     dto.setGrupoActual(rs.getString("GRUPO_ACTUAL"));
 

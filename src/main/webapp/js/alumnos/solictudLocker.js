@@ -14,24 +14,26 @@ function validarYContinuar() {
     campos.forEach(campo => {
         const input = document.getElementById(campo.inputId);
         const fieldContainer = document.getElementById(campo.fieldId);
-        const errorFeedback = fieldContainer.querySelector('.error-feedback');
+        const errorFeedback = fieldContainer ? fieldContainer.querySelector('.error-feedback') : null;
 
-        if (!input.value.trim()) {
-            fieldContainer.classList.add('has-error');
-            if (errorFeedback) errorFeedback.classList.remove('d-none');
-            hayError = true;
-        } else {
-            fieldContainer.classList.remove('has-error');
-            if (errorFeedback) errorFeedback.classList.add('d-none');
+        if (input && fieldContainer) {
+            if (!input.value.trim()) {
+                fieldContainer.classList.add('has-error');
+                if (errorFeedback) errorFeedback.classList.remove('d-none');
+                hayError = true;
+            } else {
+                fieldContainer.classList.remove('has-error');
+                if (errorFeedback) errorFeedback.classList.add('d-none');
+            }
         }
     });
 
     const alertError = document.getElementById('alertErrorGlobal');
 
     if (hayError) {
-        alertError.classList.remove('d-none');
+        if (alertError) alertError.classList.remove('d-none');
     } else {
-        alertError.classList.add('d-none');
+        if (alertError) alertError.classList.add('d-none');
 
         // Ocultar Paso 1 y mostrar Paso 2
         document.getElementById('vistaPaso1').classList.add('d-none');
@@ -54,7 +56,7 @@ function volverPaso1() {
 }
 
 function enviarSolicitudFinal() {
-    // Obtener las referencias del DOM sin anotaciones de tipo TS
+    // Obtener las referencias del DOM
     const checkTerminos = document.getElementById('checkTerminos');
     const alertErrorTerminos = document.getElementById('alertErrorTerminos');
     const formSolicitud = document.getElementById('formSolicitud');
@@ -79,15 +81,21 @@ function enviarSolicitudFinal() {
         console.error("No se encontró el elemento con ID 'formSolicitud'. Verifique el id en el JSP.");
     }
 }
+
 function cargarLockersPorEdificio(idEdificio) {
     const selectCasillero = document.getElementById('inputCasillero');
     if (!selectCasillero) return;
 
+    // Si no se selecciona ningún edificio válido, resetear a la opción por defecto
+    if (!idEdificio || idEdificio.trim() === "") {
+        selectCasillero.innerHTML = '<option value="" disabled selected>Selecciona primero una docencia/edificio</option>';
+        selectCasillero.disabled = true;
+        return;
+    }
+
     // Resetear el select de casilleros y mostrar estado de carga
     selectCasillero.innerHTML = '<option value="" disabled selected>Cargando casilleros disponibles...</option>';
     selectCasillero.disabled = true;
-
-    if (!idEdificio) return;
 
     // Petición AJAX al Servlet endpoint
     fetch(contextPath + '/obtener-lockers?idEdificio=' + encodeURIComponent(idEdificio))
@@ -100,7 +108,7 @@ function cargarLockersPorEdificio(idEdificio) {
         .then(lockers => {
             selectCasillero.innerHTML = ''; // Limpiar opciones
 
-            if (lockers.length === 0) {
+            if (!lockers || lockers.length === 0) {
                 selectCasillero.innerHTML = '<option value="" disabled selected>Sin lockers disponibles en este edificio</option>';
                 selectCasillero.disabled = true;
             } else {

@@ -7,8 +7,8 @@ import java.util.Properties;
 
 public class EmailService {
 
-    private static final String REMITENTE = "tu_correo@gmail.com"; // Tu correo
-    private static final String CLAVE_APP = "xxxx xxxx xxxx xxxx"; // Contraseña de aplicación Gmail
+    private static final String REMITENTE = "e01384359@gmail.com"; // Tu correo
+    private static final String CLAVE_APP = "kuukwecayomkrudo"; // Contraseña de aplicación Gmail
 
     public static boolean enviarToken(String destinatario, String token) {
         Properties props = new Properties();

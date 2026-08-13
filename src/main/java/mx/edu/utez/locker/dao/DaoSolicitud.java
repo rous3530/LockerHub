@@ -1,5 +1,6 @@
 package mx.edu.utez.locker.dao;
 
+import mx.edu.utez.locker.model.EdificioDto;
 import mx.edu.utez.locker.model.SolicitudDto;
 import mx.edu.utez.locker.ConnectionOracle;
 
@@ -40,6 +41,7 @@ public class DaoSolicitud {
                 lista.add(dto);
             }
         } catch (SQLException e) {
+            System.err.println("Error al obtener solicitudes pendientes: " + e.getMessage());
             e.printStackTrace();
         }
         return lista;
@@ -61,6 +63,7 @@ public class DaoSolicitud {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
+            System.err.println("Error al cambiar estado de solicitud: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
@@ -77,6 +80,7 @@ public class DaoSolicitud {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
+            System.err.println("Error al obtener el total de lockers: " + e.getMessage());
             e.printStackTrace();
         }
         return 0;
@@ -93,8 +97,120 @@ public class DaoSolicitud {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
+            System.err.println("Error al obtener lockers disponibles: " + e.getMessage());
             e.printStackTrace();
         }
         return 0;
+    }
+
+    // 5. REGISTRAR UNA NUEVA SOLICITUD
+    public boolean registrarSolicitud(int idAlumno, int idEdificio, int idPeriodoCuatri, String grupo, String cuatrimestre) {
+        String query = "INSERT INTO SOLICITUD (" +
+                "FECHA_SOLICITUD, ESTATUS_SOLICITUD, ID_ALUMNO, ID_EDIFICIO, " +
+                "ID_PERIODO_CUATRI, GRUPO_ACTUAL, CUATRI_ACTUAL" +
+                ") VALUES (SYSDATE, 'PENDIENTE', ?, ?, ?, ?, ?)";
+
+        try (Connection con = ConnectionOracle.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+
+            ps.setInt(1, idAlumno);
+            ps.setInt(2, idEdificio);
+            ps.setInt(3, idPeriodoCuatri);
+            ps.setString(4, grupo);
+            ps.setString(5, cuatrimestre);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error al registrar solicitud: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // 6. OBTENER LISTA DE EDIFICIOS / DOCENCIAS
+    public List<EdificioDto> obtenerEdificios() {
+        List<EdificioDto> lista = new ArrayList<>();
+        // Consulta principal a EDIFICIOS; si falla por diferencia de nombre en la BD, intenta con EDIFICIO
+        String query = "SELECT id_edificio, nombre FROM EDIFICIOS ORDER BY id_edificio ASC";
+
+        try (Connection con = ConnectionOracle.getConnection()) {
+            if (con == null) {
+                System.err.println("Error: La conexión a la base de datos es NULL.");
+                return lista;
+            }
+
+            try (PreparedStatement ps = con.prepareStatement(query);
+                 ResultSet rs = ps.executeQuery()) {
+
+                while (rs.next()) {
+                    EdificioDto edificio = new EdificioDto();
+                    edificio.setIdEdificio(rs.getInt("id_edificio"));
+                    edificio.setNombre(rs.getString("nombre"));
+                    lista.add(edificio);
+                }
+            } catch (SQLException ex) {
+                // Alternativa en caso de que la tabla esté nombrada en singular (EDIFICIO)
+                String fallbackQuery = "SELECT id_edificio, nombre FROM EDIFICIO ORDER BY id_edificio ASC";
+                try (PreparedStatement psFallback = con.prepareStatement(fallbackQuery);
+                     ResultSet rsFallback = psFallback.executeQuery()) {
+
+                    while (rsFallback.next()) {
+                        EdificioDto edificio = new EdificioDto();
+                        edificio.setIdEdificio(rsFallback.getInt("id_edificio"));
+                        edificio.setNombre(rsFallback.getString("nombre"));
+                        lista.add(edificio);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener la lista de edificios: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    public class LockerDto {
+        private int idLocker;
+        private String numeroLocker;
+
+        public LockerDto() {}
+
+        public LockerDto(int idLocker, String numeroLocker) {
+            this.idLocker = idLocker;
+            this.numeroLocker = numeroLocker;
+        }
+
+        public int getIdLocker() { return idLocker; }
+        public void setIdLocker(int idLocker) { this.idLocker = idLocker; }
+
+        public String getNumeroLocker() { return numeroLocker; }
+        public void setNumeroLocker(String numeroLocker) { this.numeroLocker = numeroLocker; }
+    }
+
+    // 7. OBTENER LOCKERS DISPONIBLES POR EDIFICIO
+    public List<LockerDto> obtenerLockersDisponiblesPorEdificio(int idEdificio) {
+        List<LockerDto> lista = new ArrayList<>();
+        String query = "SELECT id_locker, numero_locker FROM LOCKERS " +
+                "WHERE id_edificio = ? AND UPPER(estatus) = 'DISPONIBLE' " +
+                "ORDER BY numero_locker ASC";
+
+        try (Connection con = ConnectionOracle.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+
+            ps.setInt(1, idEdificio);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    LockerDto locker = new LockerDto();
+                    locker.setIdLocker(rs.getInt("id_locker"));
+                    locker.setNumeroLocker(rs.getString("numero_locker"));
+                    lista.add(locker);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener lockers disponibles por edificio: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return lista;
     }
 }

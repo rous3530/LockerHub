@@ -24,12 +24,17 @@ public class RecuperarContraServlet extends HttpServlet {
         if ("solicitar".equalsIgnoreCase(accion)) {
             String correo = request.getParameter("correo");
 
-            // Generar token numérico de 6 dígitos
-            String token = String.format("%06d", new Random().nextInt(999999));
+            // Generar token numérico de 6 dígitos (000000 a 999999)
+            String token = String.format("%06d", new Random().nextInt(1000000));
 
             if (dao.guardarTokenRecuperacion(correo, token)) {
-                EmailService.enviarToken(correo, token);
-                response.sendRedirect(request.getContextPath() + jspPath + "?step=2&correo=" + correo);
+                boolean enviado = EmailService.enviarToken(correo, token);
+
+                if (enviado) {
+                    response.sendRedirect(request.getContextPath() + jspPath + "?step=2&correo=" + correo);
+                } else {
+                    response.sendRedirect(request.getContextPath() + jspPath + "?status=error_correo");
+                }
             } else {
                 response.sendRedirect(request.getContextPath() + jspPath + "?status=correo_no_encontrado");
             }

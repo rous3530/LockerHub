@@ -1,4 +1,15 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="mx.edu.utez.locker.dao.DaoSolicitud" %>
+<%@ page import="mx.edu.utez.locker.model.EdificioDto" %>
+<%@ page import="java.util.List" %>
+<%
+    // Instanciar DAO y consultar edificios una sola vez al inicio
+    DaoSolicitud daoEdificio = new DaoSolicitud();
+    List<EdificioDto> listaEdificios = daoEdificio.obtenerEdificios();
+
+    // Traza de control en consola del servidor
+    System.out.println("[JSP] Cantidad de edificios obtenidos: " + (listaEdificios != null ? listaEdificios.size() : "NULL"));
+%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -66,11 +77,7 @@
             flex-shrink: 0;
         }
 
-        .step-item.active .step-number {
-            background-color: #1a365d;
-            color: #ffffff;
-        }
-
+        .step-item.active .step-number,
         .step-item.completed .step-number {
             background-color: #1a365d;
             color: #ffffff;
@@ -165,7 +172,7 @@
 
         .has-error .form-control-custom {
             border-color: #ef4444 !important;
-            background-color: #f1f5f9;
+            background-color: #fef2f2;
         }
 
         .error-feedback {
@@ -260,11 +267,11 @@
 
         <div class="row g-4 mb-5">
 
-            <!-- Sidebar Izquierda: Stepper dinámico -->
+            <!-- Sidebar Izquierda: Stepper -->
             <div class="col-lg-4">
                 <div class="stepper-card shadow-sm">
                     <h3 class="fw-bold text-navy-brand fs-4 mb-2">Solicitud de Locker</h3>
-                    <p class="text-muted small mb-4 lh-sm">Optimiza tu día en el campus. Solicita un espacio seguro para tus pertenencias en solo tres pasos.</p>
+                    <p class="text-muted small mb-4 lh-sm">Optimiza tu día en el campus. Solicita un espacio seguro para tus pertenencias en solo dos pasos.</p>
 
                     <div class="d-flex flex-column gap-4">
                         <!-- Paso 1 -->
@@ -272,13 +279,13 @@
                             <div class="step-number" id="numPaso1">1</div>
                             <div>
                                 <div class="step-title">Información Personal</div>
-                                <div class="step-desc">Confirmación de datos pre-llenados.</div>
+                                <div class="step-desc">Confirmación de datos e ID del casillero.</div>
                             </div>
                         </div>
 
                         <!-- Paso 2 -->
                         <div class="step-item" id="stepperPaso2">
-                            <div class="step-number">2</div>
+                            <div class="step-number" id="numPaso2">2</div>
                             <div>
                                 <div class="step-title">Finalizar</div>
                                 <div class="step-desc">Términos y condiciones.</div>
@@ -292,27 +299,31 @@
             <div class="col-lg-8">
                 <div class="form-card shadow-sm">
 
-                    <!-- ========================================== -->
-                    <!-- VISTA: PASO 1 (DATOS E IDENTIFICACIÓN)     -->
-                    <!-- ========================================== -->
-                    <div id="vistaPaso1">
-                        <!-- Alerta global de error -->
-                        <div id="alertErrorGlobal" class="alert-danger-custom mb-4 d-none">
-                            <i class="bi bi-exclamation-circle fs-5"></i>
-                            <span>Se han encontrado errores en el formulario. Por favor, revisa los campos marcados en rojo.</span>
-                        </div>
+                    <!-- Formulario único que engloba ambos pasos y envía la petición al Servlet -->
+                    <form id="formSolicitud" action="${pageContext.request.contextPath}/solicitud-locker" method="POST">
 
-                        <div class="d-flex align-items-center gap-2 mb-4">
-                            <i class="bi bi-person-badge fs-5 text-navy-brand"></i>
-                            <h4 class="fw-bold text-navy-brand fs-5 m-0">Paso 1: Identificación Estudiantil</h4>
-                        </div>
+                        <!-- Inputs ocultos para IDs foráneos requeridos por la base de datos -->
+                        <input type="hidden" name="idPeriodoCuatri" value="1">
 
-                        <form id="formPaso1" onsubmit="event.preventDefault(); validarYContinuar();">
+                        <!-- ========================================== -->
+                        <!-- VISTA: PASO 1 (DATOS Y CASILLERO)          -->
+                        <!-- ========================================== -->
+                        <div id="vistaPaso1">
+                            <div id="alertErrorGlobal" class="alert-danger-custom mb-4 d-none">
+                                <i class="bi bi-exclamation-circle fs-5"></i>
+                                <span>Se han encontrado errores en el formulario. Por favor, revisa los campos marcados en rojo.</span>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-2 mb-4">
+                                <i class="bi bi-person-badge fs-5 text-navy-brand"></i>
+                                <h4 class="fw-bold text-navy-brand fs-5 m-0">Paso 1: Identificación Estudiantil</h4>
+                            </div>
+
                             <div class="row g-3 mb-4">
                                 <!-- Nombre Completo -->
                                 <div class="col-md-6" id="fieldNombre">
                                     <label class="form-label-custom">Nombre Completo</label>
-                                    <input type="text" class="form-control-custom" id="inputNombre" placeholder="Ej. Alejandro Martínez Silva">
+                                    <input type="text" class="form-control-custom" id="inputNombre" name="nombreCompleto" placeholder="Ej. Alejandro Martínez Silva">
                                     <div class="sync-text" id="syncTextNombre">
                                         <i class="bi bi-lock"></i> Dato sincronizado con servicios universitarios
                                     </div>
@@ -324,7 +335,7 @@
                                 <!-- Matrícula -->
                                 <div class="col-md-6" id="fieldMatricula">
                                     <label class="form-label-custom">Matrícula / ID</label>
-                                    <input type="text" class="form-control-custom" id="inputMatricula" placeholder="Ej. 2024–0012354">
+                                    <input type="text" class="form-control-custom" id="inputMatricula" name="matricula" placeholder="Ej. 2024–0012354">
                                     <div class="error-feedback d-none">
                                         <i class="bi bi-exclamation-circle"></i> Favor de llenar este campo.
                                     </div>
@@ -333,7 +344,7 @@
                                 <!-- Carrera -->
                                 <div class="col-md-6" id="fieldCarrera">
                                     <label class="form-label-custom">Carrera</label>
-                                    <input type="text" class="form-control-custom" id="inputCarrera" placeholder="Ej. Ingeniería en Software">
+                                    <input type="text" class="form-control-custom" id="inputCarrera" name="carrera" placeholder="Ej. Ingeniería en Software">
                                     <div class="error-feedback d-none">
                                         <i class="bi bi-exclamation-circle"></i> Favor de llenar este campo.
                                     </div>
@@ -342,7 +353,7 @@
                                 <!-- Cuatrimestre -->
                                 <div class="col-md-6" id="fieldCuatrimestre">
                                     <label class="form-label-custom">Cuatrimestre</label>
-                                    <input type="text" class="form-control-custom" id="inputCuatrimestre" placeholder="Ej. 4to Cuatrimestre">
+                                    <input type="text" class="form-control-custom" id="inputCuatrimestre" name="cuatrimestre" placeholder="Ej. 4to Cuatrimestre">
                                     <div class="error-feedback d-none">
                                         <i class="bi bi-exclamation-circle"></i> Favor de llenar este campo.
                                     </div>
@@ -351,71 +362,105 @@
                                 <!-- Grupo -->
                                 <div class="col-md-6" id="fieldGrupo">
                                     <label class="form-label-custom">Grupo</label>
-                                    <input type="text" class="form-control-custom" id="inputGrupo" placeholder="Ej. G-101">
+                                    <input type="text" class="form-control-custom" id="inputGrupo" name="grupo" placeholder="Ej. G-101">
                                     <div class="error-feedback d-none">
                                         <i class="bi bi-exclamation-circle"></i> Favor de llenar este campo.
                                     </div>
                                 </div>
 
-                                <!-- Docencia -->
+                                <!-- Docencia / Edificio -->
                                 <div class="col-md-6" id="fieldDocencia">
-                                    <label class="form-label-custom">Docencia</label>
-                                    <input type="text" class="form-control-custom" id="inputDocencia" placeholder="Ej. D1">
+                                    <label class="form-label-custom">Docencia / Edificio</label>
+
+                                    <% if (listaEdificios == null || listaEdificios.isEmpty()) { %>
+                                    <div class="text-danger small mb-1 fw-bold">
+                                        <i class="bi bi-exclamation-triangle"></i> No se pudieron cargar los edificios desde la BD.
+                                    </div>
+                                    <% } %>
+
+                                    <select class="form-control-custom" id="inputDocencia" name="idEdificio" required onchange="cargarLockersPorEdificio(this.value)">
+                                        <option value="" disabled selected>Selecciona un edificio...</option>
+                                        <%
+                                            if (listaEdificios != null) {
+                                                for (EdificioDto ed : listaEdificios) {
+                                        %>
+                                        <option value="<%= ed.getIdEdificio() %>"><%= ed.getNombre() %></option>
+                                        <%
+                                                }
+                                            }
+                                        %>
+                                    </select>
                                     <div class="error-feedback d-none">
-                                        <i class="bi bi-exclamation-circle"></i> Favor de llenar este campo.
+                                        <i class="bi bi-exclamation-circle"></i> Favor de seleccionar una docencia/edificio.
+                                    </div>
+                                </div>
+
+                                <!-- Casillero Solicitado (Convertido a Select Dinámico) -->
+                                <div class="col-md-12" id="fieldCasillero">
+                                    <label class="form-label-custom">Casillero Disponible</label>
+                                    <select class="form-control-custom" id="inputCasillero" name="idLocker" required disabled>
+                                        <option value="" disabled selected>Primero selecciona un edificio/docencia...</option>
+                                    </select>
+                                    <div class="error-feedback d-none">
+                                        <i class="bi bi-exclamation-circle"></i> Favor de seleccionar un casillero disponible.
                                     </div>
                                 </div>
                             </div>
 
                             <div class="d-flex justify-content-end">
-                                <button type="submit" class="btn-navy-action">
+                                <button type="button" class="btn-navy-action" onclick="validarYContinuar()">
                                     Continuar <i class="bi bi-arrow-right"></i>
                                 </button>
                             </div>
-                        </form>
-                    </div>
-
-                    <!-- ========================================== -->
-                    <!-- VISTA: PASO 2 (TÉRMINOS Y CONDICIONES)     -->
-                    <!-- ========================================== -->
-                    <div id="vistaPaso2" class="d-none">
-                        <!-- Alerta de éxito enviada -->
-                        <div id="alertExitoGlobal" class="alert-success-custom mb-4 d-none">
-                            <i class="bi bi-check-circle fs-5"></i>
-                            <span>¡Solicitud enviada con éxito! Por favor, mantente al pendiente de la respuesta en tu correo institucional y en este portal.</span>
                         </div>
 
-                        <div class="d-flex align-items-center gap-2 mb-4">
-                            <i class="bi bi-shield-check fs-5 text-navy-brand"></i>
-                            <h4 class="fw-bold text-navy-brand fs-5 m-0">Paso 2: Términos y condiciones</h4>
+                        <!-- ========================================== -->
+                        <!-- VISTA: PASO 2 (TÉRMINOS Y CONDICIONES)     -->
+                        <!-- ========================================== -->
+                        <div id="vistaPaso2" class="d-none">
+                            <div id="alertExitoGlobal" class="alert-success-custom mb-4 d-none">
+                                <i class="bi bi-check-circle fs-5"></i>
+                                <span>¡Solicitud enviada con éxito! Por favor, mantente al pendiente de la respuesta en tu correo institucional y en este portal.</span>
+                            </div>
+
+                            <div id="alertErrorTerminos" class="alert-danger-custom mb-4 d-none">
+                                <i class="bi bi-exclamation-circle fs-5"></i>
+                                <span>Debes aceptar el Reglamento de Uso de Lockers para enviar la solicitud.</span>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-2 mb-4">
+                                <i class="bi bi-shield-check fs-5 text-navy-brand"></i>
+                                <h4 class="fw-bold text-navy-brand fs-5 m-0">Paso 2: Términos y condiciones</h4>
+                            </div>
+
+                            <div class="terms-box mb-4">
+                                <h6 class="fw-bold text-navy-brand mb-3" style="font-size: 0.85rem;">REGLAMENTO DE USO DE LOCKERS UNIVERSITARIOS</h6>
+                                <ol class="ps-3 mb-0 d-flex flex-column gap-2" style="font-size: 0.82rem;">
+                                    <li><strong>Uso Personal:</strong> El locker asignado es exclusivamente para uso personal del estudiante registrado. Queda prohibida la cesión o subarrendamiento del mismo.</li>
+                                    <li><strong>Responsabilidad:</strong> La universidad no se hace responsable por la pérdida, robo o daño de los objetos almacenados en el locker. Se recomienda no guardar objetos de alto valor.</li>
+                                    <li><strong>Mantenimiento:</strong> El estudiante debe mantener el locker limpio y en buen estado. No se permite pegar calcomanías ni realizar inscripciones en la superficie.</li>
+                                    <li><strong>Artículos Prohibidos:</strong> Queda estrictamente prohibido almacenar sustancias ilegales.</li>
+                                </ol>
+                            </div>
+
+                            <div class="checkbox-box mb-4">
+                                <input class="form-check-input flex-shrink-0" type="checkbox" id="checkTerminos" style="width: 18px; height: 18px; cursor: pointer;">
+                                <label class="form-check-label text-muted small fw-medium mb-0" for="checkTerminos" style="cursor: pointer;">
+                                    He leído y acepto el <a href="#" class="text-navy-brand fw-bold text-decoration-none">Reglamento de Uso de Lockers</a> y me comprometo a cumplir con todas las normativas establecidas.
+                                </label>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center gap-3">
+                                <button type="button" class="btn btn-outline-secondary px-3 py-2 fw-semibold rounded-3 text-sm" onclick="volverPaso1()">
+                                    <i class="bi bi-arrow-left"></i> Regresar
+                                </button>
+                                <button type="button" class="btn-navy-action py-2" onclick="enviarSolicitudFinal()">
+                                    Enviar Solicitud <i class="bi bi-send-fill ms-1"></i>
+                                </button>
+                            </div>
                         </div>
 
-                        <!-- Recuadro del Reglamento -->
-                        <div class="terms-box mb-4">
-                            <h6 class="fw-bold text-navy-brand mb-3" style="font-size: 0.85rem;">REGLAMENTO DE USO DE LOCKERS UNIVERSITARIOS</h6>
-                            <ol class="ps-3 mb-0 d-flex flex-column gap-2" style="font-size: 0.82rem;">
-                                <li><strong>Uso Personal:</strong> El locker asignado es exclusivamente para uso personal del estudiante registrado. Queda prohibida la cesión o subarrendamiento del mismo.</li>
-                                <li><strong>Responsabilidad:</strong> La universidad no se hace responsable por la pérdida, robo o daño de los objetos almacenados en el locker. Se recomienda no guardar objetos de alto valor.</li>
-                                <li><strong>Mantenimiento:</strong> El estudiante debe mantener el locker limpio y en buen estado. No se permite pegar calcomanías ni realizar inscripciones en la superficie.</li>
-                                <li><strong>Artículos Prohibidos:</strong> Queda estrictamente prohibido almacenar sustancias ilegales.</li>
-                            </ol>
-                        </div>
-
-                        <!-- Checkbox Aceptación -->
-                        <div class="checkbox-box mb-4">
-                            <input class="form-check-input flex-shrink-0" type="checkbox" id="checkTerminos" style="width: 18px; height: 18px; cursor: pointer;">
-                            <label class="form-check-label text-muted small fw-medium mb-0" for="checkTerminos" style="cursor: pointer;">
-                                He leído y acepto el <a href="#" class="text-navy-brand fw-bold text-decoration-none">Reglamento de Uso de Lockers</a> y me comprometo a cumplir con todas las normativas establecidas.
-                            </label>
-                        </div>
-
-                        <!-- Botón Enviar Solicitud -->
-                        <div class="w-100">
-                            <button type="button" class="btn-navy-action w-100 justify-content-center py-2" onclick="enviarSolicitudFinal()">
-                                Enviar Solicitud <i class="bi bi-send-fill ms-1" style="font-size: 0.85rem;"></i>
-                            </button>
-                        </div>
-                    </div>
+                    </form>
 
                 </div>
             </div>
@@ -427,7 +472,7 @@
 
 <footer class="bg-white border-top py-3 mt-auto">
     <div class="container-fluid px-4 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
-        <span class="text-muted-light text-micro">© 2024 LockerHub University Services. All rights reserved.</span>
+        <span class="text-muted-light text-micro">© 2026 LockerHub University Services. All rights reserved.</span>
         <div class="d-flex gap-4 text-micro">
             <a href="#" class="text-muted-dark text-decoration-none fw-medium">Privacy Policy</a>
             <a href="#" class="text-muted-dark text-decoration-none fw-medium">Terms of Service</a>
@@ -436,8 +481,11 @@
     </div>
 </footer>
 
+<script>
+    // Context Path del proyecto para peticiones AJAX
+    const contextPath = '${pageContext.request.contextPath}';
+</script>
 <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
-
 <script src="${pageContext.request.contextPath}/js/alumnos/solictudLocker.js"></script>
 </body>
 </html>

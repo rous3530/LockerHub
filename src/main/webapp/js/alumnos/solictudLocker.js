@@ -135,3 +135,58 @@ function cargarLockersPorEdificio(idEdificio) {
             selectCasillero.disabled = true;
         });
 }
+
+// ==========================================
+// CONTROLADOR DE RESPUESTA DEL SERVLET
+// ==========================================
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status');
+
+    if (status === 'success') {
+        // Mostrar alerta de éxito
+        const alertExito = document.getElementById('alertExitoGlobal');
+        if (alertExito) alertExito.classList.remove('d-none');
+
+        // Mover vistas al Paso 2
+        const vistaPaso1 = document.getElementById('vistaPaso1');
+        const vistaPaso2 = document.getElementById('vistaPaso2');
+        if (vistaPaso1 && vistaPaso2) {
+            vistaPaso1.classList.add('d-none');
+            vistaPaso2.classList.remove('d-none');
+        }
+
+        // Actualizar el stepper a completado
+        const step1 = document.getElementById('stepperPaso1');
+        const step2 = document.getElementById('stepperPaso2');
+        if (step1 && step2) {
+            step1.classList.remove('active');
+            step1.classList.add('completed');
+            step2.classList.add('active', 'completed');
+        }
+
+        // Inhabilitar los controles para evitar duplicados
+        const checkTerminos = document.getElementById('checkTerminos');
+        if (checkTerminos) {
+            checkTerminos.checked = true;
+            checkTerminos.disabled = true;
+        }
+
+        const btnEnviar = document.querySelector('#vistaPaso2 button[onclick="enviarSolicitudFinal()"]');
+        if (btnEnviar) {
+            btnEnviar.disabled = true;
+            btnEnviar.innerHTML = 'Solicitud Enviada <i class="bi bi-check-lg ms-1"></i>';
+        }
+
+        const btnRegresar = document.querySelector('#vistaPaso2 button[onclick="volverPaso1()"]');
+        if (btnRegresar) {
+            btnRegresar.classList.add('d-none');
+        }
+    } else if (status === 'error') {
+        const alertError = document.getElementById('alertErrorGlobal');
+        if (alertError) {
+            alertError.querySelector('span').textContent = 'Ocurrió un error al registrar la solicitud en la base de datos. Inténtalo de nuevo.';
+            alertError.classList.remove('d-none');
+        }
+    }
+});

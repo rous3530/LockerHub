@@ -10,8 +10,8 @@
     --color-text-secondary: #64748b;
     --color-text-muted: #94a3b8;
     --color-bg-white: #ffffff;
-    --radius-container: 20px;          /* Esquinas suaves de Figma */
-    --radius-input: 10px;              /* Bordes del grupo de entrada */
+    --radius-container: 20px;
+    --radius-input: 10px;
 
     /* Variables Módulo Admin / Pre-aceptados */
     --admin-bg-main: #f8fafc;
@@ -26,7 +26,7 @@
    ========================================================================== */
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #f8fafc !important; /* Fondo suave y limpio */
+    background-color: #f8fafc !important;
     color: #1e293b;
     -webkit-font-smoothing: antialiased;
     min-height: 100vh;
@@ -36,7 +36,6 @@ body {
     padding: 0;
 }
 
-/* Barra de navegación oscura de autenticación */
 .bg-navy {
     background-color: var(--color-navy-dark) !important;
 }
@@ -69,7 +68,6 @@ body {
     border-radius: var(--radius-input);
 }
 
-/* Iconos integrados en los campos de texto */
 .custom-input-group .input-group-text {
     background-color: #ffffff !important;
     border-color: var(--color-border-light) !important;
@@ -78,13 +76,11 @@ body {
     transition: border-color 0.15s ease, color 0.15s ease;
 }
 
-/* Redondeado izquierdo del grupo de entrada */
 .custom-input-group .input-group-text:first-child {
     border-top-left-radius: var(--radius-input) !important;
     border-bottom-left-radius: var(--radius-input) !important;
 }
 
-/* Input propiamente dicho */
 .custom-input-group .form-control {
     border-color: var(--color-border-light) !important;
     border-left: none !important;
@@ -96,7 +92,6 @@ body {
     transition: border-color 0.15s ease;
 }
 
-/* Formulario con botón/icono interactivo de ojo (contraseñas) */
 .custom-input-group .form-control.has-end-icon {
     border-right: none !important;
     border-top-right-radius: 0 !important;
@@ -109,7 +104,6 @@ body {
     cursor: pointer;
 }
 
-/* Efectos activos al enfocar el campo */
 .custom-input-group:focus-within .form-control,
 .custom-input-group:focus-within .input-group-text {
     border-color: #cbd5e1 !important;
@@ -167,7 +161,6 @@ h2.text-navy {
     pointer-events: none;
 }
 
-/* Footer Dashboard Admin */
 .footer-admin {
     margin-top: 3rem;
     padding: 1.25rem 2rem;
@@ -195,12 +188,9 @@ h2.text-navy {
     text-decoration: underline;
 }
 
-
 /* ==========================================================================
    MÓDULO ADMINISTRACIÓN: DASHBOARD Y PRE-ACEPTADOS
    ========================================================================== */
-
-/* Navbar Dashboard Superior Alineado */
 .navbar-admin {
     background-color: var(--color-navy-dark);
     padding: 0.85rem 3rem;
@@ -255,13 +245,7 @@ h2.text-navy {
     object-fit: cover;
 }
 
-/* Layout Principal */
-.container {
-    max-width: 1140px;
-    margin: 0.5rem auto;
-    padding: 0 1.5rem;
-}
-.container-nav {
+.container, .container-nav {
     max-width: 1140px;
     margin: 0.5rem auto;
     padding: 0 1.5rem;
@@ -294,10 +278,9 @@ h2.text-navy {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    flex-shrink: 0; /* Impide que los botones se deformen o salten de línea */
+    flex-shrink: 0;
 }
 
-/* Buscador con lupa integrada */
 .search-box {
     position: relative;
     display: flex;
@@ -321,10 +304,6 @@ h2.text-navy {
     font-size: 0.875rem;
     outline: none;
     min-width: 300px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%3A94a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: 0.75rem center;
-    background-size: 1rem;
     transition: all 0.2s ease;
 }
 
@@ -354,255 +333,137 @@ h2.text-navy {
     background-color: var(--admin-btn-green-hover) !important;
 }
 
-/* Tabla Estilo Card Con Bordes Suaves */
-.table-container {
-    background: #ffffff;
-    border-radius: 12px;
-    border: 1px solid var(--color-border-light);
+/* ==========================================================================
+   TABLA DE PRE-ACEPTADOS (Diseño Unificado y Elegante)
+   ========================================================================== */
+.card-table {
+    border-radius: 12px !important;
     overflow: hidden;
-    margin-bottom: 1.5rem;
+    background-color: #ffffff;
+    border: 1px solid #eef2f6 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
-#preAceptadosTable {
-    width: 100%;
+.custom-table {
     border-collapse: collapse;
-    font-size: 0.875rem;
+    width: 100%;
+    margin: 0;
 }
 
-#preAceptadosTable thead {
-    background-color: #f1f5f9;
-}
-
-#preAceptadosTable th {
-    padding: 0.9rem 1.25rem;
+/* Encabezado Azul Pastel */
+.custom-table thead th {
+    background-color: #f0f4fd !important;
+    color: #3b506c;
+    font-size: 0.72rem;
     font-weight: 700;
-    color: #475569;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
+    padding: 16px;
+    border-bottom: 1px solid #e2e8f0;
     text-transform: uppercase;
-    text-align: left;
-    border-bottom: 1px solid var(--color-border-light);
 }
 
-#preAceptadosTable td {
-    padding: 0.9rem 1.25rem;
+/* Filas y Celdas */
+.custom-table tbody td {
+    padding: 16px;
     border-bottom: 1px solid #f1f5f9;
     vertical-align: middle;
-    color: #334155;
 }
 
-/* Avatares redondos */
-.student-cell {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
+/* Avatar de Iniciales */
 .avatar-circle {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background-color: #e2e8f0;
-    color: #334155;
-    font-weight: 700;
-    font-size: 0.8rem;
+    background-color: #e2eafc;
+    color: #3b506c;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
     flex-shrink: 0;
 }
 
-/* Enlaces y Acciones con Bootstrap Icons */
-.btn-link {
-    background: none;
-    border: none;
-    padding: 0;
-    font-size: 0.825rem;
+/* Tipografía de Estudiante */
+.student-name {
+    font-size: 0.9rem;
     font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    text-decoration: none;
+    color: #1e293b;
+    line-height: 1.2;
 }
 
-.btn-link i {
-    font-size: 0.95rem;
-}
-
-.text-danger {
-    color: var(--admin-danger) !important;
-}
-.text-danger:hover {
-    text-decoration: underline;
-}
-
-.text-primary {
-    color: var(--admin-primary-link) !important;
-}
-.text-primary:hover {
-    text-decoration: underline;
-}
-
-/* Paginación de Tabla Integrada */
-.table-pagination {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.85rem 1.25rem;
-    background-color: #ffffff;
-    font-size: 0.825rem;
-    color: var(--color-text-secondary);
-    border-top: 1px solid var(--color-border-light);
-}
-
-.pagination-controls {
-    display: flex;
-    gap: 0.3rem;
-    align-items: center;
-}
-
-.page-btn {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    border: 1px solid #e2e8f0;
-    color: #64748b;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.8rem;
-    background-color: #ffffff;
-    transition: all 0.2s ease;
-}
-
-.page-btn.active {
-    background-color: var(--color-navy-dark);
-    color: #ffffff;
-    border-color: var(--color-navy-dark);
-    font-weight: 600;
-}
-
-.page-btn:hover:not(.active) {
-    background-color: #f1f5f9;
-}
-
-/* Tarjetas de Métricas con Fondo Suave e Íconos */
-.metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
-    margin-bottom: 2rem;
-}
-
-.card {
-    padding: 1.1rem 1.4rem;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.card-icon-box {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-}
-
-.metric-number {
-    font-size: 1.5rem;
-    font-weight: 700;
-    line-height: 1;
-}
-
-.metric-label {
+.student-career {
     font-size: 0.75rem;
-    color: var(--color-text-secondary);
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.table-text-muted {
+    font-size: 0.875rem;
+    color: #475569;
+    font-weight: 500;
+}
+
+/* Estado del Casillero */
+.casillero-codigo {
     font-weight: 600;
-    display: block;
-    margin-top: 0.3rem;
+    color: #1e293b;
+    font-size: 0.875rem;
 }
 
-/* Card 1: Azul */
-.card-blue {
-    background-color: #f0f4ff;
-    border: 1px solid #e0e7ff;
-}
-.card-blue .card-icon-box {
-    background-color: #dbeafe !important;
-    color: #1e40af !important;
-}
-.card-blue .metric-number {
-    color: #1e3a8a;
-}
-
-/* Card 2: Verde */
-.card-green {
-    background-color: #f0fdf4;
-    border: 1px solid #dcfce7;
-}
-.card-green .card-icon-box {
-    background-color: #dcfce7 !important;
-    color: #166534 !important;
-}
-.card-green .metric-number {
-    color: #15803d;
-}
-
-/* Card 3: Roja */
-.card-red {
-    background-color: #fef2f2;
-    border: 1px solid #fee2e2;
-}
-.card-red .card-icon-box {
-    background-color: #fee2e2 !important;
-    color: #991b1b !important;
-}
-.card-red .metric-number {
-    color: #dc2626;
-}
-
-/* Modales Ocultos por Defecto */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(15, 23, 42, 0.4);
-    backdrop-filter: blur(3px);
-    z-index: 1050;
-    justify-content: center;
-    align-items: center;
+.text-sin-asignar {
+    color: #64748b;
+    font-size: 0.875rem;
 }
 
 /* ==========================================================================
-   TARJETAS DE MÉTRICAS (Fondo idéntico tipo lavanda suave)
+   BOTONES DE ACCIÓN (Tabla Pre-aceptados)
    ========================================================================== */
+.btn-action {
+    text-decoration: none !important;
+    font-size: 0.825rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
 
+.btn-action:hover {
+    opacity: 0.75;
+}
+
+/* Botón Asignar (Azul suave) */
+.btn-asignar {
+    color: #3b82f6;
+}
+
+/* Botones Quitar (Rojo coral) */
+.btn-quitar-casillero, .btn-quitar-lista {
+    color: #ef4444;
+}
+
+/* ==========================================================================
+   TARJETAS DE MÉTRICAS (Estilo unificado)
+   ========================================================================== */
 .metrics-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1.25rem;
+    margin-top: 1.5rem;
     margin-bottom: 2rem;
 }
 
-/* Base idéntica para los 3 contenedores */
 .card {
     padding: 1.1rem 1.4rem;
     border-radius: 14px;
     display: flex;
     align-items: center;
     gap: 1rem;
-    background-color: #f0f4ff !important; /* Fondo lavanda/azul suave único */
-    border: 1px solid #e0e7ff !important; /* Borde único */
+    background-color: #f0f4ff !important;
+    border: 1px solid #e0e7ff !important;
 }
 
 .card-icon-box {
@@ -629,7 +490,7 @@ h2.text-navy {
     margin-top: 0.35rem;
 }
 
-/* --- Variación 1: Azul (Estudiantes en lista) --- */
+/* Variación 1: Azul (Estudiantes en lista) */
 .card-blue .card-icon-box {
     background-color: #dbeafe !important;
     color: #1e40af !important;
@@ -638,7 +499,7 @@ h2.text-navy {
     color: #1a365d !important;
 }
 
-/* --- Variación 2: Verde (Casilleros disponibles) --- */
+/* Variación 2: Verde (Casilleros disponibles) */
 .card-green .card-icon-box {
     background-color: #dcfce7 !important;
     color: #166534 !important;
@@ -647,11 +508,28 @@ h2.text-navy {
     color: #15803d !important;
 }
 
-/* --- Variación 3: Rojo (Esperando cupo) --- */
+/* Variación 3: Roja (Esperando cupo) */
 .card-red .card-icon-box {
     background-color: #fee2e2 !important;
     color: #991b1b !important;
 }
 .card-red .metric-number {
     color: #dc2626 !important;
+}
+
+/* ==========================================================================
+   MODALES
+   ========================================================================== */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(3px);
+    z-index: 1050;
+    justify-content: center;
+    align-items: center;
 }

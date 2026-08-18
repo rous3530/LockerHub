@@ -23,8 +23,10 @@ public class SolicitudLockerServlet extends HttpServlet {
         Integer idAlumno = (Integer) session.getAttribute("idAlumno");
 
         if (idAlumno == null) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
-            return;
+            // Redirige a la misma página donde está el formulario de solicitud
+            response.sendRedirect(request.getContextPath() + "/views/alumno/solicitudLocker.jsp?status=success");
+        } else {
+            response.sendRedirect(request.getContextPath() + "/views/alumno/solicitudLocker.jsp?status=error");
         }
 
         // Parámetros capturados en el formulario JSP

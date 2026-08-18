@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="Locker:war" />
       <artifact name="Locker:war exploded" />
     </artifacts-to-build>
   </component>
@@ -11,8 +10,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6e3a30cd-90d3-4b00-9fe4-ded8c356d096" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/PreAceptadosServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoAlumnoPortal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoAlumnoPortal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/AdminSolicitudesServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/AdminSolicitudesServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/SolicitudLockerServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/SolicitudLockerServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoSolicitud.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoSolicitud.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/model/SolicitudDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/model/SolicitudDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/css/customer.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/css/customer.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/js/alumnos/solictudLocker.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/js/alumnos/solictudLocker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/admin/aceptados.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/admin/aceptados.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/admin/inicio.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/admin/inicio.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/admin/pre-aceptacion.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/admin/pre-aceptacion.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/alumno/solicitarLocker.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/alumno/solicitarLocker.jsp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,36 +63,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.ConnectionOracle.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.Locker [clean,install].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.Locker [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.Locker [install].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.Locker [package].executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;Tomcat Server.Tomcat 10.1.56.executor&quot;: &quot;Run&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/josef/OneDrive/Escritorio/LockerHub/Locker/src/main/resources/wallet&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Facets&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.29655173&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;MavenSettings&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.ConnectionOracle.executor": "Run",
+    "Maven.Locker [clean,install].executor": "Run",
+    "Maven.Locker [clean].executor": "Run",
+    "Maven.Locker [compile].executor": "Run",
+    "Maven.Locker [install].executor": "Run",
+    "Maven.Locker [package].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Tomcat Server.Tomcat 10.1.56.executor": "Run",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/josef/OneDrive/Escritorio/LockerHub/Locker/src/main/resources/wallet",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Facets",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.29655173",
+    "settings.editor.selected.configurable": "MavenSettings",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\josef\OneDrive\Escritorio\LockerHub\Locker\src\main\resources\wallet" />
@@ -156,11 +166,6 @@
       <option name="UPDATING_POLICY" value="restart-server" />
       <deployment>
         <artifact name="Locker:war exploded">
-          <settings>
-            <option name="CONTEXT_PATH" value="/Locker_war_exploded" />
-          </settings>
-        </artifact>
-        <artifact name="Locker:war">
           <settings>
             <option name="CONTEXT_PATH" value="/Locker_war" />
           </settings>
@@ -241,10 +246,14 @@
         <option name="Make" enabled="true" />
         <option name="BuildArtifacts" enabled="true">
           <artifact name="Locker:war exploded" />
-          <artifact name="Locker:war" />
         </option>
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Application.ConnectionOracle" />
+      <item itemvalue="Maven.Locker [clean]" />
+      <item itemvalue="Tomcat Server.Tomcat 10.1.56" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.ConnectionOracle" />
@@ -272,7 +281,8 @@
       <workItem from="1784213606418" duration="9251000" />
       <workItem from="1784570693688" duration="17037000" />
       <workItem from="1785189558108" duration="42558000" />
-      <workItem from="1786633511829" duration="3279000" />
+      <workItem from="1786633511829" duration="4245000" />
+      <workItem from="1787019570818" duration="11645000" />
     </task>
     <servers />
   </component>

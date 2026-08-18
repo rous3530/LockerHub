@@ -11,13 +11,19 @@
         return;
     }
 
+    if (request.getAttribute("solicitudes") == null && request.getParameter("redirected") == null) {
+        response.sendRedirect(request.getContextPath() + "/views/admin/inicio?redirected=true");
+        return;
+    }
+
+    @SuppressWarnings("unchecked")
     List<SolicitudDto> solicitudes = (List<SolicitudDto>) request.getAttribute("solicitudes");
     Integer totalLockers = (Integer) request.getAttribute("totalLockers");
     Integer disponibles = (Integer) request.getAttribute("lockersDisponibles");
     Integer pendientes = (Integer) request.getAttribute("pendientesCount");
 
-    if (totalLockers == null) totalLockers = 1000;
-    if (disponibles == null) disponibles = 50;
+    if (totalLockers == null) totalLockers = 0;
+    if (disponibles == null) disponibles = 0;
     if (pendientes == null) pendientes = (solicitudes != null) ? solicitudes.size() : 0;
 
     double porcentajeDisponible = (totalLockers > 0) ? ((double) disponibles / totalLockers) * 100 : 0;
@@ -157,26 +163,36 @@
             font-size: 0.875rem;
             width: 100%;
         }
+
+        /* Fuerza la desactivación de backdrops dinámicos duplicados */
+        .modal-backdrop {
+            display: none !important;
+        }
+
+        /* Asegura que el modal de customer.css se encargue del fondo sin acumular z-index */
+        .modal.show {
+            background-color: rgba(0, 0, 0, 0.5) !important;
+        }
     </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
 
 <!-- Header / Navigation -->
-<nav class="navbar navbar-dark bg-navy py-3 shadow-sm">
-    <div class="container-fluid px-4">
-        <a class="navbar-brand fw-bold fs-4 m-0" href="#">LockerHub</a>
+<nav class="navbar-admin shadow-sm">
+    <a class="navbar-brand fw-bold fs-4 m-0 text-white text-decoration-none" href="#">LockerHub</a>
 
-        <div class="d-flex gap-4 mx-auto">
-            <a href="${pageContext.request.contextPath}/admin/solicitudes" class="nav-link-custom active">SOLICITUDES</a>
-            <a href="${pageContext.request.contextPath}/views/admin/pre-aceptacion.jsp" class="nav-link-custom">PRE-ACEPTADOS</a>
-            <a href="${pageContext.request.contextPath}/views/admin/aceptados.jsp" class="nav-link-custom">ACEPTADOS</a>
-        </div>
+    <div class="nav-links-center">
+        <a href="${pageContext.request.contextPath}/views/admin/inicio.jsp" class="nav-link active">SOLICITUDES</a>
+        <a href="${pageContext.request.contextPath}/views/admin/pre-aceptacion.jsp" class="nav-link ">PRE-ACEPTADOS</a>
+        <a href="${pageContext.request.contextPath}/views/admin/aceptados.jsp" class="nav-link">ACEPTADOS</a>
+    </div>
 
-        <div class="d-flex align-items-center gap-3">
-            <span class="text-white small me-2"><%= admin.getNombres() %></span>
-            <a href="${pageContext.request.contextPath}/cerrar-sesion" class="text-white opacity-75" title="Cerrar Sesión">
-                <i class="bi bi-box-arrow-right fs-5"></i>
-            </a>
+    <div class="nav-actions-right d-flex align-items-center gap-3 text-white">
+        <i class="bi bi-bell" style="cursor: pointer;"></i>
+        <i class="bi bi-gear" style="cursor: pointer;"></i>
+        <i class="bi bi-question-circle" style="cursor: pointer;"></i>
+        <div class="user-avatar-nav d-flex align-items-center">
+            <img src="https://ui-avatars.com/api/?name=Admin+User&background=3b82f6&color=fff" alt="Perfil" style="width: 32px; height: 32px; border-radius: 50%;">
         </div>
     </div>
 </nav>
@@ -184,7 +200,6 @@
 <!-- Main Container -->
 <div class="container-fluid px-4 py-4 flex-grow-1">
 
-    <!-- BANNER DE NOTIFICACIÓN ÉXITO -->
     <% if ("success".equals(request.getParameter("status"))) { %>
     <div class="alert alert-success d-flex align-items-center alert-dismissible fade show mb-4" role="alert">
         <i class="bi bi-check-circle-fill fs-5 me-2"></i>
@@ -199,7 +214,6 @@
     </div>
     <% } %>
 
-    <!-- BANNER DE ADVERTENCIA INVENTARIO BAJO -->
     <% if (bajoInventario) { %>
     <div class="alert alert-primary border-0 mb-4" style="background-color: #dbeafe; color: #1e3a8a; border-radius: 8px;">
         <div class="d-flex align-items-center">
@@ -257,7 +271,7 @@
         </div>
     </div>
 
-    <!-- CONTENEDOR PRINCIPAL DE TABLA -->
+    <!-- TABLA -->
     <div class="table-container shadow-sm mb-4">
         <div class="p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
@@ -270,7 +284,6 @@
             </div>
         </div>
 
-        <!-- ENCABEZADO TABLA -->
         <div class="table-header-bg">
             <div class="row m-0">
                 <div class="col-3 table-th">ESTUDIANTE</div>
@@ -281,7 +294,6 @@
             </div>
         </div>
 
-        <!-- LISTA DE FILAS DINÁMICAS -->
         <div id="tableBody">
             <% if (solicitudes != null && !solicitudes.isEmpty()) {
                 for (SolicitudDto sol : solicitudes) { %>
@@ -311,7 +323,6 @@
             } %>
         </div>
 
-        <!-- ESTADO VACÍO -->
         <div id="emptyState" class="text-center py-5 <%= (solicitudes != null && !solicitudes.isEmpty()) ? "d-none" : "" %>">
             <div class="mb-2">
                 <i class="bi bi-check-circle text-secondary fs-2"></i>
@@ -323,13 +334,13 @@
 
 </div>
 
-<!-- FORMULARIO OCULTO PARA ENVIAR ACCIONES POST -->
-<form id="actionForm" action="${pageContext.request.contextPath}/admin/solicitudes" method="POST" class="d-none">
+<!-- FORMULARIO OCULTO POST -->
+<form id="actionForm" action="${pageContext.request.contextPath}/views/admin/inicio" method="POST" class="d-none">
     <input type="hidden" name="accion" id="formAccion">
     <input type="hidden" name="matricula" id="formMatricula">
 </form>
 
-<!-- MODAL DE CONFIRMACIÓN DE RECHAZO -->
+<!-- MODAL DE CONFIRMACIÓN -->
 <div class="modal fade" id="modalRechazar" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
@@ -371,6 +382,18 @@
 
 <script>
     let matriculaSeleccionada = null;
+    let modalRechazarInstance = null;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const modalElement = document.getElementById('modalRechazar');
+        if (modalElement) {
+            // backdrop: false evita que Bootstrap inserte su propia capa .modal-backdrop extra
+            modalRechazarInstance = new bootstrap.Modal(modalElement, {
+                backdrop: false,
+                keyboard: true
+            });
+        }
+    });
 
     function ejecutarAccion(matricula, accion) {
         document.getElementById('formMatricula').value = matricula;
@@ -381,8 +404,10 @@
     function abrirModalRechazo(matricula, nombre) {
         matriculaSeleccionada = matricula;
         document.getElementById('modalRechazarTitle').innerText = '¿Estás seguro de RECHAZAR a ' + nombre + '?';
-        const modal = new bootstrap.Modal(document.getElementById('modalRechazar'));
-        modal.show();
+
+        if (modalRechazarInstance) {
+            modalRechazarInstance.show();
+        }
     }
 
     document.getElementById('btnConfirmarRechazo').addEventListener('click', function() {

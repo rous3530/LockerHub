@@ -8,6 +8,7 @@ public class SolicitudDto {
     private String cuatrimestre;
     private String grupo;
     private String estado;
+    private String casilleroCodigo;
 
     public SolicitudDto() {}
 
@@ -20,6 +21,9 @@ public class SolicitudDto {
         this.grupo = grupo;
         this.estado = estado;
     }
+
+    public String getCasilleroCodigo() { return casilleroCodigo; }
+    public void setCasilleroCodigo(String casilleroCodigo) { this.casilleroCodigo = casilleroCodigo; }
 
     public int getIdSolicitud() { return idSolicitud; }
     public void setIdSolicitud(int idSolicitud) { this.idSolicitud = idSolicitud; }
@@ -43,7 +47,9 @@ public class SolicitudDto {
     public void setEstado(String estado) { this.estado = estado; }
 
     public String getIniciales() {
-        if (nombreCompleto == null || nombreCompleto.trim().isEmpty()) return "US";
+        if (nombreCompleto == null || nombreCompleto.trim().isEmpty()) {
+            return "ST";
+        }
         String[] partes = nombreCompleto.trim().split("\\s+");
         if (partes.length >= 2) {
             return (partes[0].substring(0, 1) + partes[1].substring(0, 1)).toUpperCase();

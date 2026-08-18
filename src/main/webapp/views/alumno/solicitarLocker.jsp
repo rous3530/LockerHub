@@ -335,7 +335,7 @@
                                 <!-- Matrícula -->
                                 <div class="col-md-6" id="fieldMatricula">
                                     <label class="form-label-custom">Matrícula / ID</label>
-                                    <input type="text" class="form-control-custom" id="inputMatricula" name="matricula" placeholder="Ej. 2024–0012354">
+                                    <input type="text" class="form-control-custom" id="inputMatricula" name="matricula" placeholder="Ej. 2025ds091">
                                     <div class="error-feedback d-none">
                                         <i class="bi bi-exclamation-circle"></i> Favor de llenar este campo.
                                     </div>

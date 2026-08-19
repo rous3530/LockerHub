@@ -1,9 +1,18 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ page import="mx.edu.utez.locker.model.Administrador" %>
+<%@ page import="mx.edu.utez.locker.dao.DaoSolicitud" %>
+<%@ page import="mx.edu.utez.locker.model.EdificioDto" %>
+<%@ page import="java.util.List" %>
 <%
     HttpSession sesion = request.getSession(false);
     Administrador admin = (sesion != null) ? (Administrador) sesion.getAttribute("usuario") : null;
+
+    // Instanciar DAO para cargar los edificios
+    DaoSolicitud daoEdificio = new DaoSolicitud();
+    List<EdificioDto> listaEdificios = daoEdificio.obtenerEdificios();
+    // Guardar en request para que el EL (Expression Language) lo pueda usar
+    request.setAttribute("listaEdificios", listaEdificios);
 
     if (admin == null || !"ADMIN".equalsIgnoreCase(admin.getRol())) {
         response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp");
@@ -215,14 +224,15 @@
             <p><span id="modalEstudianteMatricula"></span> | <span id="modalEstudianteCarrera"></span></p>
         </div>
 
-        <!-- Filtros actualizados con datos dinámicos de Edificios y Plantas -->
+        <!-- Filtros actualizados -->
         <div class="filters-row">
             <input type="text" id="buscarLockerInput" placeholder="Ej. 101" onkeyup="filtrarLockersModal()">
 
             <select id="filtroEdificio" onchange="filtrarLockersModal()">
                 <option value="">Todos los edificios</option>
                 <c:forEach var="edif" items="${listaEdificios}">
-                    <option value="${edif.nombre}">${edif.nombre}</option>
+                    <%-- Aquí debe ir idEdificio, no el nombre --%>
+                    <option value="${edif.idEdificio}">${edif.nombre}</option>
                 </c:forEach>
             </select>
 

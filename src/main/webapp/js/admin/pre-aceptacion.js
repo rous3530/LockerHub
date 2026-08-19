@@ -5,14 +5,6 @@ let estadoSeleccion = {
     casilleroCodigo: null
 };
 
-// Datos simulados de casilleros para la prueba modal
-const casillerosSimulados = [
-    { id: 101, codigo: 'A-042', edificio: 'Edif. A', piso: 'PB', estado: 'Disponible' },
-    { id: 102, codigo: 'A-045', edificio: 'Edif. A', piso: 'PB', estado: 'Disponible' },
-    { id: 103, codigo: 'B-102', edificio: 'Edif. B', piso: 'Piso 1', estado: 'Mantenimiento' },
-    { id: 104, codigo: 'A-055', edificio: 'Edif. A', piso: 'Piso 1', estado: 'Ocupado' }
-];
-
 // 1. Buscador en la tabla principal
 function filtrarTabla() {
     const input = document.getElementById('searchInput').value.toLowerCase();
@@ -33,7 +25,7 @@ function cerrarModal(idModal) {
     document.getElementById(idModal).style.display = 'none';
 }
 
-// 3. Modal Asignar Casillero
+// 3. Modal Asignar Casillero (Modificado para cargar dinámicamente)
 function abrirModalAsignar(id, nombre, matricula, carrera) {
     estadoSeleccion.estudianteId = id;
     estadoSeleccion.casilleroId = null;
@@ -42,68 +34,154 @@ function abrirModalAsignar(id, nombre, matricula, carrera) {
     document.getElementById('modalEstudianteNombre').innerText = nombre;
     document.getElementById('modalEstudianteMatricula').innerText = matricula;
     document.getElementById('modalEstudianteCarrera').innerText = carrera;
-    document.getElementById('lockerSeleccionadoTexto').innerText = 'Ninguno';
-    document.getElementById('btnConfirmarAsignacion').disabled = true;
 
-    renderizarLockers(casillerosSimulados);
+    const labelSeleccionado = document.getElementById('lblSeleccionado');
+    if (labelSeleccionado) labelSeleccionado.innerText = 'Ninguno';
+
+    const lockerTexto = document.getElementById('lockerSeleccionadoTexto');
+    if (lockerTexto) lockerTexto.innerText = 'Ninguno';
+
+    const btnConfirmar = document.getElementById('btnConfirmarAsignacion');
+    if (btnConfirmar) btnConfirmar.disabled = true;
+
+    // Limpiar inputs de filtro al abrir
+    document.getElementById('buscarLockerInput').value = '';
+    document.getElementById('filtroEdificio').value = '';
+    document.getElementById('filtroPiso').value = '';
+
+    // Cargar todos los lockers disponibles inicialmente o limpiar la grid
+    const grid = document.getElementById('lockersGrid');
+    grid.innerHTML = '<div class="text-center text-muted p-4 w-100">Selecciona un edificio para ver los casilleros disponibles.</div>';
+
     abrirModal('modalAsignar');
 }
 
-function renderizarLockers(lockers) {
+// Función que consulta al Servlet por Edificio vía Fetch
+const contextPath = window.location.pathname.substring(0, window.location.pathname.indexOf("/", 2));
+
+function filtrarLockersModal() {
+    const idEdificio = document.getElementById('filtroEdificio').value;
+    const busqueda = document.getElementById('buscarLockerInput').value.toLowerCase();
+    const plantaSeleccionada = document.getElementById('filtroPiso').value;
     const grid = document.getElementById('lockersGrid');
-    grid.innerHTML = '';
 
-    lockers.forEach(l => {
-        const card = document.createElement('div');
-        card.className = 'locker-card ' + l.estado.toLowerCase();
+    if (!idEdificio) {
+        grid.innerHTML = '<div class="text-center text-muted p-4 w-100">Selecciona un edificio.</div>';
+        return;
+    }
 
-        // Usamos concatenación tradicional para evitar conflictos de sintaxis o con JSP
-        card.innerHTML = '<strong>' + l.codigo + '</strong>' +
-            '<small>' + l.edificio + ', ' + l.piso + '</small>' +
-            '<span class="status-tag">' + l.estado + '</span>';
+    grid.innerHTML = '<div class="text-center text-muted p-4 w-100">Cargando casilleros...</div>';
 
-        if (l.estado === 'Disponible') {
-            card.onclick = function() { seleccionarLocker(card, l); };
-        }
+    fetch(`${contextPath}/obtener-lockers?idEdificio=${idEdificio}`)
+        .then(response => response.json())
+        .then(data => {
+            grid.innerHTML = '';
 
-        grid.appendChild(card);
-    });
+            const lockersFiltrados = data.filter(l => {
+                const coincideTexto = l.numeroLocker.toLowerCase().includes(busqueda);
+                const coincidePlanta = (plantaSeleccionada === "") || (l.piso && l.piso.trim() === plantaSeleccionada);
+                return coincideTexto && coincidePlanta;
+            });
+
+            if (lockersFiltrados.length === 0) {
+                grid.innerHTML = '<div class="text-center text-muted p-4 w-100">No se encontraron casilleros disponibles.</div>';
+                return;
+            }
+
+            // Dibujar las tarjetas en el grid
+            lockersFiltrados.forEach(l => {
+                const card = document.createElement('div');
+                const estatusLower = (l.estatus || 'disponible').toLowerCase();
+
+                let claseEstatus = 'disponible';
+                let textoEstatus = 'Disponible';
+
+                if (estatusLower.includes('ocupado')) {
+                    claseEstatus = 'ocupado';
+                    textoEstatus = 'Ocupado';
+                } else if (estatusLower.includes('mantenimiento')) {
+                    claseEstatus = 'mantenimiento';
+                    textoEstatus = 'Mantenimiento';
+                }
+
+                card.className = `locker-card ${claseEstatus}`;
+
+                card.innerHTML = `
+                    <div class="locker-card-header">
+                        <span class="locker-title">${l.numeroLocker}</span>
+                        <span class="badge-status ${claseEstatus}">${textoEstatus}</span>
+                    </div>
+                    <div class="locker-card-body">
+                        <i class="bi bi-geo-alt"></i> <span>${l.piso}</span>
+                    </div>
+                `;
+
+                if (claseEstatus !== 'disponible') {
+                    card.style.opacity = '0.7';
+                    card.style.cursor = 'not-allowed';
+                } else {
+                    card.onclick = function() {
+                        // 1. Remover selección previa de todas las tarjetas
+                        document.querySelectorAll('.locker-card').forEach(c => c.classList.remove('selected'));
+                        card.classList.add('selected');
+
+                        // 2. Guardar en el objeto global de estado
+                        estadoSeleccion.casilleroId = l.idLocker;
+                        estadoSeleccion.casilleroCodigo = l.numeroLocker;
+
+                        // 3. Actualizar textos inferiores de forma segura
+                        const labelSeleccionado = document.getElementById('lblSeleccionado');
+                        if (labelSeleccionado) {
+                            labelSeleccionado.innerText = `Locker ${l.numeroLocker} (${l.piso})`;
+                        }
+
+                        const lockerTexto = document.getElementById('lockerSeleccionadoTexto');
+                        if (lockerTexto) {
+                            lockerTexto.innerText = l.numeroLocker;
+                        }
+
+                        // 4. Habilitar el botón de confirmación de asignación
+                        const btnConfirmar = document.getElementById('btnConfirmarAsignacion');
+                        if (btnConfirmar) {
+                            btnConfirmar.disabled = false;
+                        }
+
+                        // 5. Ejecutar función externa si está definida
+                        if (typeof seleccionarLocker === 'function') {
+                            seleccionarLocker(l);
+                        }
+                    };
+                }
+
+                grid.appendChild(card);
+            });
+        })
+        .catch(error => {
+            console.error("Error al cargar lockers:", error);
+            grid.innerHTML = '<div class="text-center text-danger p-4 w-100">Error al cargar los casilleros.</div>';
+        });
 }
 
 function seleccionarLocker(element, locker) {
     document.querySelectorAll('.locker-card').forEach(c => c.classList.remove('selected'));
     element.classList.add('selected');
 
-    estadoSeleccion.casilleroId = locker.id;
-    estadoSeleccion.casilleroCodigo = locker.codigo;
+    estadoSeleccion.casilleroId = locker.idLocker;
+    estadoSeleccion.casilleroCodigo = locker.numeroLocker;
 
-    document.getElementById('lockerSeleccionadoTexto').innerText = locker.codigo;
+    document.getElementById('lockerSeleccionadoTexto').innerText = locker.numeroLocker;
     document.getElementById('btnConfirmarAsignacion').disabled = false;
 }
 
-function filtrarLockersModal() {
-    const busqueda = document.getElementById('buscarLockerInput').value.toLowerCase();
-    const edificio = document.getElementById('filtroEdificio').value;
-    const piso = document.getElementById('filtroPiso').value;
-
-    const filtrados = casillerosSimulados.filter(l => {
-        const coincideCodigo = l.codigo.toLowerCase().includes(busqueda);
-        const coincideEdificio = !edificio || l.edificio === edificio;
-        const coincidePiso = !piso || l.piso === piso;
-        return coincideCodigo && coincideEdificio && coincidePiso;
-    });
-
-    renderizarLockers(filtrados);
-}
-
 function confirmarSeleccionLocker() {
-    // Obtenemos el nombre del estudiante directamente del modal de asignación
     const nombreEstudiante = document.getElementById('modalEstudianteNombre').innerText;
 
+    // Cierra el modal de asignar para evitar el amontonamiento visual
     cerrarModal('modalAsignar');
 
+    // Muestra la alerta de confirmación con Bootstrap Icons
     mostrarAlerta({
-        icono: 'ℹ️',
+        iconoClase: 'bi bi-info-circle-fill text-primary fs-1',
         titulo: 'Confirmar Asignación',
         mensaje: `¿Estás seguro de asignar el casillero ${estadoSeleccion.casilleroCodigo} a ${nombreEstudiante}?`,
         botones: `
@@ -116,7 +194,7 @@ function confirmarSeleccionLocker() {
 // 4. Modal Quitar Casillero
 function abrirModalQuitarCasillero(id, nombre, casillero) {
     mostrarAlerta({
-        icono: '🗑️',
+        iconoClase: 'bi bi-trash-fill text-danger fs-1',
         titulo: '¿Estás seguro de quitar el casillero?',
         mensaje: `¿Estás seguro de quitar la asignación del casillero ${casillero} a ${nombre}? Esta acción dejará el casillero disponible.`,
         botones: `
@@ -129,7 +207,7 @@ function abrirModalQuitarCasillero(id, nombre, casillero) {
 // 5. Modal Quitar de Lista
 function abrirModalQuitarLista(id, nombre) {
     mostrarAlerta({
-        icono: '⚠️',
+        iconoClase: 'bi bi-exclamation-triangle-fill text-warning fs-1',
         titulo: `¿Estás seguro de quitar a ${nombre}?`,
         mensaje: 'Al quitar esta solicitud ya no se visualizará en el listado de Pre-aceptados.',
         botones: `
@@ -146,7 +224,7 @@ function intentarAceptarTodos() {
 
     if (sinAsignar) {
         mostrarAlerta({
-            icono: '⚠️',
+            iconoClase: 'bi bi-exclamation-circle-fill text-warning fs-1',
             titulo: 'Acción requerida',
             mensaje: 'Todos los estudiantes tienen que tener un casillero asignado para poder completar la aceptación masiva.',
             botones: '<button class="btn btn-primary" onclick="cerrarModal(\'modalAlerta\')">Entendido</button>'
@@ -155,7 +233,7 @@ function intentarAceptarTodos() {
     }
 
     mostrarAlerta({
-        icono: '✅',
+        iconoClase: 'bi bi-check-circle-fill text-success fs-1',
         titulo: '¿Estás seguro de ACEPTAR a todos los alumnos?',
         mensaje: 'Al confirmar esta acción, todos los estudiantes pre-aceptados serán movidos automáticamente a la lista de aceptados.',
         botones: `
@@ -166,8 +244,11 @@ function intentarAceptarTodos() {
 }
 
 // Helper para Renderizar Alertas Dinámicas
-function mostrarAlerta({ icono, titulo, mensaje, botones }) {
-    document.getElementById('alertaIcono').innerText = icono;
+function mostrarAlerta({ iconoClase, titulo, mensaje, botones }) {
+    const contenedorIcono = document.getElementById('alertaIcono');
+    if (contenedorIcono) {
+        contenedorIcono.innerHTML = `<i class="${iconoClase}"></i>`;
+    }
     document.getElementById('alertaTitulo').innerText = titulo;
     document.getElementById('alertaMensaje').innerText = mensaje;
     document.getElementById('alertaBotones').innerHTML = botones;
@@ -177,8 +258,30 @@ function mostrarAlerta({ icono, titulo, mensaje, botones }) {
 // 7. Peticiones de actualización al backend (Servlets / Controllers)
 function guardarAsignacionBackend() {
     cerrarModal('modalAlerta');
-    // fetch('/api/pre-aceptados/asignar', { method: 'POST', body: JSON.stringify(estadoSeleccion) })...
-    location.reload();
+
+    // Enviamos los datos como parámetros de formulario estándar
+    const params = new URLSearchParams();
+    params.append('idSolicitud', estadoSeleccion.estudianteId);
+    params.append('idLocker', estadoSeleccion.casilleroId);
+
+    fetch(`${contextPath}/asignar-locker`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params
+    })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert("No se pudo guardar la asignación en la base de datos.");
+            }
+        })
+        .catch(error => {
+            console.error("Error en la petición:", error);
+            alert("Error de conexión con el servidor.");
+        });
 }
 
 function ejecutarQuitarCasillero(idEstudiante) {
@@ -195,6 +298,30 @@ function ejecutarQuitarDeLista(idEstudiante) {
 
 function ejecutarAceptarTodosBackend() {
     cerrarModal('modalAlerta');
-    // fetch('/api/pre-aceptados/aceptar-todos', { method: 'POST' })...
-    location.reload();
+
+    // Forzamos la ruta completa usando el contextPath existente
+    const urlEndpoint = contextPath + "/aceptar-todos";
+
+    fetch(urlEndpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                console.error("El servidor respondió con error:", response.status);
+                mostrarAlerta({
+                    iconoClase: 'bi bi-x-circle-fill text-danger fs-1',
+                    titulo: 'Error del Servidor',
+                    mensaje: 'El servidor rechazó la petición (Código ' + response.status + '). Revisa la consola de Java.',
+                    botones: '<button class="btn btn-secondary" onclick="cerrarModal(\'modalAlerta\')">Cerrar</button>'
+                });
+            }
+        })
+        .catch(error => {
+            console.error("Error de red:", error);
+        });
 }

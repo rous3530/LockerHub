@@ -169,52 +169,52 @@ public class DaoSolicitud {
         return lista;
     }
 
+    // 8. OBTENER SOLICITUDES POR ESTADO
+    public List<SolicitudDto> obtenerSolicitudesPorEstado(String estado) {
+        List<SolicitudDto> lista = new ArrayList<>();
 
-// 8. OBTENER SOLICITUDES POR ESTADO (Nombre de tabla EDIFICIO en singular)
-public List<SolicitudDto> obtenerSolicitudesPorEstado(String estado) {
-    List<SolicitudDto> lista = new ArrayList<>();
+        String query = "SELECT s.ID_SOLICITUD, a.MATRICULA, " +
+                "a.NOMBRES || ' ' || a.APELLIDO_PATERNO || ' ' || NVL(a.APELLIDO_MATERNO, '') AS nombre_completo, " +
+                "NVL(c.NOMBRE, 'Sin Carrera') AS carrera, s.CUATRI_ACTUAL, s.GRUPO_ACTUAL, s.ESTATUS_SOLICITUD, " +
+                "CASE " +
+                "   WHEN l.NUMERO IS NOT NULL THEN ed.NOMBRE || '-' || l.NUMERO " +
+                "   ELSE 'Sin asignar' " +
+                "END AS CASILLERO_CODIGO " +
+                "FROM SOLICITUD s " +
+                "INNER JOIN ALUMNO a ON s.ID_ALUMNO = a.ID_ALUMNO " +
+                "LEFT JOIN CARRERA c ON a.ID_CARRERA = c.ID_CARRERA " +
+                "LEFT JOIN LOCKER l ON s.ID_LOCKER = l.ID_LOCKER " +
+                "LEFT JOIN EDIFICIO ed ON l.ID_EDIFICIO = ed.ID_EDIFICIO " +
+                "WHERE UPPER(s.ESTATUS_SOLICITUD) LIKE UPPER(?) " +
+                "ORDER BY s.FECHA_SOLICITUD ASC";
 
-    String query = "SELECT s.ID_SOLICITUD, a.MATRICULA, " +
-            "a.NOMBRES || ' ' || a.APELLIDO_PATERNO || ' ' || NVL(a.APELLIDO_MATERNO, '') AS nombre_completo, " +
-            "NVL(c.NOMBRE, 'Sin Carrera') AS carrera, s.CUATRI_ACTUAL, s.GRUPO_ACTUAL, s.ESTATUS_SOLICITUD, " +
-            "CASE " +
-            "   WHEN l.NUMERO IS NOT NULL THEN ed.NOMBRE || '-' || l.NUMERO " +
-            "   ELSE 'Sin asignar' " +
-            "END AS CASILLERO_CODIGO " +
-            "FROM SOLICITUD s " +
-            "INNER JOIN ALUMNO a ON s.ID_ALUMNO = a.ID_ALUMNO " +
-            "LEFT JOIN CARRERA c ON a.ID_CARRERA = c.ID_CARRERA " +
-            "LEFT JOIN LOCKER l ON s.ID_LOCKER = l.ID_LOCKER " +
-            "LEFT JOIN EDIFICIO ed ON l.ID_EDIFICIO = ed.ID_EDIFICIO " +
-            "WHERE UPPER(s.ESTATUS_SOLICITUD) LIKE UPPER(?) " +
-            "ORDER BY s.FECHA_SOLICITUD ASC";
+        try (Connection con = ConnectionOracle.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
 
-    try (Connection con = ConnectionOracle.getConnection();
-         PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, "%" + estado + "%");
 
-        ps.setString(1, "%" + estado + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    SolicitudDto dto = new SolicitudDto();
+                    dto.setIdSolicitud(rs.getInt("ID_SOLICITUD"));
+                    dto.setMatricula(rs.getString("MATRICULA"));
+                    dto.setNombreCompleto(rs.getString("nombre_completo"));
+                    dto.setCarrera(rs.getString("carrera"));
+                    dto.setCuatrimestre(rs.getString("CUATRI_ACTUAL"));
+                    dto.setGrupo(rs.getString("GRUPO_ACTUAL"));
+                    dto.setEstado(rs.getString("ESTATUS_SOLICITUD"));
+                    dto.setCasilleroCodigo(rs.getString("CASILLERO_CODIGO"));
 
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                SolicitudDto dto = new SolicitudDto();
-                dto.setIdSolicitud(rs.getInt("ID_SOLICITUD"));
-                dto.setMatricula(rs.getString("MATRICULA"));
-                dto.setNombreCompleto(rs.getString("nombre_completo"));
-                dto.setCarrera(rs.getString("carrera"));
-                dto.setCuatrimestre(rs.getString("CUATRI_ACTUAL"));
-                dto.setGrupo(rs.getString("GRUPO_ACTUAL"));
-                dto.setEstado(rs.getString("ESTATUS_SOLICITUD"));
-                dto.setCasilleroCodigo(rs.getString("CASILLERO_CODIGO"));
-
-                lista.add(dto);
+                    lista.add(dto);
+                }
             }
+        } catch (SQLException e) {
+            System.err.println("Error en obtenerSolicitudesPorEstado: " + e.getMessage());
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        System.err.println("Error en obtenerSolicitudesPorEstado: " + e.getMessage());
-        e.printStackTrace();
+        return lista;
     }
-    return lista;
-}
+
     // 9. OBTENER TOTAL DE ESTUDIANTES EN ESPERA DE CUPO
     public int obtenerEsperaCupo() {
         String query = "SELECT COUNT(*) FROM SOLICITUD WHERE UPPER(ESTATUS_SOLICITUD) = 'ESPERA_CUPO'";
@@ -231,16 +231,21 @@ public List<SolicitudDto> obtenerSolicitudesPorEstado(String estado) {
         }
         return 0;
     }
+
     // 7. CLASE DTO INTERNA Y MÉTODO DE LOCKERS
     public class LockerDto {
         private int idLocker;
         private String numeroLocker;
+        private String piso; // Campo agregado para soportar el filtro por planta
+        private String estatus;
 
         public LockerDto() {}
 
-        public LockerDto(int idLocker, String numeroLocker) {
+        public LockerDto(int idLocker, String numeroLocker, String piso) {
             this.idLocker = idLocker;
             this.numeroLocker = numeroLocker;
+            this.piso = piso;
+            this.estatus = estatus;
         }
 
         public int getIdLocker() { return idLocker; }
@@ -248,13 +253,20 @@ public List<SolicitudDto> obtenerSolicitudesPorEstado(String estado) {
 
         public String getNumeroLocker() { return numeroLocker; }
         public void setNumeroLocker(String numeroLocker) { this.numeroLocker = numeroLocker; }
+
+        public String getPiso() { return piso; }
+        public void setPiso(String piso) { this.piso = piso; }
+
+        public String getEstatus() { return estatus; }
+        public void setEstatus(String estatus) { this.estatus = estatus; }
     }
 
     public List<LockerDto> obtenerLockersDisponiblesPorEdificio(int idEdificio) {
         List<LockerDto> lista = new ArrayList<>();
-        String query = "SELECT ID_LOCKER, NUMERO " +
+        // Incluimos ESTATUS en el SELECT (y quitamos el filtro estricto si quieres mostrar todos los estados)
+        String query = "SELECT ID_LOCKER, NUMERO, PLANTA, ESTATUS " +
                 "FROM LOCKER " +
-                "WHERE ID_EDIFICIO = ? AND UPPER(ESTATUS) = 'DISPONIBLE' " +
+                "WHERE ID_EDIFICIO = ? " +
                 "ORDER BY NUMERO ASC";
 
         try (Connection con = ConnectionOracle.getConnection();
@@ -266,10 +278,86 @@ public List<SolicitudDto> obtenerSolicitudesPorEstado(String estado) {
                     LockerDto dto = new LockerDto();
                     dto.setIdLocker(rs.getInt("ID_LOCKER"));
                     dto.setNumeroLocker(rs.getString("NUMERO"));
+                    dto.setPiso(rs.getString("PLANTA"));
+                    dto.setEstatus(rs.getString("ESTATUS")); // Mapeamos el estatus de la base de datos
                     lista.add(dto);
                 }
             }
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    public boolean asignarLockerASolicitud(int idSolicitud, int idLocker) {
+        String querySolicitud = "UPDATE SOLICITUD SET ID_LOCKER = ? WHERE ID_SOLICITUD = ?";
+        String queryLocker = "UPDATE LOCKER SET ESTATUS = 'OCUPADO' WHERE ID_LOCKER = ?"; // Opcional si quieres actualizar el estatus del casillero
+
+        try (Connection con = ConnectionOracle.getConnection()) {
+            con.setAutoCommit(false); // Transacción para asegurar integridad
+
+            try (PreparedStatement psSol = con.prepareStatement(querySolicitud);
+                 PreparedStatement psLock = con.prepareStatement(queryLocker)) {
+
+                // 1. Actualizar la solicitud con el locker elegido
+                psSol.setInt(1, idLocker);
+                psSol.setInt(2, idSolicitud);
+                psSol.executeUpdate();
+
+                // 2. Cambiar estatus del locker a ocupado
+                psLock.setInt(1, idLocker);
+                psLock.executeUpdate();
+
+                con.commit();
+                return true;
+            } catch (SQLException e) {
+                con.rollback();
+                e.printStackTrace();
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public boolean aceptarTodasLasSolicitudes() {
+        String query = "UPDATE SOLICITUD SET ESTATUS_SOLICITUD = 'ACEPTADA' WHERE ESTATUS_SOLICITUD = 'PRE_ACEPTADA' AND ID_LOCKER IS NOT NULL";
+
+        try (Connection con = ConnectionOracle.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public List<SolicitudDto> obtenerEstudiantesAceptados() {
+        List<SolicitudDto> lista = new ArrayList<>();
+        String query = "SELECT s.ID_SOLICITUD, a.MATRICULA, a.NOMBRES, a.APELLIDO_PATERNO, a.APELLIDO_MATERNO, a.CORREO, " +
+                "s.CUATRI_ACTUAL, s.GRUPO_ACTUAL " +
+                "FROM SOLICITUD s " +
+                "JOIN ALUMNO a ON s.ID_ALUMNO = a.ID_ALUMNO " +
+                "WHERE s.ESTATUS_SOLICITUD = 'ACEPTADA'";
+
+        System.out.println("=== EJECUTANDO CONSULTA DE ESTUDIANTES ACEPTADOS ===");
+
+        try (Connection con = ConnectionOracle.getConnection();
+             PreparedStatement ps = con.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                SolicitudDto sol = SolicitudDto.mapearDesdeResultSet(rs);
+                lista.add(sol);
+                System.out.println("Estudiante aceptado encontrado -> Matrícula: " + sol.getMatricula() + ", Nombre: " + sol.getNombreCompleto());
+            }
+
+            System.out.println("Total de estudiantes aceptados cargados desde la BD: " + lista.size());
+
+        } catch (SQLException e) {
+            System.out.println("ERROR SQL al obtener estudiantes aceptados:");
             e.printStackTrace();
         }
         return lista;

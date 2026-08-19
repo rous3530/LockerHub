@@ -5,8 +5,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import mx.edu.utez.locker.dao.DaoSolicitud;
-
+import mx.edu.utez.locker.model.Administrador;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -22,9 +23,21 @@ public class ObtenerLockersServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        String idEdificioParam = request.getParameter("idEdificio");
         PrintWriter out = response.getWriter();
 
+        // 1. VALIDACIÓN DE SEGURIDAD EXCLUSIVA PARA ADMINISTRADOR
+        HttpSession sesion = request.getSession(false);
+        Administrador admin = (sesion != null) ? (Administrador) sesion.getAttribute("usuario") : null;
+
+        if (admin == null || !"ADMIN".equalsIgnoreCase(admin.getRol())) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            out.print("[]");
+            out.flush();
+            return;
+        }
+
+        // 2. RECUPERAR PARÁMETRO DE EDIFICIO
+        String idEdificioParam = request.getParameter("idEdificio");
         if (idEdificioParam == null || idEdificioParam.isEmpty()) {
             out.print("[]");
             out.flush();
@@ -36,12 +49,13 @@ public class ObtenerLockersServlet extends HttpServlet {
             DaoSolicitud dao = new DaoSolicitud();
             List<DaoSolicitud.LockerDto> lockers = dao.obtenerLockersDisponiblesPorEdificio(idEdificio);
 
-            // Construcción manual de JSON liviano
+            // 3. CONSTRUCCIÓN DE JSON (Incluyendo el piso opcionalmente si tu DTO lo tiene)
             StringBuilder json = new StringBuilder("[");
             for (int i = 0; i < lockers.size(); i++) {
                 DaoSolicitud.LockerDto l = lockers.get(i);
                 json.append("{\"idLocker\":").append(l.getIdLocker())
-                        .append(",\"numeroLocker\":\"").append(l.getNumeroLocker()).append("\"}");
+                        .append(",\"numeroLocker\":\"").append(l.getNumeroLocker()).append("\"")
+                        .append(",\"piso\":\"").append(l.getPiso() != null ? l.getPiso() : "").append("\"}");
                 if (i < lockers.size() - 1) {
                     json.append(",");
                 }

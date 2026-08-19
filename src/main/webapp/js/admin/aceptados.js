@@ -4,15 +4,33 @@ let estudianteSeleccionado = {
     nombre: ''
 };
 
-// 1. Buscador en tiempo real
+// 1. Buscador en tiempo real adaptado a la estructura de filas
 function filtrarTablaAceptados() {
     const input = document.getElementById('searchInput').value.toLowerCase().trim();
-    const rows = document.querySelectorAll('#aceptadosTable tbody tr');
+    const rows = document.querySelectorAll('.item-row');
+    let visibles = 0;
 
     rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        row.style.display = text.includes(input) ? '' : 'none';
+        const nombre = row.querySelector('.student-name') ? row.querySelector('.student-name').innerText.toLowerCase() : '';
+        const matricula = row.querySelector('.student-matricula') ? row.querySelector('.student-matricula').innerText.toLowerCase() : '';
+
+        if (nombre.includes(input) || matricula.includes(input)) {
+            row.style.display = 'flex';
+            visibles++;
+        } else {
+            row.style.display = 'none';
+        }
     });
+
+    // Control de estado vacío (si no hay coincidencias)
+    const emptyState = document.getElementById('emptyState');
+    if (emptyState) {
+        if (visibles === 0) {
+            emptyState.classList.remove('d-none');
+        } else {
+            emptyState.classList.add('d-none');
+        }
+    }
 }
 
 // 2. Apertura del Modal de Reporte
@@ -25,15 +43,23 @@ function abrirModalReporte(idEstudiante, nombreEstudiante) {
     document.getElementById('modalEstudianteNombre').innerText = nombreEstudiante;
     document.getElementById('textoReporte').value = ''; // Limpiar campo previo
 
-    // Mostrar modal con flexbox
-    const modal = document.getElementById('modalReporte');
-    modal.style.display = 'flex';
+    // Mostrar modal usando la instancia de Bootstrap configurada en el JSP
+    if (typeof modalReporteInstance !== 'undefined' && modalReporteInstance !== null) {
+        modalReporteInstance.show();
+    } else {
+        const modal = document.getElementById('modalReporte');
+        if (modal) modal.style.display = 'flex';
+    }
 }
 
 // 3. Cierre del Modal
 function cerrarModalReporte() {
-    const modal = document.getElementById('modalReporte');
-    modal.style.display = 'none';
+    if (typeof modalReporteInstance !== 'undefined' && modalReporteInstance !== null) {
+        modalReporteInstance.hide();
+    } else {
+        const modal = document.getElementById('modalReporte');
+        if (modal) modal.style.display = 'none';
+    }
 }
 
 // 4. Envío de Formulario / Adjuntar Reporte al Backend
@@ -75,9 +101,9 @@ function adjuntarReporte(event) {
     .catch(error => console.error('Error:', error));
     */
 
-    // Simulación de respuesta exitosa
+    // Simulación de respuesta exitosa con interpolación correcta (comillas invertidas)
     cerrarModalReporte();
-    alert(Reporte adjuntado con éxito a ${estudianteSeleccionado.nombre}.);
+    alert(`Reporte adjuntado con éxito a ${estudianteSeleccionado.nombre}.`);
 }
 
 // Cierre de modal al hacer clic en el backdrop oscuro

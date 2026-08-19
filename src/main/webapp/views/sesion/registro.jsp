@@ -115,9 +115,10 @@
                 <label class="form-label text-secondary small fw-semibold mb-1">Contraseña</label>
                 <div class="input-group custom-input-group">
                     <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                    <input type="password" name="contrasena" class="form-control has-end-icon" placeholder="••••••••" required minlength="8">
+                    <!-- Agregamos el pattern para exigir letras y números, y minlength para los 8 caracteres -->
+                    <input type="password" name="contrasena" class="form-control has-end-icon" placeholder="••••••••" required minlength="8" pattern="(?=.*\d)(?=.*[A-Za-z]).{8,}" title="Debe contener al menos 8 caracteres, una letra y un número">
                     <span class="input-group-text end-icon" style="cursor: pointer;"><i class="bi bi-eye"></i></span>
-                    <div class="invalid-feedback">La contraseña debe tener al menos 8 caracteres.</div>
+                    <div class="invalid-feedback">La contraseña debe tener al menos 8 caracteres, incluir letras y números.</div>
                 </div>
             </div>
 

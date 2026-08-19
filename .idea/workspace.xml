@@ -10,10 +10,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6e3a30cd-90d3-4b00-9fe4-ded8c356d096" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/webapp/errores/error404.jsp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/webapp/errores/error500.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/QuitarCasilleroServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/RegresarPendienteServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoLocker.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/model/LockerDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/ObtenerLockersServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/ObtenerLockersServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoSolicitud.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoSolicitud.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/js/admin/pre-aceptacion.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/js/admin/pre-aceptacion.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,8 +28,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="JavaScript File" />
-        <option value="Class" />
         <option value="Jsp File" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -90,6 +94,9 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\josef\OneDrive\Escritorio\LockerHub\Locker\src\main\resources\wallet" />
       <recent name="C:\Users\josef\OneDrive\Escritorio\LockerHub\Locker\src\main\webapp" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\josef\OneDrive\Escritorio\LockerHub\Locker\src\main\webapp\views" />
     </key>
   </component>
   <component name="RunAnythingCache">
@@ -275,7 +282,7 @@
       <workItem from="1785189558108" duration="42558000" />
       <workItem from="1786633511829" duration="4245000" />
       <workItem from="1787019570818" duration="22723000" />
-      <workItem from="1787128702385" duration="12578000" />
+      <workItem from="1787128702385" duration="17394000" />
     </task>
     <servers />
   </component>

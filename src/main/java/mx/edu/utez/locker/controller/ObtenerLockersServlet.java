@@ -47,7 +47,7 @@ public class ObtenerLockersServlet extends HttpServlet {
         try {
             int idEdificio = Integer.parseInt(idEdificioParam);
             DaoSolicitud dao = new DaoSolicitud();
-            List<DaoSolicitud.LockerDto> lockers = dao.obtenerLockersDisponiblesPorEdificio(idEdificio);
+            List<DaoSolicitud.LockerDto> lockers = dao.obtenerLockersPorEdificio(idEdificio);
 
             // 3. CONSTRUCCIÓN DE JSON (Incluyendo el piso opcionalmente si tu DTO lo tiene)
             StringBuilder json = new StringBuilder("[");

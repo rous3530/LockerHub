@@ -88,6 +88,7 @@ function filtrarLockersModal() {
                 return;
             }
 
+            console.log("Datos recibidos del servidor:", lockersFiltrados);
             // Dibujar las tarjetas en el grid
             lockersFiltrados.forEach(l => {
                 const card = document.createElement('div');
@@ -286,14 +287,45 @@ function guardarAsignacionBackend() {
 
 function ejecutarQuitarCasillero(idEstudiante) {
     cerrarModal('modalAlerta');
-    // fetch(`/api/pre-aceptados/quitar-casillero?id=${idEstudiante}`, { method: 'DELETE' })...
-    location.reload();
+
+    // Hacemos la petición al Servlet encargado de liberar/quitar el casillero
+    fetch(`${pageContextRequestPath}/quitar-casillero?idEstudiante=${idEstudiante}`, {
+        method: 'POST' // O GET dependiendo de cómo lo reciba tu servlet
+    })
+        .then(response => {
+            if (response.ok) {
+                // Recargamos la página o actualizamos la tabla dinámicamente
+                location.reload();
+            } else {
+                alert("Error al intentar liberar el casillero.");
+            }
+        })
+        .catch(error => {
+            console.error("Error en la red:", error);
+            alert("Ocurrió un error de conexión.");
+        });
 }
+
 
 function ejecutarQuitarDeLista(idEstudiante) {
     cerrarModal('modalAlerta');
-    // fetch(`/api/pre-aceptados/eliminar?id=${idEstudiante}`, { method: 'DELETE' })...
-    location.reload();
+
+    // Hacemos una petición al servlet encargado de devolver la solicitud a estatus pendiente
+    fetch(`${pageContextRequestPath}/regresar-pendiente?idEstudiante=${idEstudiante}`, {
+        method: 'POST'
+    })
+        .then(response => {
+            if (response.ok) {
+                // Recargamos la página para que la tabla se actualice y ya no aparezca
+                location.reload();
+            } else {
+                alert("Error al intentar regresar la solicitud a pendiente.");
+            }
+        })
+        .catch(error => {
+            console.error("Error en la red:", error);
+            alert("Ocurrió un error de conexión.");
+        });
 }
 
 function ejecutarAceptarTodosBackend() {

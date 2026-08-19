@@ -261,9 +261,9 @@ public class DaoSolicitud {
         public void setEstatus(String estatus) { this.estatus = estatus; }
     }
 
-    public List<LockerDto> obtenerLockersDisponiblesPorEdificio(int idEdificio) {
+    public List<LockerDto> obtenerLockersPorEdificio(int idEdificio) {
         List<LockerDto> lista = new ArrayList<>();
-        // Incluimos ESTATUS en el SELECT (y quitamos el filtro estricto si quieres mostrar todos los estados)
+        // Consultamos TODOS los lockers del edificio, sin importar su estatus
         String query = "SELECT ID_LOCKER, NUMERO, PLANTA, ESTATUS " +
                 "FROM LOCKER " +
                 "WHERE ID_EDIFICIO = ? " +
@@ -279,7 +279,7 @@ public class DaoSolicitud {
                     dto.setIdLocker(rs.getInt("ID_LOCKER"));
                     dto.setNumeroLocker(rs.getString("NUMERO"));
                     dto.setPiso(rs.getString("PLANTA"));
-                    dto.setEstatus(rs.getString("ESTATUS")); // Mapeamos el estatus de la base de datos
+                    dto.setEstatus(rs.getString("ESTATUS")); // Aquí viaja "OCUPADO" o "DISPONIBLE"
                     lista.add(dto);
                 }
             }
@@ -361,5 +361,23 @@ public class DaoSolicitud {
             e.printStackTrace();
         }
         return lista;
+    }
+
+    public boolean cambiarEstatusPendiente(int idEstudiante) {
+        boolean exito = false;
+        // Asegúrate de que el nombre de tu tabla y columnas coincidan con tu base de datos (ej. tabla SOLICITUD, columna ESTATUS, ID_ESTUDIANTE)
+        String query = "UPDATE SOLICITUD SET ESTATUS = 'PENDIENTE' WHERE ID_ESTUDIANTE = ?";
+
+        try (Connection con = ConnectionOracle.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+
+            ps.setInt(1, idEstudiante);
+            int filasAfectadas = ps.executeUpdate();
+            exito = filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return exito;
     }
 }

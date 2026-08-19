@@ -14,8 +14,13 @@
     // Guardar en request para que el EL (Expression Language) lo pueda usar
     request.setAttribute("listaEdificios", listaEdificios);
 
+    // Validar que la sesión exista y que el usuario esté logueado
+    if (sesion == null || sesion.getAttribute("usuario") == null) {
+        response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
+        return;
+    }
     if (admin == null || !"ADMIN".equalsIgnoreCase(admin.getRol())) {
-        response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp");
+        response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
         return;
     }
 

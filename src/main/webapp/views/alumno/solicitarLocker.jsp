@@ -9,6 +9,16 @@
 
     // Traza de control en consola del servidor
     System.out.println("[JSP] Cantidad de edificios obtenidos: " + (listaEdificios != null ? listaEdificios.size() : "NULL"));
+
+    HttpSession sesion = request.getSession(false);
+    // Verificamos si existe el usuario en sesión
+    if (sesion == null || sesion.getAttribute("usuario") == null) {
+        // Redirigimos al login con un mensaje o parámetro de error de permisos
+        response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
+        return;
+    }
+
+
 %>
 <!DOCTYPE html>
 <html lang="es">

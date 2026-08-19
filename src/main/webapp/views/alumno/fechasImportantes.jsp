@@ -1,4 +1,22 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    HttpSession sesion = request.getSession(false);
+    // Verificamos si existe el usuario en sesión
+    if (sesion == null || sesion.getAttribute("usuario") == null) {
+        // Redirigimos al login con un mensaje o parámetro de error de permisos
+        response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
+        return;
+    }
+
+    // Opcional: Validar rol específico si es vista de administrador
+    /*
+    Administrador admin = (Administrador) sesion.getAttribute("usuario");
+    if (!"ADMIN".equalsIgnoreCase(admin.getRol())) {
+        response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
+        return;
+    }
+    */
+%>
 <!DOCTYPE html>
 <html lang="es">
 <head>

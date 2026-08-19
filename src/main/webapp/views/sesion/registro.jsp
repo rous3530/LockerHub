@@ -149,6 +149,19 @@
     </div>
 </footer>
 
+<!-- Coloca esto en tu vista de IniciarSesion.jsp donde quieras mostrar la alerta -->
+<%
+    String error = request.getParameter("error");
+    if ("sin_permiso".equals(error)) {
+%>
+<div class="alert alert-danger alert-dismissible fade show text-center py-2 small" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-1"></i> No tienes permiso para ver esta página. Inicia sesión para continuar.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<%
+    }
+%>
+
 <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
 <script src="${pageContext.request.contextPath}/js/sesion/registro.js"></script>
 </body>

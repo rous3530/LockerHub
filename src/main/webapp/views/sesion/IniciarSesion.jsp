@@ -1,4 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %>
+<%
+
+%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -27,6 +30,18 @@
 </nav>
 
 <!-- CONTENEDOR CENTRAL -->
+<!-- Coloca esto en tu vista de IniciarSesion.jsp donde quieras mostrar la alerta -->
+<%
+    String error = request.getParameter("error");
+    if ("sin_permiso".equals(error)) {
+%>
+<div class="alert alert-danger alert-dismissible fade show text-center py-2 small" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-1"></i> No tienes permiso para ver esta página. Inicia sesión para continuar.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<%
+    }
+%>
 <div class="container d-flex flex-grow-1 justify-content-center align-items-center py-5">
     <div class="register-container p-4 p-md-5 shadow-sm">
 
@@ -67,9 +82,9 @@
                 <label class="form-label text-secondary small fw-semibold mb-1">Contraseña</label>
                 <div class="input-group custom-input-group">
                     <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                    <input type="password" name="contrasena" id="contrasena" class="form-control" placeholder="••••••••" required>
+                    <input type="password" name="contrasena" id="contrasena" class="form-control" placeholder="••••••••" required title="Debe contener al menos 8 caracteres, una letra y un número">
                 </div>
-                <div class="invalid-feedback">La contraseña es obligatoria.</div>
+                <div class="invalid-feedback">La contraseña debe tener al menos 8 caracteres, incluir letras y números.</div>
             </div>
 
             <!-- Enlace Recuperar Contraseña -->
@@ -110,6 +125,8 @@
         </div>
     </div>
 </footer>
+
+
 
 <!-- Bootstrap Bundle JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

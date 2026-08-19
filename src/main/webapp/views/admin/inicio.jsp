@@ -7,12 +7,17 @@
     Administrador admin = (sesion != null) ? (Administrador) sesion.getAttribute("usuario") : null;
 
     if (admin == null || !"ADMIN".equalsIgnoreCase(admin.getRol())) {
-        response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp");
+        response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
         return;
     }
 
     if (request.getAttribute("solicitudes") == null && request.getParameter("redirected") == null) {
         response.sendRedirect(request.getContextPath() + "/views/admin/inicio?redirected=true");
+        return;
+    }
+    // Validar que la sesión exista y que el usuario esté logueado
+    if (sesion == null || sesion.getAttribute("usuario") == null) {
+        response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
         return;
     }
 

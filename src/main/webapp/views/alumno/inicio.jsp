@@ -8,7 +8,12 @@
     Alumno alumnoSesion = (sesion != null) ? (Alumno) sesion.getAttribute("usuario") : null;
 
     if (alumnoSesion == null) {
-        response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp");
+        response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
+        return;
+    }
+    // Validar que la sesión exista y que el usuario esté logueado
+    if (sesion == null || sesion.getAttribute("usuario") == null) {
+        response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
         return;
     }
 

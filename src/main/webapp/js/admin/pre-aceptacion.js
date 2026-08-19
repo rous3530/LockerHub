@@ -55,15 +55,15 @@ function renderizarLockers(lockers) {
 
     lockers.forEach(l => {
         const card = document.createElement('div');
-        card.className = locker-card ${l.estado.toLowerCase()};
-        card.innerHTML = `
-            <strong>${l.codigo}</strong>
-            <small>${l.edificio}, ${l.piso}</small>
-            <span class="status-tag">${l.estado}</span>
-        `;
+        card.className = 'locker-card ' + l.estado.toLowerCase();
+
+        // Usamos concatenación tradicional para evitar conflictos de sintaxis o con JSP
+        card.innerHTML = '<strong>' + l.codigo + '</strong>' +
+            '<small>' + l.edificio + ', ' + l.piso + '</small>' +
+            '<span class="status-tag">' + l.estado + '</span>';
 
         if (l.estado === 'Disponible') {
-            card.onclick = () => seleccionarLocker(card, l);
+            card.onclick = function() { seleccionarLocker(card, l); };
         }
 
         grid.appendChild(card);
@@ -97,16 +97,20 @@ function filtrarLockersModal() {
 }
 
 function confirmarSeleccionLocker() {
+    // Obtenemos el nombre del estudiante directamente del modal de asignación
+    const nombreEstudiante = document.getElementById('modalEstudianteNombre').innerText;
+
     cerrarModal('modalAsignar');
+
     mostrarAlerta({
         icono: 'ℹ️',
         titulo: 'Confirmar Asignación',
-        mensaje: ¿Estás seguro de asignar el casillero ${estadoSeleccion.casilleroCodigo}?,
+        mensaje: `¿Estás seguro de asignar el casillero ${estadoSeleccion.casilleroCodigo} a ${nombreEstudiante}?`,
         botones: `
-            <button class="btn btn-secondary" onclick="cerrarModal('modalAlerta')">Cancelar</button>
+            <button class="btn btn-secondary" onclick="cerrarModal('modalAlerta'); abrirModal('modalAsignar');">Cancelar</button>
             <button class="btn btn-primary" onclick="guardarAsignacionBackend()">Confirmar Asignación</button>
         `
-});
+    });
 }
 
 // 4. Modal Quitar Casillero
@@ -114,30 +118,29 @@ function abrirModalQuitarCasillero(id, nombre, casillero) {
     mostrarAlerta({
         icono: '🗑️',
         titulo: '¿Estás seguro de quitar el casillero?',
-        mensaje: ¿Estás seguro de quitar la asignación del casillero ${casillero} a ${nombre}? Esta acción dejará el casillero disponible.,
+        mensaje: `¿Estás seguro de quitar la asignación del casillero ${casillero} a ${nombre}? Esta acción dejará el casillero disponible.`,
         botones: `
             <button class="btn btn-secondary" onclick="cerrarModal('modalAlerta')">Cancelar</button>
             <button class="btn btn-danger" onclick="ejecutarQuitarCasillero('${id}')">Confirmar</button>
         `
-});
+    });
 }
 
 // 5. Modal Quitar de Lista
 function abrirModalQuitarLista(id, nombre) {
     mostrarAlerta({
         icono: '⚠️',
-        titulo: ¿Estás seguro de quitar a ${nombre}?,
+        titulo: `¿Estás seguro de quitar a ${nombre}?`,
         mensaje: 'Al quitar esta solicitud ya no se visualizará en el listado de Pre-aceptados.',
         botones: `
             <button class="btn btn-secondary" onclick="cerrarModal('modalAlerta')">Regresar</button>
             <button class="btn btn-danger" onclick="ejecutarQuitarDeLista('${id}')">Quitar</button>
         `
-});
+    });
 }
 
 // 6. Validación para "Aceptar Todos" (Casos Borde)
 function intentarAceptarTodos() {
-    // Ejemplo de validación: comprobar si hay filas con "Sin asignar"
     const sinAsignar = Array.from(document.querySelectorAll('#preAceptadosTable tbody tr'))
         .some(tr => tr.innerText.includes('Sin asignar'));
 
@@ -146,7 +149,7 @@ function intentarAceptarTodos() {
             icono: '⚠️',
             titulo: 'Acción requerida',
             mensaje: 'Todos los estudiantes tienen que tener un casillero asignado para poder completar la aceptación masiva.',
-            botones: <button class="btn btn-primary" onclick="cerrarModal('modalAlerta')">Entendido</button>
+            botones: '<button class="btn btn-primary" onclick="cerrarModal(\'modalAlerta\')">Entendido</button>'
         });
         return;
     }
@@ -180,13 +183,13 @@ function guardarAsignacionBackend() {
 
 function ejecutarQuitarCasillero(idEstudiante) {
     cerrarModal('modalAlerta');
-    // fetch(/api/pre-aceptados/quitar-casillero?id=${idEstudiante}, { method: 'DELETE' })...
+    // fetch(`/api/pre-aceptados/quitar-casillero?id=${idEstudiante}`, { method: 'DELETE' })...
     location.reload();
 }
 
 function ejecutarQuitarDeLista(idEstudiante) {
     cerrarModal('modalAlerta');
-    // fetch(/api/pre-aceptados/eliminar?id=${idEstudiante}, { method: 'DELETE' })...
+    // fetch(`/api/pre-aceptados/eliminar?id=${idEstudiante}`, { method: 'DELETE' })...
     location.reload();
 }
 

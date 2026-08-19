@@ -28,7 +28,6 @@
 
     <!-- Hojas de Estilo Externas -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/customer.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/pre-aceptacion.css">
 </head>
 <body class="d-flex flex-column min-vh-100">
 
@@ -55,7 +54,7 @@
 <!-- Main Container -->
 <div class="container py-4 flex-grow-1" style="max-width: 1140px;">
 
-    <!-- CABECERA SUPERIOR CORREGIDA (Diseño en bloque idéntico a la referencia: Título y texto a la izquierda, barra y botones alineados a la derecha en la misma línea) -->
+    <!-- CABECERA SUPERIOR -->
     <header class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div>
             <h2 class="h4 fw-bold mb-1" style="color: #1a365d;">Gestión de Pre-aceptados</h2>
@@ -79,7 +78,7 @@
     <!-- TABLA DE PRE-ACEPTADOS -->
     <div class="card-table shadow-sm mb-4 bg-white" style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
         <div class="table-responsive">
-            <table class="table custom-table align-middle m-0" id="tablaPreAceptados">
+            <table class="table custom-table align-middle m-0" id="preAceptadosTable">
                 <thead>
                 <tr style="background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;">
                     <th scope="col" class="py-3 ps-4" style="font-size: 0.75rem; color: #475569; font-weight: 700; width: 30%;">ESTUDIANTE</th>
@@ -123,25 +122,22 @@
 
                                 <td class="pe-4 text-end py-3">
                                     <c:choose>
-                                        <%-- CASO A: Con casillero asignado --%>
                                         <c:when test="${item.casilleroCodigo ne 'Sin asignar'}">
-                                            <a href="${pageContext.request.contextPath}/views/admin/quitarCasillero?id=${item.idSolicitud}"
-                                               class="text-danger text-decoration-none fw-semibold d-inline-flex align-items-center justify-content-end gap-1" style="font-size: 0.8rem;">
+                                            <button type="button" onclick="abrirModalQuitarCasillero('${item.idSolicitud}', '${item.nombreCompleto}', '${item.casilleroCodigo}')"
+                                                    class="text-danger bg-transparent border-0 text-decoration-none fw-semibold d-inline-flex align-items-center justify-content-end gap-1 p-0" style="font-size: 0.8rem;">
                                                 <i class="bi bi-scissors"></i> Quitar casillero
-                                            </a>
+                                            </button>
                                         </c:when>
-
-                                        <%-- CASO B: Sin asignar --%>
                                         <c:otherwise>
                                             <div class="d-flex flex-column align-items-end gap-1">
-                                                <a href="${pageContext.request.contextPath}/views/admin/asignarManual?id=${item.idSolicitud}"
-                                                   class="btn btn-sm fw-semibold px-3 py-1 d-inline-flex align-items-center gap-1 text-primary bg-white border border-primary shadow-sm rounded-2" style="font-size: 0.75rem;">
+                                                <button type="button" onclick="abrirModalAsignar('${item.idSolicitud}', '${item.nombreCompleto}', '${item.matricula}', '${item.carrera}')"
+                                                        class="btn btn-sm fw-semibold px-3 py-1 d-inline-flex align-items-center gap-1 text-primary bg-white border border-primary shadow-sm rounded-2" style="font-size: 0.75rem;">
                                                     <i class="bi bi-plus-circle"></i> Asignar
-                                                </a>
-                                                <a href="${pageContext.request.contextPath}/views/admin/quitarLista?id=${item.idSolicitud}"
-                                                   class="text-danger text-decoration-none fw-semibold d-inline-flex align-items-center gap-1" style="font-size: 0.75rem;">
+                                                </button>
+                                                <button type="button" onclick="abrirModalQuitarLista('${item.idSolicitud}', '${item.nombreCompleto}')"
+                                                        class="text-danger bg-transparent border-0 text-decoration-none fw-semibold d-inline-flex align-items-center gap-1 p-0" style="font-size: 0.75rem;">
                                                     <i class="bi bi-person-dash"></i> Quitar de lista
-                                                </a>
+                                                </button>
                                             </div>
                                         </c:otherwise>
                                     </c:choose>
@@ -219,17 +215,21 @@
             <p><span id="modalEstudianteMatricula"></span> | <span id="modalEstudianteCarrera"></span></p>
         </div>
 
+        <!-- Filtros actualizados con datos dinámicos de Edificios y Plantas -->
         <div class="filters-row">
-            <input type="text" id="buscarLockerInput" placeholder="Ej. A-042" onkeyup="filtrarLockersModal()">
+            <input type="text" id="buscarLockerInput" placeholder="Ej. 101" onkeyup="filtrarLockersModal()">
+
             <select id="filtroEdificio" onchange="filtrarLockersModal()">
                 <option value="">Todos los edificios</option>
-                <option value="Edif. A">Edificio A</option>
-                <option value="Edif. B">Edificio B</option>
+                <c:forEach var="edif" items="${listaEdificios}">
+                    <option value="${edif.nombre}">${edif.nombre}</option>
+                </c:forEach>
             </select>
+
             <select id="filtroPiso" onchange="filtrarLockersModal()">
-                <option value="">Todos los pisos</option>
-                <option value="PB">Planta Baja</option>
-                <option value="Piso 1">Piso 1</option>
+                <option value="">Todas las plantas</option>
+                <option value="PLANTA BAJA">PLANTA BAJA</option>
+                <option value="PLANTA ALTA">PLANTA ALTA</option>
             </select>
         </div>
 

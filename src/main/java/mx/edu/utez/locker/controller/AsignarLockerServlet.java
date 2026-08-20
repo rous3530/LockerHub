@@ -24,16 +24,16 @@ public class AsignarLockerServlet extends HttpServlet {
         try {
             // 1. Recibir los parámetros enviados desde JavaScript
             String idSolicitudStr = request.getParameter("idSolicitud");
-            String idLockerStr = request.getParameter("idLocker");
+            String idLocker = request.getParameter("idLocker"); // Mantenido como String
 
-            if (idSolicitudStr == null || idLockerStr == null || idSolicitudStr.isEmpty() || idLockerStr.isEmpty()) {
+            if (idSolicitudStr == null || idLocker == null || idSolicitudStr.isEmpty() || idLocker.isEmpty()) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 out.print("{\"success\": false, \"message\": \"Faltan parámetros requeridos.\"}");
                 return;
             }
 
             int idSolicitud = Integer.parseInt(idSolicitudStr);
-            int idLocker = Integer.parseInt(idLockerStr);
+            // Ya no hacemos Integer.parseInt(idLocker) porque es un String (ej. "D1-01")
 
             // 2. Llamar al DAO para hacer el UPDATE en la base de datos Oracle
             DaoSolicitud daoSolicitud = new DaoSolicitud();
@@ -49,7 +49,7 @@ public class AsignarLockerServlet extends HttpServlet {
 
         } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.print("{\"success\": false, \"message\": \"Los IDs deben ser numéricos.\"}");
+            out.print("{\"success\": false, \"message\": \"El ID de la solicitud debe ser numérico.\"}");
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

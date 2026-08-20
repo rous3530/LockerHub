@@ -234,22 +234,22 @@ public class DaoSolicitud {
 
     // 7. CLASE DTO INTERNA Y MÉTODO DE LOCKERS
     public class LockerDto {
-        private int idLocker;
+        private String idLocker;
         private String numeroLocker;
         private String piso; // Campo agregado para soportar el filtro por planta
         private String estatus;
 
         public LockerDto() {}
 
-        public LockerDto(int idLocker, String numeroLocker, String piso) {
+        public LockerDto(String idLocker, String numeroLocker, String piso) {
             this.idLocker = idLocker;
             this.numeroLocker = numeroLocker;
             this.piso = piso;
             this.estatus = estatus;
         }
 
-        public int getIdLocker() { return idLocker; }
-        public void setIdLocker(int idLocker) { this.idLocker = idLocker; }
+        public String getIdLocker() { return idLocker; }
+        public void setIdLocker(String idLocker) { this.idLocker = idLocker; }
 
         public String getNumeroLocker() { return numeroLocker; }
         public void setNumeroLocker(String numeroLocker) { this.numeroLocker = numeroLocker; }
@@ -276,7 +276,7 @@ public class DaoSolicitud {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     LockerDto dto = new LockerDto();
-                    dto.setIdLocker(rs.getInt("ID_LOCKER"));
+                    dto.setIdLocker(rs.getString("ID_LOCKER"));
                     dto.setNumeroLocker(rs.getString("NUMERO"));
                     dto.setPiso(rs.getString("PLANTA"));
                     dto.setEstatus(rs.getString("ESTATUS")); // Aquí viaja "OCUPADO" o "DISPONIBLE"
@@ -289,7 +289,7 @@ public class DaoSolicitud {
         return lista;
     }
 
-    public boolean asignarLockerASolicitud(int idSolicitud, int idLocker) {
+    public boolean asignarLockerASolicitud(int idSolicitud, String idLocker) {
         String querySolicitud = "UPDATE SOLICITUD SET ID_LOCKER = ? WHERE ID_SOLICITUD = ?";
         String queryLocker = "UPDATE LOCKER SET ESTATUS = 'OCUPADO' WHERE ID_LOCKER = ?"; // Opcional si quieres actualizar el estatus del casillero
 
@@ -300,12 +300,12 @@ public class DaoSolicitud {
                  PreparedStatement psLock = con.prepareStatement(queryLocker)) {
 
                 // 1. Actualizar la solicitud con el locker elegido
-                psSol.setInt(1, idLocker);
+                psSol.setString(1, idLocker); // Cambiado a setString porque idLocker es String
                 psSol.setInt(2, idSolicitud);
                 psSol.executeUpdate();
 
                 // 2. Cambiar estatus del locker a ocupado
-                psLock.setInt(1, idLocker);
+                psLock.setString(1, idLocker); // Cambiado a setString porque idLocker es String
                 psLock.executeUpdate();
 
                 con.commit();

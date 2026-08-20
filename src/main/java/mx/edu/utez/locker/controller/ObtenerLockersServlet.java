@@ -50,12 +50,16 @@ public class ObtenerLockersServlet extends HttpServlet {
             List<DaoSolicitud.LockerDto> lockers = dao.obtenerLockersPorEdificio(idEdificio);
 
             // 3. CONSTRUCCIÓN DE JSON (Incluyendo el piso opcionalmente si tu DTO lo tiene)
+// 3. CONSTRUCCIÓN DE JSON
             StringBuilder json = new StringBuilder("[");
             for (int i = 0; i < lockers.size(); i++) {
                 DaoSolicitud.LockerDto l = lockers.get(i);
-                json.append("{\"idLocker\":").append(l.getIdLocker())
-                        .append(",\"numeroLocker\":\"").append(l.getNumeroLocker()).append("\"")
-                        .append(",\"piso\":\"").append(l.getPiso() != null ? l.getPiso() : "").append("\"}");
+                json.append("{")
+                        .append("\"idLocker\":\"").append(l.getIdLocker()).append("\",")
+                        .append("\"numeroLocker\":\"").append(l.getNumeroLocker()).append("\",")
+                        .append("\"piso\":\"").append(l.getPiso() != null ? l.getPiso() : "").append("\",")
+                        .append("\"estatus\":\"").append(l.getEstatus() != null ? l.getEstatus() : "").append("\"")
+                        .append("}");
                 if (i < lockers.size() - 1) {
                     json.append(",");
                 }

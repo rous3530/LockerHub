@@ -1,7 +1,7 @@
 package mx.edu.utez.locker.model;
 
 public class LockerDto {
-    private int idLocker;
+    private String idLocker;
     private String numeroLocker;
     private String piso;
     private String estatus;
@@ -12,7 +12,7 @@ public class LockerDto {
     }
 
     // Constructor con parámetros principales
-    public LockerDto(int idLocker, String numeroLocker, String piso, String estatus, int idEdificio) {
+    public LockerDto(String idLocker, String numeroLocker, String piso, String estatus, int idEdificio) {
         this.idLocker = idLocker;
         this.numeroLocker = numeroLocker;
         this.piso = piso;
@@ -21,11 +21,11 @@ public class LockerDto {
     }
 
     // Getters y Setters
-    public int getIdLocker() {
+    public String getIdLocker() {
         return idLocker;
     }
 
-    public void setIdLocker(int idLocker) {
+    public void setIdLocker(String idLocker) {
         this.idLocker = idLocker;
     }
 

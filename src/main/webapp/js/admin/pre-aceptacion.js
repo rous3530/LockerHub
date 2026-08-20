@@ -289,7 +289,7 @@ function ejecutarQuitarCasillero(idEstudiante) {
     cerrarModal('modalAlerta');
 
     // Hacemos la petición al Servlet encargado de liberar/quitar el casillero
-    fetch(`${pageContextRequestPath}/quitar-casillero?idEstudiante=${idEstudiante}`, {
+    fetch(`${contextPath}/quitar-casillero?idEstudiante=${idEstudiante}`, {
         method: 'POST' // O GET dependiendo de cómo lo reciba tu servlet
     })
         .then(response => {

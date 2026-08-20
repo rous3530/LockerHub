@@ -105,8 +105,8 @@
                 <label class="form-label text-secondary small fw-semibold mb-1">Correo Institucional</label>
                 <div class="input-group custom-input-group">
                     <span class="input-group-text"><i class="bi bi-at"></i></span>
-                    <input type="email" name="correo" class="form-control" placeholder="usuario@utez.edu.mx" required>
-                    <div class="invalid-feedback">Ingresa un correo institucional válido.</div>
+                    <input type="email" name="correo" class="form-control" placeholder="usuario@utez.edu.mx" pattern="[a-zA-Z0-9._%+-]+@utez\.edu\.mx$" title="Debe terminar con @utez.edu.mx" required>
+                    <div class="invalid-feedback">Ingresa un correo institucional válido (@utez.edu.mx).</div>
                 </div>
             </div>
 

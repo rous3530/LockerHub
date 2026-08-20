@@ -327,7 +327,33 @@ public class DaoSolicitud {
         return lista;
     }
 
+    public boolean regresarAStatusPendiente(int idSolicitud) {
+        // Ajusta la columna 'ESTATUS' y el valor según cómo los nombres en tu tabla SOLICITUD
+        String sql = "UPDATE SOLICITUD SET ESTATUS_SOLICITUD = 'PENDIENTE', ID_LOCKER = NULL WHERE ID_SOLICITUD = ?";
 
+        try (Connection conn = ConnectionOracle.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            conn.setAutoCommit(false); // Desactivar autocommit para control transaccional en Oracle
+
+            ps.setInt(1, idSolicitud);
+            int filasAfectadas = ps.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                conn.commit(); // Guardar cambios de forma permanente
+                System.out.println("Solicitud " + idSolicitud + " regresada a estatus pendiente exitosamente.");
+                return true;
+            } else {
+                conn.rollback();
+                System.out.println("No se encontró la solicitud con ID: " + idSolicitud);
+                return false;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     // 7. CLASE DTO INTERNA Y MÉTODO DE LOCKERS
     public class LockerDto {
@@ -432,21 +458,67 @@ public class DaoSolicitud {
         }
     }
 
-    public boolean cambiarEstatusPendiente(int idEstudiante) {
-        boolean exito = false;
-        // Asegúrate de que el nombre de tu tabla y columnas coincidan con tu base de datos (ej. tabla SOLICITUD, columna ESTATUS, ID_ESTUDIANTE)
-        String query = "UPDATE SOLICITUD SET ESTATUS = 'PENDIENTE' WHERE ID_ESTUDIANTE = ?";
+    public boolean asignarLockersAutomaticamente() {
+        // 1. Consultar solicitudes pre-aceptadas sin casillero
+        String sqlSolicitudes = "SELECT ID_SOLICITUD FROM SOLICITUD WHERE ESTATUS_SOLICITUD = 'PRE_ACEPTADA' AND ID_LOCKER IS NULL";
+        // 2. Buscar lockers disponibles
+        String sqlLockersDisp = "SELECT ID_LOCKER FROM LOCKER WHERE ESTATUS = 'DISPONIBLE' AND ROWNUM = 1";
+        // 3. Actualizar la solicitud con el locker
+        String sqlAsignar = "UPDATE SOLICITUD SET ID_LOCKER = ? WHERE ID_SOLICITUD = ?";
 
-        try (Connection con = ConnectionOracle.getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
 
-            ps.setInt(1, idEstudiante);
-            int filasAfectadas = ps.executeUpdate();
-            exito = filasAfectadas > 0;
+        try (Connection conn = ConnectionOracle.getConnection()) {
+            conn.setAutoCommit(false); // Transacción segura
 
+            System.out.println("[DaoSolicitud] Buscando solicitudes 'PRE_ACEPTADA' sin locker...");
+
+            // Obtenemos los estudiantes sin casillero
+            try (PreparedStatement psSol = conn.prepareStatement(sqlSolicitudes);
+                 ResultSet rsSol = psSol.executeQuery()) {
+
+                int totalAsignados = 0;
+                while (rsSol.next()) {
+                    int idSolicitud = rsSol.getInt("ID_SOLICITUD");
+                    System.out.println("[DaoSolicitud] Procesando ID_SOLICITUD: " + idSolicitud);
+
+                    // Buscamos un locker disponible para este estudiante
+                    String idLockerAsignado = null;
+                    try (PreparedStatement psLock = conn.prepareStatement(sqlLockersDisp);
+                         ResultSet rsLock = psLock.executeQuery()) {
+                        if (rsLock.next()) {
+                            idLockerAsignado = rsLock.getString("ID_LOCKER");
+                        }
+                    }
+
+                    // Si ya no hay lockers disponibles, rompemos el ciclo
+                    if (idLockerAsignado == null) {
+                        System.out.println("[DaoSolicitud] ⚠️ Ya no hay lockers disponibles en la BD para más estudiantes.");
+                        break;
+                    }
+
+                    System.out.println("[DaoSolicitud] -> Locker disponible encontrado: " + idLockerAsignado);
+
+                    // Asignamos el locker a la solicitud
+                    try (PreparedStatement psAsig = conn.prepareStatement(sqlAsignar)) {
+                        psAsig.setString(1, idLockerAsignado);
+                        psAsig.setInt(2, idSolicitud);
+                        psAsig.executeUpdate();
+                    }
+
+
+                    totalAsignados++;
+                    System.out.println("[DaoSolicitud] ✓ Locker " + idLockerAsignado + " asignado exitosamente a la solicitud " + idSolicitud);
+                }
+
+                System.out.println("[DaoSolicitud] Total de casilleros asignados en este proceso: " + totalAsignados);
+            }
+
+            conn.commit();
+            return true;
         } catch (SQLException e) {
+            System.err.println("[DaoSolicitud] Error crítico en asignación masiva:");
             e.printStackTrace();
+            return false;
         }
-        return exito;
     }
 }

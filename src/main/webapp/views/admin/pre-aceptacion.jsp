@@ -80,7 +80,7 @@
                 <i class="bi bi-search text-muted" style="font-size: 0.9rem;"></i>
                 <input type="text" id="searchInput" placeholder="Buscar estudiante o matrícula..." onkeyup="filtrarTabla()" style="border: none; outline: none; font-size: 0.85rem; width: 100%; background: transparent;">
             </div>
-            <button class="btn btn-sm btn-success fw-semibold px-3 d-flex align-items-center gap-1 shadow-sm" style="background-color: #16a34a; border: none; border-radius: 8px; height: 38px;" onclick="asignarLockersAutomatico()">
+            <button class="btn btn-sm btn-success fw-semibold px-3 d-flex align-items-center gap-1 shadow-sm" style="background-color: #16a34a; border: none; border-radius: 8px; height: 38px;" onclick="ejecutarAsignacionMasivaLockers()">
                 <i class="bi bi-check-circle-fill"></i> Asignar Lockers
             </button>
             <button class="btn btn-sm btn-success fw-semibold px-3 d-flex align-items-center gap-1 shadow-sm" style="background-color: #16a34a; border: none; border-radius: 8px; height: 38px;" onclick="intentarAceptarTodos()">

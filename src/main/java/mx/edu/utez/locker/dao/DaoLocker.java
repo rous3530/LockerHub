@@ -42,22 +42,32 @@ public class DaoLocker {
         return lista;
     }
 
-    // Método para liberar el casillero de un estudiante
-    public boolean liberarCasilleroPorEstudiante(int idEstudiante) {
-        boolean exito = false;
-        // Ajusta la consulta dependiendo de cómo relacionalmente guardes la asignación en tu BD Oracle
-        String sql = "UPDATE LOCKER SET ESTATUS = 'DISPONIBLE' WHERE ID_LOCKER = (SELECT ID_LOCKER FROM SOLICITUD WHERE ID_SOLICITUD = ?)";
+    public boolean liberarCasilleroPorEstudiante(int idSolicitud) {
+        String sql = "UPDATE SOLICITUD SET ID_LOCKER = NULL WHERE ID_SOLICITUD = ?";
 
-        try (Connection con = ConnectionOracle.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setInt(1, idEstudiante);
+        try (Connection conn = ConnectionOracle.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            // Nos aseguramos de que la conexión permita commit manual o forzamos commit
+            conn.setAutoCommit(false);
+
+            ps.setInt(1, idSolicitud);
             int filasAfectadas = ps.executeUpdate();
-            exito = filasAfectadas > 0;
+
+            if (filasAfectadas > 0) {
+                conn.commit(); // ¡Esto guarda permanentemente el cambio en Oracle!
+                System.out.println("Filas realmente afectadas en la tabla SOLICITUD: " + filasAfectadas);
+                return true;
+            } else {
+                conn.rollback();
+                System.out.println("No se encontró la solicitud con ID: " + idSolicitud);
+                return false;
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-        return exito;
     }
 }

@@ -285,23 +285,29 @@ function guardarAsignacionBackend() {
         });
 }
 
-function ejecutarQuitarCasillero(idEstudiante) {
+function ejecutarQuitarCasillero(idSolicitud) {
+    console.log(">>> Ejecutando quitar casillero para el ID de solicitud:", idSolicitud);
     cerrarModal('modalAlerta');
 
-    // Hacemos la petición al Servlet encargado de liberar/quitar el casillero
-    fetch(`${contextPath}/quitar-casillero?idEstudiante=${idEstudiante}`, {
-        method: 'POST' // O GET dependiendo de cómo lo reciba tu servlet
+    // AQUÍ ESTABA EL ERROR: Cambia idEstudiante por idSolicitud
+    const url = `${contextPath}/quitar-casillero?idSolicitud=${idSolicitud}`;
+    console.log(">>> URL de petición fetch:", url);
+
+    fetch(url, {
+        method: 'POST'
     })
         .then(response => {
+            console.log("<<< Respuesta del servidor recibida. Status:", response.status);
             if (response.ok) {
-                // Recargamos la página o actualizamos la tabla dinámicamente
+                console.log("<<< Casillero liberado con éxito. Recargando página...");
                 location.reload();
             } else {
+                console.error("<<< Error del servidor al liberar casillero.");
                 alert("Error al intentar liberar el casillero.");
             }
         })
         .catch(error => {
-            console.error("Error en la red:", error);
+            console.error("<<< Error crítico de red:", error);
             alert("Ocurrió un error de conexión.");
         });
 }
@@ -310,8 +316,8 @@ function ejecutarQuitarCasillero(idEstudiante) {
 function ejecutarQuitarDeLista(idEstudiante) {
     cerrarModal('modalAlerta');
 
-    // Hacemos una petición al servlet encargado de devolver la solicitud a estatus pendiente
-    fetch(`${pageContextRequestPath}/regresar-pendiente?idEstudiante=${idEstudiante}`, {
+    // Cambiamos pageContextRequestPath por contextPath y el parámetro a idSolicitud si tu servlet lo espera así
+    fetch(`${contextPath}/regresar-pendiente?idSolicitud=${idEstudiante}`, {
         method: 'POST'
     })
         .then(response => {
@@ -355,5 +361,21 @@ function ejecutarAceptarTodosBackend() {
         })
         .catch(error => {
             console.error("Error de red:", error);
+        });
+}
+function ejecutarAsignacionMasivaLockers() {
+    fetch(`${contextPath}/asignar-lockers-masivo`, {
+        method: 'POST'
+    })
+        .then(response => {
+            if (response.ok) {
+                location.reload(); // Recarga la página para ver los casilleros asignados reflejados en la tabla
+            } else {
+                alert("Error al intentar realizar la asignación masiva de lockers.");
+            }
+        })
+        .catch(error => {
+            console.error("Error de red:", error);
+            alert("Ocurrió un error de conexión con el servidor.");
         });
 }

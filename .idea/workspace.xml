@@ -10,15 +10,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6e3a30cd-90d3-4b00-9fe4-ded8c356d096" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/AsignarLockersMasivoServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/SolicitudLockerServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/SolicitudLockerServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/admin/inicio.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/admin/inicio.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/alumno/HistorialSolicitud.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/alumno/HistorialSolicitud.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/alumno/editarPerfil.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/alumno/editarPerfil.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/alumno/fechasImportantes.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/alumno/fechasImportantes.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/alumno/inicio.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/alumno/inicio.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/alumno/reglamento.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/alumno/reglamento.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/alumno/solicitarLocker.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/alumno/solicitarLocker.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/QuitarCasilleroServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/QuitarCasilleroServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/RegresarPendienteServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/RegresarPendienteServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoLocker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoLocker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoSolicitud.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoSolicitud.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/js/admin/pre-aceptacion.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/js/admin/pre-aceptacion.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/admin/pre-aceptacion.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/admin/pre-aceptacion.jsp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -283,7 +282,7 @@
       <workItem from="1785189558108" duration="42558000" />
       <workItem from="1786633511829" duration="4245000" />
       <workItem from="1787019570818" duration="22723000" />
-      <workItem from="1787128702385" duration="34873000" />
+      <workItem from="1787128702385" duration="38176000" />
     </task>
     <servers />
   </component>

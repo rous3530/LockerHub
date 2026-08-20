@@ -1,6 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="mx.edu.utez.locker.model.AlumnoDashboardDto" %>
+<%@ page import="mx.edu.utez.locker.model.Alumno" %>
 <%
+
     HttpSession sesion = request.getSession(false);
+    Alumno alumnoSesion = (sesion != null) ? (Alumno) sesion.getAttribute("usuario") : null;
     // Verificamos si existe el usuario en sesión
     if (sesion == null || sesion.getAttribute("usuario") == null) {
         // Redirigimos al login con un mensaje o parámetro de error de permisos
@@ -16,6 +20,12 @@
         return;
     }
     */
+    AlumnoDashboardDto dashboard = (AlumnoDashboardDto) request.getAttribute("dashboard");
+
+    String nombre = (dashboard != null && dashboard.getNombreCompleto() != null) ? dashboard.getNombreCompleto() : alumnoSesion.getNombres();
+    String matricula = (dashboard != null && dashboard.getMatricula() != null) ? dashboard.getMatricula() : alumnoSesion.getMatricula();
+
+
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -193,7 +203,6 @@
 </head>
 <body class="bg-page">
 
-<!-- Navbar adaptada de image_574848.png -->
 <!-- Navbar Corregida y Perfectamente Centrada -->
 <nav class="navbar navbar-expand-lg bg-white border-bottom py-2 mb-4">
     <div class="container-fluid px-4">
@@ -216,14 +225,18 @@
 
             <!-- Columna Derecha: Opciones y Perfil del Usuario -->
             <div class="col-4 d-flex justify-content-end align-items-center gap-3 p-0">
-                <button class="btn btn-link text-muted p-1"><i class="bi bi-gear fs-5"></i></button>
-                <button class="btn btn-link text-muted p-1 border-end pe-3" onclick="location.href='${pageContext.request.contextPath}/logout'"><i class="bi bi-box-arrow-right fs-5"></i></button>
+                <a href="${pageContext.request.contextPath}/views/alumno/editarPerfil.jsp" class="btn btn-link text-muted p-1">
+                    <i class="bi bi-gear fs-5"></i>
+                </a>
+                <a href="${pageContext.request.contextPath}/cerrar-sesion" class="btn btn-link text-muted p-1 border-end pe-3">
+                    <i class="bi bi-box-arrow-right fs-5"></i>
+                </a>
                 <div class="d-flex align-items-center gap-2 ps-2">
                     <div class="text-end d-none d-sm-block lh-1">
-                        <div class="fw-bold text-dark small mb-1">Carlos Mendoza</div>
-                        <span class="text-muted text-micro">ID: 2023-0452</span>
+                        <div class="fw-bold text-dark small mb-1"><%= nombre %></div>
+                        <span class="text-muted text-micro">ID: <%= matricula %></span>
                     </div>
-                    <img src="https://ui-avatars.com/api/?name=Carlos+Mendoza&background=1a365d&color=fff&size=100" class="rounded-circle border" width="36" height="36" alt="Avatar">
+                    <img src="https://ui-avatars.com/api/?name=<%= nombre.replace(" ", "+") %>&background=1a365d&color=fff&size=100" class="rounded-circle border" width="36" height="36" alt="Avatar">
                 </div>
             </div>
 

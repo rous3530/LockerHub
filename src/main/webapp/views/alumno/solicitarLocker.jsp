@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="mx.edu.utez.locker.model.AlumnoDashboardDto" %>
 <%@ page import="mx.edu.utez.locker.dao.DaoSolicitud" %>
 <%@ page import="mx.edu.utez.locker.model.EdificioDto" %>
+<%@ page import="mx.edu.utez.locker.model.Alumno" %>
+
 <%@ page import="java.util.List" %>
 <%
     // Instanciar DAO y consultar edificios una sola vez al inicio
@@ -11,6 +14,7 @@
     System.out.println("[JSP] Cantidad de edificios obtenidos: " + (listaEdificios != null ? listaEdificios.size() : "NULL"));
 
     HttpSession sesion = request.getSession(false);
+    Alumno alumnoSesion = (sesion != null) ? (Alumno) sesion.getAttribute("usuario") : null;
     // Verificamos si existe el usuario en sesión
     if (sesion == null || sesion.getAttribute("usuario") == null) {
         // Redirigimos al login con un mensaje o parámetro de error de permisos
@@ -19,6 +23,8 @@
     }
 
 
+    String nombre = (alumnoSesion != null) ? alumnoSesion.getNombres() : "Sin nombre";
+    String matricula = (alumnoSesion != null) ? alumnoSesion.getMatricula() : "Sin matrícula";
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -246,8 +252,7 @@
         <div class="row w-100 align-items-center m-0">
 
             <div class="col-4 d-flex justify-content-start p-0">
-                <a class="navbar-brand d-flex align-items-center fw-bold text-navy-brand m-0" href="#">
-                    <i class="bi bi-shield-lock-fill text-navy-brand me-2 fs-4"></i> LockerHub
+                     LockerHub
                 </a>
             </div>
 
@@ -259,12 +264,18 @@
             </div>
 
             <div class="col-4 d-flex justify-content-end align-items-center gap-3 p-0">
-                <button class="btn btn-link text-muted p-1"><i class="bi bi-bell fs-5"></i></button>
-                <a href="${pageContext.request.contextPath}/views/alumno/reglamento.jsp" class="btn btn-link text-muted p-1">
+                <a href="${pageContext.request.contextPath}/views/alumno/editarPerfil.jsp" class="btn btn-link text-muted p-1">
                     <i class="bi bi-gear fs-5"></i>
                 </a>
+                <a href="${pageContext.request.contextPath}/cerrar-sesion" class="btn btn-link text-muted p-1 border-end pe-3">
+                    <i class="bi bi-box-arrow-right fs-5"></i>
+                </a>
                 <div class="d-flex align-items-center gap-2 ps-2">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100" class="rounded-circle border" width="36" height="36" alt="Avatar">
+                    <div class="text-end d-none d-sm-block lh-1">
+                        <div class="fw-bold text-dark small mb-1"><%= nombre %></div>
+                        <span class="text-muted text-micro">ID: <%= matricula %></span>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=<%= nombre.replace(" ", "+") %>&background=1a365d&color=fff&size=100" class="rounded-circle border" width="36" height="36" alt="Avatar">
                 </div>
             </div>
 
@@ -363,7 +374,7 @@
                                 <!-- Cuatrimestre -->
                                 <div class="col-md-6" id="fieldCuatrimestre">
                                     <label class="form-label-custom">Cuatrimestre</label>
-                                    <input type="number" class="form-control-custom" id="inputCuatrimestre" name="cuatrimestre" placeholder="Ej. 4to Cuatrimestre">
+                                    <input type="number" class="form-control-custom" id="inputCuatrimestre" name="cuatrimestre" placeholder="Ej. 4">
                                     <div class="error-feedback d-none">
                                         <i class="bi bi-exclamation-circle"></i> Favor de llenar este campo.
                                     </div>
@@ -372,7 +383,7 @@
                                 <!-- Grupo -->
                                 <div class="col-md-6" id="fieldGrupo">
                                     <label class="form-label-custom">Grupo</label>
-                                    <input type="text" class="form-control-custom" id="inputGrupo" name="grupo" placeholder="Ej. G-101">
+                                    <input type="text" class="form-control-custom" id="inputGrupo" name="grupo" placeholder="Ej. A,B,C">
                                     <div class="error-feedback d-none">
                                         <i class="bi bi-exclamation-circle"></i> Favor de llenar este campo.
                                     </div>
@@ -480,7 +491,7 @@
     </div>
 </div>
 
-<footer class="bg-white border-top py-3 mt-auto">
+<footer class="bg-white border-top py-3" style="margin-top: 10.5rem">
     <div class="container-fluid px-4 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
         <span class="text-muted-light text-micro">© 2026 LockerHub University Services. All rights reserved.</span>
         <div class="d-flex gap-4 text-micro">

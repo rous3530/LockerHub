@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="mx.edu.utez.locker.model.AlumnoDashboardDto" %>
+<%@ page import="mx.edu.utez.locker.model.Alumno" %>
 <%
     HttpSession sesion = request.getSession(false);
+    Alumno alumnoSesion = (sesion != null) ? (Alumno) sesion.getAttribute("usuario") : null;
     // Verificamos si existe el usuario en sesión
     if (sesion == null || sesion.getAttribute("usuario") == null) {
         // Redirigimos al login con un mensaje o parámetro de error de permisos
@@ -16,6 +19,10 @@
         return;
     }
     */
+    AlumnoDashboardDto dashboard = (AlumnoDashboardDto) request.getAttribute("dashboard");
+
+    String nombre = (dashboard != null && dashboard.getNombreCompleto() != null) ? dashboard.getNombreCompleto() : alumnoSesion.getNombres();
+    String matricula = (dashboard != null && dashboard.getMatricula() != null) ? dashboard.getMatricula() : alumnoSesion.getMatricula();
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -181,18 +188,15 @@
                 </div>
             </div>
 
-            <!-- Columna Derecha: Configuración y Usuario -->
-            <div class="col-4 d-flex justify-content-end align-items-center gap-3 p-0">
-                <a href="${pageContext.request.contextPath}/views/alumno/editarPerfil.jsp" class="btn btn-link text-muted p-1">
-                    <i class="bi bi-gear fs-5"></i>
+                <a href="${pageContext.request.contextPath}/cerrar-sesion" class="btn btn-link text-muted p-1 border-end pe-3">
+                    <i class="bi bi-box-arrow-right fs-5"></i>
                 </a>
-                <button class="btn btn-link text-muted p-1 border-end pe-3" onclick="location.href='${pageContext.request.contextPath}/views/sesion/IniciarSesion.jsp'"><i class="bi bi-box-arrow-right fs-5"></i></button>
                 <div class="d-flex align-items-center gap-2 ps-2">
                     <div class="text-end d-none d-sm-block lh-1">
-                        <div class="fw-bold text-dark small mb-1">Carlos Mendoza</div>
-                        <span class="text-muted text-micro">ID: 2023-0452</span>
+                        <div class="fw-bold text-dark small mb-1"><%= nombre %></div>
+                        <span class="text-muted text-micro">ID: <%= matricula %></span>
                     </div>
-                    <img src="https://ui-avatars.com/api/?name=Carlos+Mendoza&background=1a365d&color=fff&size=100" class="rounded-circle border" width="36" height="36" alt="Avatar">
+                    <img src="https://ui-avatars.com/api/?name=<%= nombre.replace(" ", "+") %>&background=1a365d&color=fff&size=100" class="rounded-circle border" width="36" height="36" alt="Avatar">
                 </div>
             </div>
 
@@ -217,21 +221,6 @@
             <p class="text-muted small mb-4">Mantén tus datos institucionales actualizados para facilitar la asignación de casilleros.</p>
 
             <form action="${pageContext.request.contextPath}/alumno/actualizarPerfil" method="POST" enctype="multipart/form-data">
-
-                <!-- Sección Carga de Foto de Perfil -->
-                <div class="avatar-upload-container d-flex align-items-center gap-3 mb-4">
-                    <div class="avatar-preview-wrapper">
-                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150" alt="Foto Alumno">
-                        <label for="avatarFile" class="btn-mini-pencil" style="cursor: pointer;">
-                            <i class="bi bi-pencil-fill"></i>
-                        </label>
-                        <input type="file" id="avatarFile" name="avatarFile" accept="image/png, image/jpeg" style="display: none;">
-                    </div>
-                    <div>
-                        <span class="fw-semibold text-navy-brand d-block small mb-1">Foto de Perfil</span>
-                        <span class="text-muted text-micro d-block">PNG o JPG hasta 2MB</span>
-                    </div>
-                </div>
 
                 <!-- Campos en Grid de Dos Columnas -->
                 <div class="row g-4 mb-4">
@@ -297,7 +286,7 @@
     </div>
 </div>
 
-<footer class="bg-white border-top py-3 mt-auto">
+<footer class="bg-white border-top py-3" style="margin-top: 4rem;">
     <div class="container-fluid px-4 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
         <span class="text-muted-light text-micro">© 2024 LockerHub University Systems. All rights reserved.</span>
         <div class="d-flex gap-4 text-micro">

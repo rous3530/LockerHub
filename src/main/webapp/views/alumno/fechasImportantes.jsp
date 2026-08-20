@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="mx.edu.utez.locker.model.AlumnoDashboardDto" %>
+<%@ page import="mx.edu.utez.locker.model.Alumno" %>
 <%
     HttpSession sesion = request.getSession(false);
+    Alumno alumnoSesion = (sesion != null) ? (Alumno) sesion.getAttribute("usuario") : null;
     // Verificamos si existe el usuario en sesión
     if (sesion == null || sesion.getAttribute("usuario") == null) {
         // Redirigimos al login con un mensaje o parámetro de error de permisos
@@ -16,6 +19,10 @@
         return;
     }
     */
+    AlumnoDashboardDto dashboard = (AlumnoDashboardDto) request.getAttribute("dashboard");
+
+    String nombre = (dashboard != null && dashboard.getNombreCompleto() != null) ? dashboard.getNombreCompleto() : alumnoSesion.getNombres();
+    String matricula = (dashboard != null && dashboard.getMatricula() != null) ? dashboard.getMatricula() : alumnoSesion.getMatricula();
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -45,18 +52,19 @@
                 <a href="#" class="nav-link-custom active">Calendario</a>
             </div>
 
-            <div class="d-flex align-items-center gap-3">
-                <button class="btn btn-link text-secondary p-1 fs-5"><i class="bi bi-bell"></i></button>
-                <button class="btn btn-link text-secondary p-1 fs-5"><i class="bi bi-gear"></i></button>
-                <div class="d-flex align-items-center gap-2">
-                    <img src="${pageContext.request.contextPath}/img/avatar-estudiante.png"
-                         onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/img/default-avatar.png';"
-                         alt="Avatar"
-                         class="rounded-circle"
-                         style="width: 32px; height: 32px; object-fit: cover;">
-                    <a href="${pageContext.request.contextPath}/LogoutServlet" class="btn btn-link text-secondary p-1 fs-5">
-                        <i class="bi bi-box-arrow-right"></i>
-                    </a>
+            <div class="col-4 d-flex justify-content-end align-items-center gap-3 p-0">
+                <a href="${pageContext.request.contextPath}/views/alumno/editarPerfil.jsp" class="btn btn-link text-muted p-1">
+                    <i class="bi bi-gear fs-5"></i>
+                </a>
+                <a href="${pageContext.request.contextPath}/cerrar-sesion" class="btn btn-link text-muted p-1 border-end pe-3">
+                    <i class="bi bi-box-arrow-right fs-5"></i>
+                </a>
+                <div class="d-flex align-items-center gap-2 ps-2">
+                    <div class="text-end d-none d-sm-block lh-1">
+                        <div class="fw-bold text-dark small mb-1"><%= nombre %></div>
+                        <span class="text-muted text-micro">ID: <%= matricula %></span>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=<%= nombre.replace(" ", "+") %>&background=1a365d&color=fff&size=100" class="rounded-circle border" width="36" height="36" alt="Avatar">
                 </div>
             </div>
         </div>

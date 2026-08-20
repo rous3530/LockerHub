@@ -229,7 +229,7 @@
     </div>
 </div>
 
-<footer class="bg-white border-top py-3 mt-auto">
+<footer class="bg-white border-top py-3  " style="margin-top: 6.25rem">
     <div class="container-fluid px-4 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
         <span class="text-muted-light text-micro">© 2026 LockerHub - Portal Universitario</span>
         <div class="d-flex gap-4 text-micro">

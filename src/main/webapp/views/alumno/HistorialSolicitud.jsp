@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="mx.edu.utez.locker.model.AlumnoDashboardDto" %>
+<%@ page import="mx.edu.utez.locker.model.Alumno" %>
 <%
     HttpSession sesion = request.getSession(false);
+    Alumno alumnoSesion = (sesion != null) ? (Alumno) sesion.getAttribute("usuario") : null;
     // Verificamos si existe el usuario en sesión
     if (sesion == null || sesion.getAttribute("usuario") == null) {
         // Redirigimos al login con un mensaje o parámetro de error de permisos
@@ -16,6 +19,10 @@
         return;
     }
     */
+    AlumnoDashboardDto dashboard = (AlumnoDashboardDto) request.getAttribute("dashboard");
+
+    String nombre = (dashboard != null && dashboard.getNombreCompleto() != null) ? dashboard.getNombreCompleto() : alumnoSesion.getNombres();
+    String matricula = (dashboard != null && dashboard.getMatricula() != null) ? dashboard.getMatricula() : alumnoSesion.getMatricula();
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -288,13 +295,18 @@
 
             <!-- Columna Derecha: Notificación, Configuración y Perfil -->
             <div class="col-4 d-flex justify-content-end align-items-center gap-3 p-0">
-                <button class="btn btn-link text-muted p-1"><i class="bi bi-bell fs-5"></i></button>
-                <a href="${pageContext.request.contextPath}/views/alumno/solicitarLocker.jsp" class="btn btn-link text-muted p-1">
+                <a href="${pageContext.request.contextPath}/views/alumno/editarPerfil.jsp" class="btn btn-link text-muted p-1">
                     <i class="bi bi-gear fs-5"></i>
                 </a>
-                <button class="btn btn-link text-muted p-1 border-end pe-3" onclick="location.href='${pageContext.request.contextPath}/logout'"><i class="bi bi-box-arrow-right fs-5"></i></button>
+                <a href="${pageContext.request.contextPath}/cerrar-sesion" class="btn btn-link text-muted p-1 border-end pe-3">
+                    <i class="bi bi-box-arrow-right fs-5"></i>
+                </a>
                 <div class="d-flex align-items-center gap-2 ps-2">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100" class="rounded-circle border" width="36" height="36" alt="Avatar">
+                    <div class="text-end d-none d-sm-block lh-1">
+                        <div class="fw-bold text-dark small mb-1"><%= nombre %></div>
+                        <span class="text-muted text-micro">ID: <%= matricula %></span>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=<%= nombre.replace(" ", "+") %>&background=1a365d&color=fff&size=100" class="rounded-circle border" width="36" height="36" alt="Avatar">
                 </div>
             </div>
 

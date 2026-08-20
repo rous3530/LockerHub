@@ -62,13 +62,13 @@ public class SolicitudLockerServlet extends HttpServlet {
             );
 
             if (insertado) {
-                response.sendRedirect(request.getContextPath() + "/views/alumno/solicitudLocker.jsp?status=success");
+                response.sendRedirect(request.getContextPath() + "/views/alumno/solicitarLocker.jsp?status=success");
             } else {
-                response.sendRedirect(request.getContextPath() + "/views/alumno/solicitudLocker.jsp?status=error");
+                response.sendRedirect(request.getContextPath() + "/views/alumno/solicitarLocker.jsp?status=error");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/views/alumno/solicitudLocker.jsp?status=error");
+            response.sendRedirect(request.getContextPath() + "/views/alumno/solicitarLocker.jsp?status=error");
         }
     }
 }

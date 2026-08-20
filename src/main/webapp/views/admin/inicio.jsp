@@ -193,7 +193,9 @@
     </div>
 
     <div class="nav-actions-right d-flex align-items-center gap-3 text-white">
-        <i class="bi bi-bell" style="cursor: pointer;"></i>
+        <a href="${pageContext.request.contextPath}/cerrar-sesion" class="btn btn-link text-muted p-1 border-end pe-3">
+            <i class="bi bi-box-arrow-right fs-5"></i>
+        </a>
         <i class="bi bi-gear" style="cursor: pointer;"></i>
         <i class="bi bi-question-circle" style="cursor: pointer;"></i>
         <div class="user-avatar-nav d-flex align-items-center">

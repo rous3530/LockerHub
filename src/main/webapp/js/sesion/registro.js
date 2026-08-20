@@ -3,7 +3,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const container = document.querySelector(".register-container");
 
     form.addEventListener("submit", (e) => {
-        // Simulamos la validación nativa de Bootstrap
+        // Validación personalizada estricta para el correo institucional
+        const inputCorreo = document.querySelector("input[name='correo']");
+        if (inputCorreo) {
+            const valorCorreo = inputCorreo.value.trim();
+            // Verificamos si NO termina con @utez.edu.mx
+            if (!valorCorreo.endsWith("@utez.edu.mx")) {
+                inputCorreo.setCustomValidity("El correo debe terminar estrictamente con @utez.edu.mx");
+            } else {
+                inputCorreo.setCustomValidity(""); // Limpia el error si es válido
+            }
+        }
+
+        // Simulamos la validación nativa de Bootstrap (ahora incluirá nuestra regla personalizada)
         if (!form.checkValidity()) {
             e.preventDefault();
             e.stopPropagation();

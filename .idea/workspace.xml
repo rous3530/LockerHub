@@ -9,7 +9,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6e3a30cd-90d3-4b00-9fe4-ded8c356d096" name="Changes" comment="" />
+    <list default="true" id="6e3a30cd-90d3-4b00-9fe4-ded8c356d096" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/AceptadosServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/AceptadosServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/ObtenerLockersServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/ObtenerLockersServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/RecuperarContraServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/RecuperarContraServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/SolicitudLockerServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/SolicitudLockerServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoAlumno.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoAlumno.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoSolicitud.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoSolicitud.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/js/alumnos/solictudLocker.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/js/alumnos/solictudLocker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/alumno/solicitarLocker.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/alumno/solicitarLocker.jsp" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -273,7 +283,7 @@
       <workItem from="1785189558108" duration="42558000" />
       <workItem from="1786633511829" duration="4245000" />
       <workItem from="1787019570818" duration="22723000" />
-      <workItem from="1787128702385" duration="23066000" />
+      <workItem from="1787128702385" duration="31993000" />
     </task>
     <servers />
   </component>

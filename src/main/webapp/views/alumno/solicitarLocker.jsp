@@ -253,14 +253,14 @@
 
             <div class="col-4 d-flex justify-content-center p-0">
                 <div class="d-none d-lg-flex gap-2">
-                    <a href="${pageContext.request.contextPath}/alumno/dashboard.jsp" class="nav-link-custom">Inicio</a>
+                    <a href="${pageContext.request.contextPath}/views/alumno/inicio.jsp" class="nav-link-custom">Inicio</a>
                     <a href="#" class="nav-link-custom active">Solicitud</a>
                 </div>
             </div>
 
             <div class="col-4 d-flex justify-content-end align-items-center gap-3 p-0">
                 <button class="btn btn-link text-muted p-1"><i class="bi bi-bell fs-5"></i></button>
-                <a href="${pageContext.request.contextPath}/alumno/configuracion.jsp" class="btn btn-link text-muted p-1">
+                <a href="${pageContext.request.contextPath}/views/alumno/reglamento.jsp" class="btn btn-link text-muted p-1">
                     <i class="bi bi-gear fs-5"></i>
                 </a>
                 <div class="d-flex align-items-center gap-2 ps-2">
@@ -363,7 +363,7 @@
                                 <!-- Cuatrimestre -->
                                 <div class="col-md-6" id="fieldCuatrimestre">
                                     <label class="form-label-custom">Cuatrimestre</label>
-                                    <input type="text" class="form-control-custom" id="inputCuatrimestre" name="cuatrimestre" placeholder="Ej. 4to Cuatrimestre">
+                                    <input type="number" class="form-control-custom" id="inputCuatrimestre" name="cuatrimestre" placeholder="Ej. 4to Cuatrimestre">
                                     <div class="error-feedback d-none">
                                         <i class="bi bi-exclamation-circle"></i> Favor de llenar este campo.
                                     </div>

@@ -27,9 +27,7 @@ public class ObtenerLockersServlet extends HttpServlet {
 
         // 1. VALIDACIÓN DE SEGURIDAD EXCLUSIVA PARA ADMINISTRADOR
         HttpSession sesion = request.getSession(false);
-        Administrador admin = (sesion != null) ? (Administrador) sesion.getAttribute("usuario") : null;
-
-        if (admin == null || !"ADMIN".equalsIgnoreCase(admin.getRol())) {
+        if (sesion == null || sesion.getAttribute("usuario") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             out.print("[]");
             out.flush();
@@ -45,18 +43,18 @@ public class ObtenerLockersServlet extends HttpServlet {
         }
 
         try {
-            int idEdificio = Integer.parseInt(idEdificioParam);
+            // Ya no se usa Integer.parseInt, se pasa directamente como String
+            String idEdificio = idEdificioParam;
             DaoSolicitud dao = new DaoSolicitud();
             List<DaoSolicitud.LockerDto> lockers = dao.obtenerLockersPorEdificio(idEdificio);
 
-            // 3. CONSTRUCCIÓN DE JSON (Incluyendo el piso opcionalmente si tu DTO lo tiene)
-// 3. CONSTRUCCIÓN DE JSON
+            // 3. CONSTRUCCIÓN DE JSON (Adaptado para que idLocker sea tratado de forma segura como String)
             StringBuilder json = new StringBuilder("[");
             for (int i = 0; i < lockers.size(); i++) {
                 DaoSolicitud.LockerDto l = lockers.get(i);
                 json.append("{")
-                        .append("\"idLocker\":\"").append(l.getIdLocker()).append("\",")
-                        .append("\"numeroLocker\":\"").append(l.getNumeroLocker()).append("\",")
+                        .append("\"idLocker\":\"").append(l.getIdLocker() != null ? l.getIdLocker() : "").append("\",")
+                        .append("\"numeroLocker\":\"").append(l.getNumeroLocker() != null ? l.getNumeroLocker() : "").append("\",")
                         .append("\"piso\":\"").append(l.getPiso() != null ? l.getPiso() : "").append("\",")
                         .append("\"estatus\":\"").append(l.getEstatus() != null ? l.getEstatus() : "").append("\"")
                         .append("}");

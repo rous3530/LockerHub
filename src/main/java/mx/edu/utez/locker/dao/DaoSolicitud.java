@@ -105,30 +105,78 @@ public class DaoSolicitud {
     }
 
     // 5. REGISTRAR UNA NUEVA SOLICITUD
-    public boolean registrarSolicitud(int idAlumno, int idEdificio, int idPeriodoCuatri, String grupo, String cuatrimestre) {
+    public boolean registrarSolicitud(int idAlumno, String idEdificioParam, String idLocker, int idPeriodoCuatri, String grupo, String cuatrimestre) {
+        System.out.println("=== INICIANDO REGISTRO DE SOLICITUD ===");
+        System.out.println("Parámetros recibidos -> idAlumno: " + idAlumno +
+                ", idEdificioParam: " + idEdificioParam +
+                ", idLocker: " + idLocker +
+                ", idPeriodoCuatri: " + idPeriodoCuatri +
+                ", grupo: " + grupo +
+                ", cuatrimestre: " + cuatrimestre);
+
+        // 1. Obtener el ID numérico del edificio si viene como texto (ej. "Docencia 1" o similar)
+        int idEdificioNum = 0;
+        try {
+            // Intentamos parsearlo directamente por si acaso ya era un número
+            idEdificioNum = Integer.parseInt(idEdificioParam);
+        } catch (NumberFormatException e) {
+            // Si es texto (ej. "Docencia 1"), buscamos su ID correspondiente en la tabla EDIFICIO
+            String queryEdificio = "SELECT ID_EDIFICIO FROM EDIFICIO WHERE NOMBRE = ?";
+            try (Connection con = ConnectionOracle.getConnection();
+                 PreparedStatement psEdificio = con.prepareStatement(queryEdificio)) {
+
+                psEdificio.setString(1, idEdificioParam);
+                try (ResultSet rs = psEdificio.executeQuery()) {
+                    if (rs.next()) {
+                        idEdificioNum = rs.getInt("ID_EDIFICIO");
+                    }
+                }
+            } catch (SQLException ex) {
+                System.err.println("Error al buscar el ID del edificio por nombre: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+        }
+
+        if (idEdificioNum == 0) {
+            System.err.println("ERROR: No se pudo determinar un ID de edificio válido para: " + idEdificioParam);
+            return false;
+        }
+
+        // 2. Consulta de inserción final usando los IDs numéricos correctos
         String query = "INSERT INTO SOLICITUD (" +
                 "FECHA_SOLICITUD, ESTATUS_SOLICITUD, ID_ALUMNO, ID_EDIFICIO, " +
-                "ID_PERIODO_CUATRI, GRUPO_ACTUAL, CUATRI_ACTUAL" +
-                ") VALUES (SYSDATE, 'PENDIENTE', ?, ?, ?, ?, ?)";
+                "ID_LOCKER, ID_PERIODO_CUATRI, GRUPO_ACTUAL, CUATRI_ACTUAL" +
+                ") VALUES (SYSDATE, 'PENDIENTE', ?, ?, ?, ?, ?, ?)";
 
         try (Connection con = ConnectionOracle.getConnection();
              PreparedStatement ps = con.prepareStatement(query)) {
 
-            ps.setInt(1, idAlumno);
-            ps.setInt(2, idEdificio);
-            ps.setInt(3, idPeriodoCuatri);
-            ps.setString(4, grupo);
-            ps.setString(5, cuatrimestre);
+            if (con == null) {
+                System.err.println("ERROR CRÍTICO: La conexión a Oracle es NULL.");
+                return false;
+            }
 
-            return ps.executeUpdate() > 0;
+            ps.setInt(1, idAlumno);
+            ps.setInt(2, idEdificioNum); // Usamos el ID numérico ya resuelto
+            ps.setString(3, idLocker);    // ID_LOCKER (como D1-02, etc.)
+            ps.setInt(4, idPeriodoCuatri);
+            ps.setString(5, grupo);
+            ps.setString(6, cuatrimestre);
+
+            System.out.println("Ejecutando sentencia SQL de inserción con ID_EDIFICIO: " + idEdificioNum);
+            int filasAfectadas = ps.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                System.out.println("¡Solicitud registrada con éxito en la base de datos!");
+                return true;
+            }
 
         } catch (SQLException e) {
-            System.err.println("Error al registrar solicitud: " + e.getMessage());
+            System.err.println("ERROR SQL al registrar solicitud: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
     }
-
     // 6. OBTENER LISTA DE EDIFICIOS / DOCENCIAS
     public List<EdificioDto> obtenerEdificios() {
         List<EdificioDto> lista = new ArrayList<>();
@@ -232,6 +280,55 @@ public class DaoSolicitud {
         return 0;
     }
 
+    public List<SolicitudDto> obtenerEstudiantesAceptados() {
+        List<SolicitudDto> lista = new ArrayList<>();
+        String query = "SELECT s.ID_SOLICITUD, a.MATRICULA, " +
+                "a.NOMBRES || ' ' || a.APELLIDO_PATERNO || ' ' || NVL(a.APELLIDO_MATERNO, '') AS nombre_completo, " +
+                "a.CORREO, s.CUATRI_ACTUAL, s.GRUPO_ACTUAL " +
+                "FROM SOLICITUD s " +
+                "JOIN ALUMNO a ON s.ID_ALUMNO = a.ID_ALUMNO " +
+                "WHERE UPPER(s.ESTATUS_SOLICITUD) = 'ACEPTADA'";
+
+        System.out.println("=== EJECUTANDO CONSULTA DE ESTUDIANTES ACEPTADOS ===");
+
+        try (Connection con = ConnectionOracle.getConnection();
+             PreparedStatement ps = con.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                SolicitudDto sol = new SolicitudDto();
+                sol.setIdSolicitud(rs.getInt("ID_SOLICITUD"));
+                sol.setMatricula(rs.getString("MATRICULA"));
+                sol.setNombreCompleto(rs.getString("nombre_completo"));
+                sol.setEmail(rs.getString("CORREO"));
+                sol.setCuatrimestre(rs.getString("CUATRI_ACTUAL"));
+                sol.setGrupo(rs.getString("GRUPO_ACTUAL"));
+
+                // Generación de iniciales automáticas para el avatar en la vista
+                String nombreCompleto = sol.getNombreCompleto();
+                if (nombreCompleto != null && !nombreCompleto.isEmpty()) {
+                    String[] partes = nombreCompleto.trim().split("\\s+");
+                    String iniciales = partes[0].substring(0, 1).toUpperCase();
+                    if (partes.length > 1) {
+                        iniciales += partes[1].substring(0, 1).toUpperCase();
+                    }
+                    sol.setIniciales(iniciales);
+                }
+
+                lista.add(sol);
+            }
+
+            System.out.println("Total de estudiantes aceptados cargados desde la BD: " + lista.size());
+
+        } catch (SQLException e) {
+            System.out.println("ERROR SQL al obtener estudiantes aceptados:");
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+
+
     // 7. CLASE DTO INTERNA Y MÉTODO DE LOCKERS
     public class LockerDto {
         private String idLocker;
@@ -261,7 +358,7 @@ public class DaoSolicitud {
         public void setEstatus(String estatus) { this.estatus = estatus; }
     }
 
-    public List<LockerDto> obtenerLockersPorEdificio(int idEdificio) {
+    public List<LockerDto> obtenerLockersPorEdificio(String idEdificio) {
         List<LockerDto> lista = new ArrayList<>();
         // Consultamos TODOS los lockers del edificio, sin importar su estatus
         String query = "SELECT ID_LOCKER, NUMERO, PLANTA, ESTATUS " +
@@ -272,7 +369,7 @@ public class DaoSolicitud {
         try (Connection con = ConnectionOracle.getConnection();
              PreparedStatement ps = con.prepareStatement(query)) {
 
-            ps.setInt(1, idEdificio);
+            ps.setString(1, idEdificio);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     LockerDto dto = new LockerDto();
@@ -333,34 +430,6 @@ public class DaoSolicitud {
             e.printStackTrace();
             return false;
         }
-    }
-    public List<SolicitudDto> obtenerEstudiantesAceptados() {
-        List<SolicitudDto> lista = new ArrayList<>();
-        String query = "SELECT s.ID_SOLICITUD, a.MATRICULA, a.NOMBRES, a.APELLIDO_PATERNO, a.APELLIDO_MATERNO, a.CORREO, " +
-                "s.CUATRI_ACTUAL, s.GRUPO_ACTUAL " +
-                "FROM SOLICITUD s " +
-                "JOIN ALUMNO a ON s.ID_ALUMNO = a.ID_ALUMNO " +
-                "WHERE s.ESTATUS_SOLICITUD = 'ACEPTADA'";
-
-        System.out.println("=== EJECUTANDO CONSULTA DE ESTUDIANTES ACEPTADOS ===");
-
-        try (Connection con = ConnectionOracle.getConnection();
-             PreparedStatement ps = con.prepareStatement(query);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                SolicitudDto sol = SolicitudDto.mapearDesdeResultSet(rs);
-                lista.add(sol);
-                System.out.println("Estudiante aceptado encontrado -> Matrícula: " + sol.getMatricula() + ", Nombre: " + sol.getNombreCompleto());
-            }
-
-            System.out.println("Total de estudiantes aceptados cargados desde la BD: " + lista.size());
-
-        } catch (SQLException e) {
-            System.out.println("ERROR SQL al obtener estudiantes aceptados:");
-            e.printStackTrace();
-        }
-        return lista;
     }
 
     public boolean cambiarEstatusPendiente(int idEstudiante) {

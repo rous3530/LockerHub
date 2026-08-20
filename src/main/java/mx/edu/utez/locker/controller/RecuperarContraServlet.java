@@ -52,7 +52,7 @@ public class RecuperarContraServlet extends HttpServlet {
         } else if ("restablecer".equalsIgnoreCase(accion)) {
             String correo = request.getParameter("correo");
             String token = request.getParameter("token");
-            String nuevaContrasena = request.getParameter("nuevaContrasena");
+            String nuevaContrasena = request.getParameter("contrasena"); // <-- Cambiado de "nuevaContrasena" a "contrasena"
 
             if (dao.validarToken(correo, token) && dao.actualizarContrasena(correo, nuevaContrasena)) {
                 response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?status=pass_updated");

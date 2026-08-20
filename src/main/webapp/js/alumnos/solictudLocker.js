@@ -56,12 +56,12 @@ function volverPaso1() {
 }
 
 function enviarSolicitudFinal() {
-    // Obtener las referencias del DOM
     const checkTerminos = document.getElementById('checkTerminos');
     const alertErrorTerminos = document.getElementById('alertErrorTerminos');
     const formSolicitud = document.getElementById('formSolicitud');
+    const inputCasillero = document.getElementById('inputCasillero');
 
-    // Validar si la casilla de términos fue marcada
+
     if (!checkTerminos || !checkTerminos.checked) {
         if (alertErrorTerminos) {
             alertErrorTerminos.classList.remove('d-none');
@@ -72,6 +72,11 @@ function enviarSolicitudFinal() {
     // Ocultar alerta de error si fue marcada
     if (alertErrorTerminos) {
         alertErrorTerminos.classList.add('d-none');
+    }
+
+    // Habilitar el select del casillero temporalmente para que el navegador envíe su valor
+    if (inputCasillero) {
+        inputCasillero.disabled = false;
     }
 
     // Comprobar que el formulario exista y enviarlo al Servlet
@@ -97,7 +102,7 @@ function cargarLockersPorEdificio(idEdificio) {
     selectCasillero.innerHTML = '<option value="" disabled selected>Cargando casilleros disponibles...</option>';
     selectCasillero.disabled = true;
 
-    // Petición AJAX al Servlet endpoint
+    // Petición AJAX al Servlet endpoint actualizado
     fetch(contextPath + '/obtener-lockers?idEdificio=' + encodeURIComponent(idEdificio))
         .then(response => {
             if (!response.ok) {
@@ -109,23 +114,47 @@ function cargarLockersPorEdificio(idEdificio) {
             selectCasillero.innerHTML = ''; // Limpiar opciones
 
             if (!lockers || lockers.length === 0) {
-                selectCasillero.innerHTML = '<option value="" disabled selected>Sin lockers disponibles en este edificio</option>';
+                selectCasillero.innerHTML = '<option value="" disabled selected>Sin lockers registrados en este edificio</option>';
+                selectCasillero.disabled = true;
+                return;
+            }
+
+            let defaultOption = document.createElement('option');
+            defaultOption.value = "";
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            defaultOption.textContent = "Selecciona un casillero disponible...";
+            selectCasillero.appendChild(defaultOption);
+
+            let disponiblesCount = 0;
+
+            lockers.forEach(locker => {
+                let option = document.createElement('option');
+                option.value = locker.idLocker; // Soporta ID tipo String
+
+                const estatusUpper = locker.estatus ? locker.estatus.toUpperCase() : "";
+
+                // Validar estatus para bloquear o permitir selección
+                if (estatusUpper === "OCUPADO" || estatusUpper === "MANTENIMIENTO" || estatusUpper === "DISCAPACIDAD") {
+                    option.textContent = `Locker #${locker.numeroLocker} (Piso ${locker.piso}) - ${locker.estatus}`;
+                    option.disabled = true;
+                    option.style.color = "#94a3b8";
+                } else {
+                    option.textContent = `Locker #${locker.numeroLocker} (Piso ${locker.piso}) - Disponible`;
+                    disponiblesCount++;
+                }
+
+                selectCasillero.appendChild(option);
+            });
+
+            if (disponiblesCount === 0) {
+                const optionVacia = document.createElement('option');
+                optionVacia.value = "";
+                optionVacia.disabled = true;
+                optionVacia.textContent = "Lo sentimos, todos los casilleros de este edificio están ocupados.";
+                selectCasillero.appendChild(optionVacia);
                 selectCasillero.disabled = true;
             } else {
-                let defaultOption = document.createElement('option');
-                defaultOption.value = "";
-                defaultOption.disabled = true;
-                defaultOption.selected = true;
-                defaultOption.textContent = "Selecciona un locker disponible...";
-                selectCasillero.appendChild(defaultOption);
-
-                lockers.forEach(locker => {
-                    let option = document.createElement('option');
-                    option.value = locker.idLocker;
-                    option.textContent = "Locker #" + locker.numeroLocker;
-                    selectCasillero.appendChild(option);
-                });
-
                 selectCasillero.disabled = false;
             }
         })

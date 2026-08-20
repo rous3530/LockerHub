@@ -52,7 +52,7 @@ public class DaoAlumno {
         System.out.println("    Correo recibido: [" + correo + "]");
         System.out.println("    Contraseña recibida: [" + contrasena + "]");
 
-        // 1. INTENTAR AUTENTICAR COMO ADMINISTRADOR
+        // 1. INTENTAR AUTENTICAR COMO ADMINISTRADOR (en texto plano)
         String queryAdmin = "SELECT ID_ADMIN, NOMBRES, APELLIDO_PATERNO, APELLIDO_MATERNO, CORREO, CONTRASENA " +
                 "FROM ADMINISTRADOR " +
                 "WHERE LOWER(TRIM(CORREO)) = LOWER(TRIM(?)) " +
@@ -61,11 +61,8 @@ public class DaoAlumno {
         try (Connection con = ConnectionOracle.getConnection();
              PreparedStatement ps = con.prepareStatement(queryAdmin)) {
 
-            // Encriptamos la contraseña ingresada por el usuario para comparar el hash
-            String contrasenaHash = encriptarSHA256(contrasena);
-
             ps.setString(1, correo);
-            ps.setString(2, contrasenaHash);
+            ps.setString(2, contrasena); // Se envía en texto plano
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -78,16 +75,15 @@ public class DaoAlumno {
                     admin.setContrasena(rs.getString("CONTRASENA"));
                     admin.setRol("ADMIN");
 
-                    System.out.println(">>> ¡ADMINISTRADOR encontrado exitosamente! ID: " + admin.getIdAdministrador());
+                    System.out.println(">>> ¡ADMINISTRADOR encontrado exitosamente!");
                     return admin;
                 }
             }
         } catch (SQLException e) {
-            System.out.println(">>> ERROR SQL al consultar ADMINISTRADOR:");
             e.printStackTrace();
         }
 
-        // 2. SI NO FUE ADMIN, INTENTAR AUTENTICAR COMO ALUMNO
+        // 2. SI NO FUE ADMIN, INTENTAR AUTENTICAR COMO ALUMNO (en texto plano)
         String queryAlumno = "SELECT a.ID_ALUMNO, a.MATRICULA, a.NOMBRES, a.APELLIDO_PATERNO, " +
                 "a.APELLIDO_MATERNO, a.CORREO, a.CONTRASENA " +
                 "FROM ALUMNO a " +
@@ -98,7 +94,7 @@ public class DaoAlumno {
              PreparedStatement ps = con.prepareStatement(queryAlumno)) {
 
             ps.setString(1, correo);
-            ps.setString(2, contrasena);
+            ps.setString(2, contrasena); // Se envía en texto plano
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -110,21 +106,21 @@ public class DaoAlumno {
                     alumno.setApellidoMaterno(rs.getString("APELLIDO_MATERNO"));
                     alumno.setCorreo(rs.getString("CORREO"));
                     alumno.setContrasena(rs.getString("CONTRASENA"));
-                    alumno.setRol("ALUMNO"); // Asignar ROL ALUMNO
+                    alumno.setRol("ALUMNO");
 
-                    System.out.println(">>> ¡ALUMNO encontrado exitosamente! ID: " + alumno.getIdAlumno());
+                    System.out.println(">>> ¡ALUMNO encontrado exitosamente!");
                     return alumno;
                 } else {
                     System.out.println(">>> No se encontró usuario en ADMINISTRADOR ni en ALUMNO.");
                 }
             }
         } catch (SQLException e) {
-            System.out.println(">>> ERROR SQL al consultar ALUMNO:");
             e.printStackTrace();
         }
 
         return null;
     }
+
 
     // 1. Guardar token y vigencia de 15 min
     public boolean guardarTokenRecuperacion(String correo, String token) {
@@ -173,24 +169,6 @@ public class DaoAlumno {
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
-        }
-    }
-
-    public static String encriptarSHA256(String texto) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(texto.getBytes("UTF-8"));
-            StringBuilder hexString = new StringBuilder();
-
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-
-            return hexString.toString();
-        } catch (Exception e) {
-            throw new RuntimeException("Error al encriptar en SHA-256", e);
         }
     }
 }

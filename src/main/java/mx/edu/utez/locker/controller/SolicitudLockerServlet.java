@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import mx.edu.utez.locker.dao.DaoSolicitud;
+import mx.edu.utez.locker.model.Alumno; // Asegúrate de importar tu modelo Alumno
 
 import java.io.IOException;
 
@@ -17,51 +18,57 @@ public class SolicitudLockerServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
 
-        // Obtener el ID del alumno firmado en sesión
-        Integer idAlumno = (Integer) session.getAttribute("idAlumno");
-
-        if (idAlumno == null) {
-            // Redirige a la misma página donde está el formulario de solicitud
-            response.sendRedirect(request.getContextPath() + "/views/alumno/solicitudLocker.jsp?status=success");
-        } else {
-            response.sendRedirect(request.getContextPath() + "/views/alumno/solicitudLocker.jsp?status=error");
+        // 1. Validar si la sesión existe y si el atributo "usuario" está presente
+        if (session == null || session.getAttribute("usuario") == null) {
+            response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_sesion");
+            return;
         }
 
-        // Parámetros capturados en el formulario JSP
+        // 2. Extraer el ID del alumno desde el objeto Alumno guardado en la sesión
+        Object objUsuario = session.getAttribute("usuario");
+        Integer idAlumno = null;
+
+        if (objUsuario instanceof Alumno) {
+            Alumno alumno = (Alumno) objUsuario;
+            idAlumno = alumno.getIdAlumno(); // Asegúrate de que el getter en tu clase Alumno se llame así (ej. getIdAlumno() o getId())
+        }
+
+        // Si por alguna razón no es un alumno válido o no tiene ID, rechazar
+        if (idAlumno == null) {
+            response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
+            return;
+        }
+
+        // 3. Parámetros capturados en el formulario JSP
         String grupoActual = request.getParameter("grupo");
         String cuatriActual = request.getParameter("cuatrimestre");
+        String idEdificio = request.getParameter("idEdificio");
+        String idLocker = request.getParameter("idLocker");
 
-        // Parsing con manejo básico por si los parámetros llegan nulos
-        int idEdificio = 1;
-        int idPeriodoCuatri = 1;
+        String idPeriodoCuatriStr = request.getParameter("idPeriodoCuatri");
+        int idPeriodoCuatri = (idPeriodoCuatriStr != null && !idPeriodoCuatriStr.isEmpty()) ? Integer.parseInt(idPeriodoCuatriStr) : 1;
 
         try {
-            if (request.getParameter("idEdificio") != null) {
-                idEdificio = Integer.parseInt(request.getParameter("idEdificio"));
+            DaoSolicitud dao = new DaoSolicitud();
+            boolean insertado = dao.registrarSolicitud(
+                    idAlumno,
+                    idEdificio,
+                    idLocker,
+                    idPeriodoCuatri,
+                    grupoActual,
+                    cuatriActual
+            );
+
+            if (insertado) {
+                response.sendRedirect(request.getContextPath() + "/views/alumno/solicitudLocker.jsp?status=success");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/views/alumno/solicitudLocker.jsp?status=error");
             }
-            if (request.getParameter("idPeriodoCuatri") != null) {
-                idPeriodoCuatri = Integer.parseInt(request.getParameter("idPeriodoCuatri"));
-            }
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        // Llamada al DAO con parámetros primitivos
-        DaoSolicitud dao = new DaoSolicitud();
-        boolean insertado = dao.registrarSolicitud(
-                idAlumno,
-                idEdificio,
-                idPeriodoCuatri,
-                grupoActual,
-                cuatriActual
-        );
-
-        if (insertado) {
-            response.sendRedirect(request.getContextPath() + "/alumno/dashboard.jsp?status=success");
-        } else {
-            response.sendRedirect(request.getContextPath() + "/alumno/solicitudLocker.jsp?status=error");
+            response.sendRedirect(request.getContextPath() + "/views/alumno/solicitudLocker.jsp?status=error");
         }
     }
 }

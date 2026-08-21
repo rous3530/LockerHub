@@ -53,8 +53,7 @@ public class DaoSolicitud {
     public boolean cambiarEstadoSolicitud(String matricula, String nuevoEstatus) {
         String query = "UPDATE SOLICITUD " +
                 "SET ESTATUS_SOLICITUD = ? " +
-                "WHERE ESTATUS_SOLICITUD = 'PENDIENTE' " +
-                "AND ID_ALUMNO = (SELECT ID_ALUMNO FROM ALUMNO WHERE MATRICULA = ?)";
+                "WHERE ID_ALUMNO = (SELECT ID_ALUMNO FROM ALUMNO WHERE MATRICULA = ?)";
 
         try (Connection con = ConnectionOracle.getConnection();
              PreparedStatement ps = con.prepareStatement(query)) {

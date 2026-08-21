@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="mx.edu.utez.locker.model.Administrador" %>
 <%
     // Validación rápida de seguridad por si intentan entrar directo
     HttpSession sesion = request.getSession(false);
@@ -7,6 +8,7 @@
         response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
         return;
     }
+
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -34,6 +36,7 @@
         }
 
         .bg-navy { background-color: var(--lh-navy) !important; }
+        .text-navy { color: var(--lh-navy) !important; }
 
         .metric-card {
             border: 1px solid #e2e8f0;
@@ -94,7 +97,7 @@
         <a href="${pageContext.request.contextPath}/views/admin/inicio.jsp" class="nav-link">SOLICITUDES</a>
         <a href="${pageContext.request.contextPath}/views/admin/pre-aceptacion.jsp" class="nav-link">PRE-ACEPTADOS</a>
         <a href="${pageContext.request.contextPath}/views/admin/aceptados" class="nav-link">ACEPTADOS</a>
-        <a href="${pageContext.request.contextPath}admin/gestionLocker.jsp" class="nav-link active">GESTION LOCKER</a>
+        <a href="${pageContext.request.contextPath}/admin/gestionLocker.jsp" class="nav-link active">GESTION LOCKER</a>
     </div>
 
     <div class="nav-actions-right d-flex align-items-center gap-3 text-white">
@@ -116,60 +119,59 @@
         <p class="text-muted small mb-0">Visualice y gestione la disponibilidad de casilleros por edificio y nivel dentro de la red LockerHub.</p>
     </header>
 
-    <!-- Tarjetas de Métricas / Resumen -->
+    <!-- Tarjetas de Métricas / Resumen Dinámicas -->
+    <!-- Tarjetas de Métricas / Resumen Dinámicas -->
     <section class="row g-4 mb-4">
-        <!-- Total Casilleros -->
         <div class="col-md-3">
             <div class="p-4 metric-card shadow-sm h-100">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <span class="metric-title text-uppercase">TOTAL DE CASILLEROS</span>
                     <i class="bi bi-lock text-navy fs-5"></i>
                 </div>
-                <h2 class="display-6 fw-bold text-navy mb-1">${totalCasilleros != null ? totalCasilleros : '1,248'}</h2>
+                <h2 class="display-6 fw-bold text-navy mb-1">${totalCasilleros}</h2>
                 <p class="text-muted small mb-0">Capacidad instalada</p>
             </div>
         </div>
 
-        <!-- Ocupados -->
         <div class="col-md-3">
             <div class="p-4 metric-card shadow-sm h-100">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <span class="metric-title text-uppercase">OCUPADOS</span>
                     <i class="bi bi-lock-fill text-danger fs-5"></i>
                 </div>
-                <h2 class="display-6 fw-bold text-navy mb-1">${ocupados != null ? ocupados : '1,061'}</h2>
+                <h2 class="display-6 fw-bold text-navy mb-1">${ocupados}</h2>
                 <div class="progress mt-2" style="height: 6px;">
-                    <div class="progress-bar bg-danger" role="progressbar" style="width: 85%;"></div>
+                    <div class="progress-bar bg-danger" role="progressbar" style="width: ${totalCasilleros > 0 ? (ocupados * 100 / totalCasilleros) : 0}%;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Disponibles -->
         <div class="col-md-3">
             <div class="p-4 metric-card shadow-sm h-100">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <span class="metric-title text-uppercase">DISPONIBLES</span>
                     <i class="bi bi-check-circle text-success fs-5"></i>
                 </div>
-                <h2 class="display-6 fw-bold text-navy mb-1">${disponibles != null ? disponibles : '120'}</h2>
-                <p class="text-success small mb-0 fw-semibold">12% Libre</p>
+                <h2 class="display-6 fw-bold text-navy mb-1">${disponibles}</h2>
+                <p class="text-success small mb-0 fw-semibold">
+                    ${porcentajeLibre}% Libre
+                </p>
             </div>
         </div>
 
-        <!-- En Mantenimiento -->
         <div class="col-md-3">
             <div class="p-4 metric-card shadow-sm h-100">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <span class="metric-title text-uppercase">EN MANTENIMIENTO</span>
                     <i class="bi bi-tools text-primary fs-5"></i>
                 </div>
-                <h2 class="display-6 fw-bold text-navy mb-1">${mantenimiento != null ? mantenimiento : '67'}</h2>
+                <h2 class="display-6 fw-bold text-navy mb-1">${mantenimiento}</h2>
                 <p class="text-muted small mb-0">Revisión técnica</p>
             </div>
         </div>
     </section>
 
-    <!-- Barra de Filtros y Buscador Corregida -->
+    <!-- Barra de Filtros y Buscador -->
     <section class="filter-bar-container mb-4">
         <div class="search-box-custom">
             <i class="bi bi-search text-muted"></i>
@@ -196,48 +198,67 @@
         </div>
     </section>
 
-    <!-- Grid de Tarjetas de Casilleros (Limpiado y conectado al Backend) -->
-    <section id="gridCasilleros" class="lockers-grid mb-4">
+    <!-- Grid de Tarjetas de Casilleros Corregido -->
+    <section id="gridCasilleros" class="mb-4">
         <c:choose>
             <c:when test="${not empty listaCasilleros}">
-                <c:forEach var="casillero" items="${listaCasilleros}">
-                    <div class="card-locker" data-codigo="${casillero.codigo}" data-edificio="${casillero.edificio}" data-piso="${casillero.piso}">
-                        <div class="card-locker-header">
-                            <h3 class="locker-code">${casillero.codigo}</h3>
-                            <c:choose>
-                                <c:when test="${casillero.estado == 'DISPONIBLE'}">
-                                    <span class="badge-status success">● DISPONIBLE</span>
-                                </c:when>
-                                <c:when test="${casillero.estado == 'OCUPADO'}">
-                                    <span class="badge-status danger">🔒 OCUPADO</span>
-                                </c:when>
-                                <c:otherwise>
-                                    <span class="badge-status info">🔧 MANTENIMIENTO</span>
-                                </c:otherwise>
-                            </c:choose>
+                <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3">
+                    <c:forEach var="casillero" items="${listaCasilleros}">
+                        <div class="col card-locker-wrapper" data-codigo="${casillero.codigo}" data-edificio="${casillero.edificio}" data-piso="${casillero.piso}">
+                            <div class="card h-100 shadow-sm border-0 p-3" style="border-radius: 12px; border: 1px solid #e2e8f0 !important;">
+                                <div class="card-body p-1 d-flex flex-column justify-content-between">
+
+                                    <!-- Encabezado de la Tarjeta (Código y Estatus) -->
+                                    <div>
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h5 class="fw-bold text-navy m-0" style="font-size: 1.05rem;">${casillero.codigo}</h5>
+                                            <c:choose>
+                                                <c:when test="${casillero.estado == 'DISPONIBLE'}">
+                                                    <span class="badge bg-success bg-opacity-10 text-success fw-semibold" style="font-size: 0.65rem;">● DISPONIBLE</span>
+                                                </c:when>
+                                                <c:when test="${casillero.estado == 'OCUPADO'}">
+                                                    <span class="badge bg-danger bg-opacity-10 text-danger fw-semibold" style="font-size: 0.65rem;">🔒 OCUPADO</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold" style="font-size: 0.65rem;">🔧 MANTENIMIENTO</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+
+                                        <!-- Detalles de Ubicación -->
+                                        <div class="text-secondary small mb-3" style="font-size: 0.8rem;">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <i class="bi bi-building"></i> <span>${casillero.edificio}</span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <i class="bi bi-layers"></i> <span>${casillero.piso}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Botón Inferior -->
+                                    <div>
+                                        <c:choose>
+                                            <c:when test="${casillero.estado == 'DISPONIBLE'}">
+                                                <button class="btn btn-outline-primary btn-sm w-100 fw-semibold py-1" style="font-size: 0.8rem;" onclick="verDetalles('${casillero.codigo}')">Ver Detalles</button>
+                                            </c:when>
+                                            <c:when test="${casillero.estado == 'OCUPADO'}">
+                                                <button class="btn btn-outline-secondary btn-sm w-100 fw-semibold py-1" style="font-size: 0.8rem;" onclick="gestionarCasillero('${casillero.codigo}')">Gestionar</button>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <button class="btn btn-outline-dark btn-sm w-100 fw-semibold py-1" style="font-size: 0.8rem;" onclick="verEstadoMantenimiento('${casillero.codigo}')">Ver Estado</button>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-locker-body">
-                            <p>🏢 ${casillero.edificio}</p>
-                            <p>📍 ${casillero.piso}</p>
-                        </div>
-                        <div class="card-locker-footer">
-                            <c:choose>
-                                <c:when test="${casillero.estado == 'DISPONIBLE'}">
-                                    <button class="btn-outline-primary" onclick="verDetalles('${casillero.codigo}')">Ver Detalles</button>
-                                </c:when>
-                                <c:when test="${casillero.estado == 'OCUPADO'}">
-                                    <button class="btn-outline-primary" onclick="gestionarCasillero('${casillero.codigo}')">Gestionar</button>
-                                </c:when>
-                                <c:otherwise>
-                                    <button class="btn-outline-primary" onclick="verEstadoMantenimiento('${casillero.codigo}')">Ver Estado</button>
-                                </c:otherwise>
-                            </c:choose>
-                        </div>
-                    </div>
-                </c:forEach>
+                    </c:forEach>
+                </div>
             </c:when>
             <c:otherwise>
-                <div class="text-center py-5 w-100 text-muted">
+                <div class="text-center py-5 w-100 text-muted bg-white rounded-3 border">
                     <p class="fw-semibold small mb-0">No hay casilleros registrados o disponibles con los criterios seleccionados.</p>
                 </div>
             </c:otherwise>

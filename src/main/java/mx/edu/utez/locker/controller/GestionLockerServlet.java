@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import mx.edu.utez.locker.dao.DaoSolicitud;
 import mx.edu.utez.locker.model.Administrador;
 import mx.edu.utez.locker.model.CasilleroDto;
-import mx.edu.utez.locker.model.EdificioDto; // Asegúrate de importar tu DTO de casilleros o la clase que uses
+import mx.edu.utez.locker.model.EdificioDto;
 
 import java.io.IOException;
 import java.util.List;
@@ -35,17 +35,51 @@ public class GestionLockerServlet extends HttpServlet {
 
             // 2. Cargar los datos necesarios desde los DAOs
             List<EdificioDto> listaEdificios = dao.obtenerEdificios();
-             List<CasilleroDto> listaCasilleros = dao.obtenerTodosLosCasilleros(); // Descomenta e implementa según tu método real
+            List<CasilleroDto> listaCasilleros = dao.obtenerTodosLosCasilleros();
 
-            // 3. Enviar los atributos al request
+// 3. Calcular las métricas dinámicamente en base a la lista obtenida
+            int totalCasilleros = 0;
+            int ocupados = 0;
+            int disponibles = 0;
+            int mantenimiento = 0;
+
+            if (listaCasilleros != null) {
+                totalCasilleros = listaCasilleros.size();
+                for (CasilleroDto c : listaCasilleros) {
+                    if (c.getEstado() != null) {
+                        String estado = c.getEstado().toUpperCase();
+                        if (estado.contains("OCUPADO")) {
+                            ocupados++;
+                        } else if (estado.contains("DISPONIBLE")) {
+                            disponibles++;
+                        } else if (estado.contains("MANTENIMIENTO")) {
+                            mantenimiento++;
+                        }
+                    }
+                }
+            }
+
+            // Calcular porcentaje libre con formato (ej. formato entero o con 2 decimales)
+            String porcentajeLibre = "0";
+            if (totalCasilleros > 0) {
+                double calc = ((double) disponibles * 100) / totalCasilleros;
+                porcentajeLibre = String.format("%.0f", calc); // Cambia a "%.2f" si quieres 2 decimales, o "%.0f" para enteros limpios
+            }
+
+            // 4. Enviar todos los atributos al request
             request.setAttribute("listaEdificios", listaEdificios);
             request.setAttribute("listaCasilleros", listaCasilleros);
+            request.setAttribute("totalCasilleros", totalCasilleros);
+            request.setAttribute("ocupados", ocupados);
+            request.setAttribute("disponibles", disponibles);
+            request.setAttribute("mantenimiento", mantenimiento);
+            request.setAttribute("porcentajeLibre", porcentajeLibre);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        // 4. Redirigir hacia la vista JSP ubicada en tu carpeta protegida/views
+        // 5. Redirigir hacia la vista JSP ubicada en tu carpeta protegida/views
         request.getRequestDispatcher("/views/admin/gestionLocker.jsp").forward(request, response);
     }
 }

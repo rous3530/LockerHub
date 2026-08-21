@@ -7,8 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import mx.edu.utez.locker.dao.DaoSolicitud;
-import mx.edu.utez.locker.model.Alumno; // Asegúrate de importar tu modelo Alumno
-
+import mx.edu.utez.locker.model.Alumno;
 import java.io.IOException;
 
 @WebServlet(name = "SolicitudLockerServlet", value = "/solicitud-locker")
@@ -17,57 +16,34 @@ public class SolicitudLockerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-
         HttpSession session = request.getSession(false);
 
-        // 1. Validar si la sesión existe y si el atributo "usuario" está presente
+        // 1. Validar sesión
         if (session == null || session.getAttribute("usuario") == null) {
-            response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_sesion");
+            response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp");
             return;
         }
 
-        // 2. Extraer el ID del alumno desde el objeto Alumno guardado en la sesión
-        Object objUsuario = session.getAttribute("usuario");
-        Integer idAlumno = null;
+        // 2. Obtener ID del alumno
+        Alumno alumno = (Alumno) session.getAttribute("usuario");
+        int idAlumno = alumno.getIdAlumno();
 
-        if (objUsuario instanceof Alumno) {
-            Alumno alumno = (Alumno) objUsuario;
-            idAlumno = alumno.getIdAlumno(); // Asegúrate de que el getter en tu clase Alumno se llame así (ej. getIdAlumno() o getId())
-        }
-
-        // Si por alguna razón no es un alumno válido o no tiene ID, rechazar
-        if (idAlumno == null) {
-            response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
-            return;
-        }
-
-        // 3. Parámetros capturados en el formulario JSP
-        String grupoActual = request.getParameter("grupo");
-        String cuatriActual = request.getParameter("cuatrimestre");
+        // 3. Recibir parámetros del JSP
         String idEdificio = request.getParameter("idEdificio");
-        String idLocker = request.getParameter("idLocker");
+        String cuatrimestre = request.getParameter("cuatrimestre");
+        String grupo = request.getParameter("grupo");
 
-        String idPeriodoCuatriStr = request.getParameter("idPeriodoCuatri");
-        int idPeriodoCuatri = (idPeriodoCuatriStr != null && !idPeriodoCuatriStr.isEmpty()) ? Integer.parseInt(idPeriodoCuatriStr) : 1;
+        String idPeriodoStr = request.getParameter("idPeriodoCuatri");
+        int idPeriodoCuatri = (idPeriodoStr != null) ? Integer.parseInt(idPeriodoStr) : 1;
 
-        try {
-            DaoSolicitud dao = new DaoSolicitud();
-            boolean insertado = dao.registrarSolicitud(
-                    idAlumno,
-                    idEdificio,
-                    idLocker,
-                    idPeriodoCuatri,
-                    grupoActual,
-                    cuatriActual
-            );
+        // 4. Guardar en BD (pasamos 'null' en el locker)
+        DaoSolicitud dao = new DaoSolicitud();
+        boolean exito = dao.registrarSolicitud(idAlumno, idEdificio, null, idPeriodoCuatri, grupo, cuatrimestre);
 
-            if (insertado) {
-                response.sendRedirect(request.getContextPath() + "/views/alumno/solicitarLocker.jsp?status=success");
-            } else {
-                response.sendRedirect(request.getContextPath() + "/views/alumno/solicitarLocker.jsp?status=error");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        // 5. Redirigir
+        if (exito) {
+            response.sendRedirect(request.getContextPath() + "/views/alumno/solicitarLocker.jsp?status=success");
+        } else {
             response.sendRedirect(request.getContextPath() + "/views/alumno/solicitarLocker.jsp?status=error");
         }
     }

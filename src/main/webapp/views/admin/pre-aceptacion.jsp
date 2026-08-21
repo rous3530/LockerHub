@@ -53,7 +53,7 @@
         <a href="${pageContext.request.contextPath}/views/admin/inicio.jsp" class="nav-link">SOLICITUDES</a>
         <a href="${pageContext.request.contextPath}/views/admin/pre-aceptacion.jsp" class="nav-link active">PRE-ACEPTADOS</a>
         <a href="${pageContext.request.contextPath}/views/admin/aceptados" class="nav-link">ACEPTADOS</a>
-        <a href="${pageContext.request.contextPath}/admin/gestion-lockers" class="nav-link">GESTION LOCKER</a>
+        <a href="${pageContext.request.contextPath}/admin/gestionLocker" class="nav-link">GESTION LOCKER</a>
     </div>
     </div>
 

@@ -105,23 +105,21 @@ public class DaoSolicitud {
         return 0;
     }
 
-    // 5. REGISTRAR UNA NUEVA SOLICITUD
+    // 5. REGISTRAR UNA NUEVA SOLICITUD (Modificado para omitir ID_LOCKER)
     public boolean registrarSolicitud(int idAlumno, String idEdificioParam, String idLocker, int idPeriodoCuatri, String grupo, String cuatrimestre) {
         System.out.println("=== INICIANDO REGISTRO DE SOLICITUD ===");
         System.out.println("Parámetros recibidos -> idAlumno: " + idAlumno +
                 ", idEdificioParam: " + idEdificioParam +
-                ", idLocker: " + idLocker +
+                ", idLocker: " + idLocker + " (omitido en BD)" +
                 ", idPeriodoCuatri: " + idPeriodoCuatri +
                 ", grupo: " + grupo +
                 ", cuatrimestre: " + cuatrimestre);
 
-        // 1. Obtener el ID numérico del edificio si viene como texto (ej. "Docencia 1" o similar)
+        // 1. Obtener el ID numérico del edificio si viene como texto
         int idEdificioNum = 0;
         try {
-            // Intentamos parsearlo directamente por si acaso ya era un número
             idEdificioNum = Integer.parseInt(idEdificioParam);
         } catch (NumberFormatException e) {
-            // Si es texto (ej. "Docencia 1"), buscamos su ID correspondiente en la tabla EDIFICIO
             String queryEdificio = "SELECT ID_EDIFICIO FROM EDIFICIO WHERE NOMBRE = ?";
             try (Connection con = ConnectionOracle.getConnection();
                  PreparedStatement psEdificio = con.prepareStatement(queryEdificio)) {
@@ -143,11 +141,11 @@ public class DaoSolicitud {
             return false;
         }
 
-        // 2. Consulta de inserción final usando los IDs numéricos correctos
+        // 2. Consulta de inserción final (sin la columna ID_LOCKER)
         String query = "INSERT INTO SOLICITUD (" +
                 "FECHA_SOLICITUD, ESTATUS_SOLICITUD, ID_ALUMNO, ID_EDIFICIO, " +
-                "ID_LOCKER, ID_PERIODO_CUATRI, GRUPO_ACTUAL, CUATRI_ACTUAL" +
-                ") VALUES (SYSDATE, 'PENDIENTE', ?, ?, ?, ?, ?, ?)";
+                "ID_PERIODO_CUATRI, GRUPO_ACTUAL, CUATRI_ACTUAL" +
+                ") VALUES (SYSDATE, 'PENDIENTE', ?, ?, ?, ?, ?)";
 
         try (Connection con = ConnectionOracle.getConnection();
              PreparedStatement ps = con.prepareStatement(query)) {
@@ -158,11 +156,10 @@ public class DaoSolicitud {
             }
 
             ps.setInt(1, idAlumno);
-            ps.setInt(2, idEdificioNum); // Usamos el ID numérico ya resuelto
-            ps.setString(3, idLocker);    // ID_LOCKER (como D1-02, etc.)
-            ps.setInt(4, idPeriodoCuatri);
-            ps.setString(5, grupo);
-            ps.setString(6, cuatrimestre);
+            ps.setInt(2, idEdificioNum);
+            ps.setInt(3, idPeriodoCuatri);
+            ps.setString(4, grupo);
+            ps.setString(5, cuatrimestre);
 
             System.out.println("Ejecutando sentencia SQL de inserción con ID_EDIFICIO: " + idEdificioNum);
             int filasAfectadas = ps.executeUpdate();
@@ -178,6 +175,7 @@ public class DaoSolicitud {
         }
         return false;
     }
+
     // 6. OBTENER LISTA DE EDIFICIOS / DOCENCIAS
     public List<EdificioDto> obtenerEdificios() {
         List<EdificioDto> lista = new ArrayList<>();
@@ -329,7 +327,6 @@ public class DaoSolicitud {
     }
 
     public boolean regresarAStatusPendiente(int idSolicitud) {
-        // Ajusta la columna 'ESTATUS' y el valor según cómo los nombres en tu tabla SOLICITUD
         String sql = "UPDATE SOLICITUD SET ESTATUS_SOLICITUD = 'PENDIENTE', ID_LOCKER = NULL WHERE ID_SOLICITUD = ?";
 
         try (Connection conn = ConnectionOracle.getConnection();
@@ -369,7 +366,7 @@ public class DaoSolicitud {
             this.idLocker = idLocker;
             this.numeroLocker = numeroLocker;
             this.piso = piso;
-            this.estatus = estatus;
+            this.estatus = estatus; // Nota: en tu original tenías una referencia a sí mismo aquí, lo mantengo similar para no romper tu lógica
         }
 
         public String getIdLocker() { return idLocker; }
@@ -415,7 +412,7 @@ public class DaoSolicitud {
 
     public boolean asignarLockerASolicitud(int idSolicitud, String idLocker) {
         String querySolicitud = "UPDATE SOLICITUD SET ID_LOCKER = ? WHERE ID_SOLICITUD = ?";
-        String queryLocker = "UPDATE LOCKER SET ESTATUS = 'OCUPADO' WHERE ID_LOCKER = ?"; // Opcional si quieres actualizar el estatus del casillero
+        String queryLocker = "UPDATE LOCKER SET ESTATUS = 'OCUPADO' WHERE ID_LOCKER = ?";
 
         try (Connection con = ConnectionOracle.getConnection()) {
             con.setAutoCommit(false); // Transacción para asegurar integridad
@@ -424,12 +421,12 @@ public class DaoSolicitud {
                  PreparedStatement psLock = con.prepareStatement(queryLocker)) {
 
                 // 1. Actualizar la solicitud con el locker elegido
-                psSol.setString(1, idLocker); // Cambiado a setString porque idLocker es String
+                psSol.setString(1, idLocker);
                 psSol.setInt(2, idSolicitud);
                 psSol.executeUpdate();
 
                 // 2. Cambiar estatus del locker a ocupado
-                psLock.setString(1, idLocker); // Cambiado a setString porque idLocker es String
+                psLock.setString(1, idLocker);
                 psLock.executeUpdate();
 
                 con.commit();
@@ -444,6 +441,7 @@ public class DaoSolicitud {
             return false;
         }
     }
+
     public boolean aceptarTodasLasSolicitudes() {
         String query = "UPDATE SOLICITUD SET ESTATUS_SOLICITUD = 'ACEPTADA' WHERE ESTATUS_SOLICITUD = 'PRE_ACEPTADA' AND ID_LOCKER IS NOT NULL";
 
@@ -529,7 +527,6 @@ public class DaoSolicitud {
         String sql = "SELECT l.ID_LOCKER, l.NUMERO, l.PLANTA, l.ESTATUS, e.NOMBRE AS NOMBRE_EDIFICIO " +
                 "FROM LOCKER l JOIN EDIFICIO e ON l.ID_EDIFICIO = e.ID_EDIFICIO";
 
-        // Usamos ConnectionOracle.getConnection() al igual que en tus otros métodos
         try (Connection conn = ConnectionOracle.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {

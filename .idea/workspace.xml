@@ -11,14 +11,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6e3a30cd-90d3-4b00-9fe4-ded8c356d096" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/model/CasilleroDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/GestionLockerServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/GestionLockerServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/SolicitudLockerServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/SolicitudLockerServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoSolicitud.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoSolicitud.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/admin/aceptados.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/admin/aceptados.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/admin/gestionLocker.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/admin/gestionLocker.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/admin/inicio.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/admin/inicio.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/admin/pre-aceptacion.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/admin/pre-aceptacion.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/alumno/solicitarLocker.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/alumno/solicitarLocker.jsp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,6 +34,18 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Aviest"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/rous3530/LockerHub.git",
+    "accountId": "6d3643cf-323e-4335-8285-671f4db19bdb"
+  }
+}]]></component>
   <component name="LogFilters">
     <option name="FILTER_ERRORS" value="false" />
     <option name="FILTER_WARNINGS" value="false" />
@@ -72,8 +80,10 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "Tomcat Server.Tomcat 10.1.55.executor": "Run",
     "Tomcat Server.Tomcat 10.1.56.executor": "Run",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
@@ -163,17 +173,17 @@
       </MavenSettings>
       <method v="2" />
     </configuration>
-    <configuration name="Tomcat 10.1.55" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 10.1.56" ALTERNATIVE_JRE_ENABLED="false" nameIsGenerated="true">
+    <configuration name="Tomcat 10.1.55" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 10.1.55" ALTERNATIVE_JRE_ENABLED="false" nameIsGenerated="true">
       <option name="UPDATING_POLICY" value="restart-server" />
       <deployment>
-        <artifact name="Locker:war exploded">
-          <settings>
-            <option name="CONTEXT_PATH" value="/Locker_war_exploded" />
-          </settings>
-        </artifact>
         <artifact name="Locker:war">
           <settings>
             <option name="CONTEXT_PATH" value="/Locker_war" />
+          </settings>
+        </artifact>
+        <artifact name="Locker:war exploded">
+          <settings>
+            <option name="CONTEXT_PATH" value="/Locker_war_exploded" />
           </settings>
         </artifact>
       </deployment>
@@ -251,8 +261,8 @@
       <method v="2">
         <option name="Make" enabled="true" />
         <option name="BuildArtifacts" enabled="true">
-          <artifact name="Locker:war exploded" />
           <artifact name="Locker:war" />
+          <artifact name="Locker:war exploded" />
         </option>
       </method>
     </configuration>
@@ -292,6 +302,7 @@
       <workItem from="1787019570818" duration="22723000" />
       <workItem from="1787128702385" duration="38176000" />
       <workItem from="1787278713143" duration="7995000" />
+      <workItem from="1787295463447" duration="6331000" />
     </task>
     <servers />
   </component>

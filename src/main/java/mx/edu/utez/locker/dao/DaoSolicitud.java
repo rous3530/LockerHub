@@ -524,21 +524,33 @@ public class DaoSolicitud {
 
     public List<CasilleroDto> obtenerTodosLosCasilleros() {
         List<CasilleroDto> lista = new ArrayList<>();
-        // Ajustado a los nombres reales de tus tablas: LOCKER y EDIFICIO
-        String sql = "SELECT l.ID_LOCKER, l.NUMERO, l.PLANTA, l.ESTATUS, e.NOMBRE AS NOMBRE_EDIFICIO " +
-                "FROM LOCKER l JOIN EDIFICIO e ON l.ID_EDIFICIO = e.ID_EDIFICIO";
+        // Consulta corregida haciendo JOIN con SOLICITUD y ALUMNO
+        String sql = "SELECT l.ID_LOCKER, l.NUMERO, l.PLANTA, l.ESTATUS, e.NOMBRE AS NOMBRE_EDIFICIO, " +
+                "a.NOMBRES || ' ' || a.APELLIDO_PATERNO || ' ' || NVL(a.APELLIDO_MATERNO, '') AS NOMBRE_ALUMNO, " +
+                "a.MATRICULA AS MATRICULA_ALUMNO " +
+                "FROM LOCKER l " +
+                "JOIN EDIFICIO e ON l.ID_EDIFICIO = e.ID_EDIFICIO " +
+                "LEFT JOIN SOLICITUD s ON l.ID_LOCKER = s.ID_LOCKER AND UPPER(s.ESTATUS_SOLICITUD) = 'ACEPTADA' " +
+                "LEFT JOIN ALUMNO a ON s.ID_ALUMNO = a.ID_ALUMNO";
 
-        // Usamos ConnectionOracle.getConnection() al igual que en tus otros métodos
         try (Connection conn = ConnectionOracle.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 CasilleroDto casillero = new CasilleroDto();
-                casillero.setCodigo(rs.getString("ID_LOCKER"));         // Ej: PBG10-02
-                casillero.setPiso(rs.getString("PLANTA"));             // Ej: PLANTA BAJA
-                casillero.setEstado(rs.getString("ESTATUS"));          // Ej: DISPONIBLE
-                casillero.setEdificio(rs.getString("NOMBRE_EDIFICIO")); // Nombre del edificio
+                casillero.setCodigo(rs.getString("ID_LOCKER"));
+                casillero.setPiso(rs.getString("PLANTA"));
+                casillero.setEstado(rs.getString("ESTATUS"));
+                casillero.setEdificio(rs.getString("NOMBRE_EDIFICIO"));
+
+                // Mapeo de datos del alumno asignado
+                String nombreAlumno = rs.getString("NOMBRE_ALUMNO");
+                casillero.setNombreAlumno((nombreAlumno != null && !nombreAlumno.trim().isEmpty()) ? nombreAlumno : "Sin asignar");
+
+                String matriculaAlumno = rs.getString("MATRICULA_ALUMNO");
+                casillero.setMatriculaAlumno(matriculaAlumno != null ? matriculaAlumno : "N/A");
+
                 lista.add(casillero);
             }
         } catch (Exception e) {
@@ -546,5 +558,72 @@ public class DaoSolicitud {
             e.printStackTrace();
         }
         return lista;
+    }
+    public boolean actualizarEstadoCasillero(String idLocker, String nuevoEstado) {
+        System.out.println("[DAO-LOCKER] Ejecutando actualización en BD...");
+        System.out.println(" - ID Locker: " + idLocker);
+        System.out.println(" - Nuevo Estatus: " + nuevoEstado);
+
+        String sql = "UPDATE LOCKER SET ESTATUS = ? WHERE ID_LOCKER = ?";
+
+        try (Connection conn = ConnectionOracle.getConnection()) {
+            if (conn == null) {
+                System.out.println("[DAO-LOCKER] ❌ ERROR: La conexión a Oracle es NULL");
+                return false;
+            }
+
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, nuevoEstado);
+                ps.setString(2, idLocker);
+
+                int filasAfectadas = ps.executeUpdate();
+                System.out.println("[DAO-LOCKER] ✔️ Operación exitosa. Filas afectadas: " + filasAfectadas);
+
+                return filasAfectadas > 0;
+            }
+        } catch (SQLException e) {
+            System.err.println("[DAO-LOCKER] ❌ Error SQL: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean guardarReporte(String idSolicitudStr, String descripcion) {
+        System.out.println("[DAO-REPORTE] Ejecutando inserción en BD...");
+        System.out.println(" - ID Solicitud: " + idSolicitudStr);
+        System.out.println(" - Descripción: " + descripcion);
+
+        String sql = "INSERT INTO REPORTE (DESCRIPCION, FECHA, APLICA_SANCION, ID_LOCKER, ID_ASIGNACION) " +
+                "VALUES (?, SYSDATE, 'NO', " +
+                "(SELECT ID_LOCKER FROM ASIGNACION WHERE ID_SOLICITUD = ? AND ROWNUM = 1), " +
+                "(SELECT ID_ASIGNACION FROM ASIGNACION WHERE ID_SOLICITUD = ? AND ROWNUM = 1))";
+
+        try (Connection conn = ConnectionOracle.getConnection()) {
+            if (conn == null) {
+                System.out.println("[DAO-REPORTE] ❌ ERROR: La conexión a Oracle es NULL");
+                return false;
+            }
+
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                long idSolicitud = Long.parseLong(idSolicitudStr); // Convertimos a número para evitar el conflicto ORA-01722
+
+                ps.setString(1, descripcion);
+                ps.setLong(2, idSolicitud);
+                ps.setLong(3, idSolicitud);
+
+                int filasAfectadas = ps.executeUpdate();
+                System.out.println("[DAO-REPORTE] ✔️ Reporte guardado con éxito. Filas afectadas: " + filasAfectadas);
+
+                return filasAfectadas > 0;
+            }
+        } catch (NumberFormatException e) {
+            System.err.println("[DAO-REPORTE] ❌ El ID de solicitud no es un número válido: " + idSolicitudStr);
+            e.printStackTrace();
+            return false;
+        } catch (SQLException e) {
+            System.err.println("[DAO-REPORTE] ❌ Error SQL al guardar reporte: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 }

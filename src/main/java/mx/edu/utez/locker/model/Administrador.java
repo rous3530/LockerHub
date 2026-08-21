@@ -81,4 +81,10 @@ public class Administrador {
     public void setRol(String rol) {
         this.rol = rol;
     }
+
+    // Método auxiliar para obtener el nombre completo en los logs
+    public String getNombre() {
+        return (nombres != null ? nombres : "") +
+                (apellidoPaterno != null ? " " + apellidoPaterno : "");
+    }
 }

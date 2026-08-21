@@ -239,9 +239,17 @@
                                     ● Aceptado
                                 </span>
                             </div>
-                            <div class="col-2 text-center">
-                                <button type="button" class="btn btn-link text-primary text-decoration-none p-0 small fw-bold" onclick="abrirModalReporte('${item.idSolicitud}', '${item.nombreCompleto}')">
+                            <div class="col-2 text-center d-flex justify-content-center gap-2">
+                                <!-- Botón para adjuntar / crear reporte -->
+                                <button type="button" class="btn btn-link text-primary text-decoration-none p-0 small fw-bold" onclick="abrirModalReporte('${item.idSolicitud}', '${item.nombreCompleto}')" title="Crear / Adjuntar Reporte">
                                     <i class="bi bi-file-earmark-text"></i> Reporte
+                                </button>
+
+                                <span class="text-muted">|</span>
+
+                                <!-- Nueva opción: Ver Reporte -->
+                                <button type="button" class="btn btn-link text-success text-decoration-none p-0 small fw-bold" onclick="abrirModalVerReporte('${item.idSolicitud}', '${item.nombreCompleto}')" title="Ver Reporte Adjunto">
+                                    <i class="bi bi-eye"></i> Ver
                                 </button>
                             </div>
                         </div>
@@ -273,19 +281,44 @@
                     Aquí se generará el reporte que se le adjuntará al estudiante <strong id="modalEstudianteNombre">Estudiante</strong>
                 </p>
 
-                <form id="formReporte" onsubmit="adjuntarReporte(event)">
+                <form id="formReporte" action="${pageContext.request.contextPath}/views/admin/aceptados" method="POST">
                     <input type="hidden" id="modalEstudianteId" name="estudianteId">
 
                     <div class="mb-3 text-start">
                         <label for="textoReporte" class="form-label text-secondary fw-semibold small">Escribir Reporte</label>
-                        <textarea id="textoReporte" name="reporte" rows="4" class="form-control" placeholder="Ej. No cumple con los requisitos" required></textarea>
+                        <textarea id="textoReporte" name="reporte" rows="4" class="form-control" placeholder="Ej. Incidencia con el casillero..." required></textarea>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
                         <button type="button" class="btn btn-secondary text-white px-3 py-2 fw-semibold" style="border-radius: 8px;" onclick="cerrarModalReporte()">REGRESAR</button>
-                        <button type="submit" class="btn btn-success px-3 py-2 fw-semibold" style="background-color: var(--lh-green); border-radius: 8px;">ADJUNTAR</button>
+                        <button type="submit" class="btn btn-success px-3 py-2 fw-semibold" style="background-color: var(--lh-green); border-radius: 8px;">GUARDAR</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Ver Reporte Existente -->
+<div class="modal fade" id="modalVerReporte" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg p-3" style="border-radius: 16px;">
+            <div class="modal-body">
+                <h3 class="text-navy fw-bold h5 mb-1">Historial de Reporte</h3>
+                <p class="text-secondary small mb-3">
+                    Reporte registrado para el estudiante: <strong id="verEstudianteNombre">Estudiante</strong>
+                </p>
+
+                <div class="mb-3 text-start">
+                    <label class="form-label text-secondary fw-semibold small">Detalle del Reporte:</label>
+                    <div id="contenidoReporteTexto" class="p-3 bg-light rounded-3 border text-dark small" style="min-height: 90px;">
+                        Cargando información del reporte...
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button type="button" class="btn btn-secondary text-white px-3 py-2 fw-semibold" style="border-radius: 8px;" onclick="cerrarModalVerReporte()">CERRAR</button>
+                </div>
             </div>
         </div>
     </div>
@@ -310,11 +343,22 @@
 <script>
     let estudianteSeleccionado = { id: null, nombre: '' };
     let modalReporteInstance = null;
+    let modalVerReporteInstance = null;
 
     document.addEventListener('DOMContentLoaded', function () {
+        // Inicializar modal de adjuntar reporte
         const modalElement = document.getElementById('modalReporte');
         if (modalElement) {
             modalReporteInstance = new bootstrap.Modal(modalElement, {
+                backdrop: false,
+                keyboard: true
+            });
+        }
+
+        // Inicializar modal de ver reporte
+        const modalVerElement = document.getElementById('modalVerReporte');
+        if (modalVerElement) {
+            modalVerReporteInstance = new bootstrap.Modal(modalVerElement, {
                 backdrop: false,
                 keyboard: true
             });
@@ -378,6 +422,24 @@
 
         cerrarModalReporte();
         alert(`Reporte adjuntado con éxito a ${estudianteSeleccionado.nombre}.`);
+    }
+
+    // Nuevas funciones para ver el reporte existente
+    function abrirModalVerReporte(idEstudiante, nombreEstudiante) {
+        document.getElementById('verEstudianteNombre').innerText = nombreEstudiante;
+
+        // Aquí puedes personalizar el texto predeterminado o cargarlo según requieras
+        document.getElementById('contenidoReporteTexto').innerText = "Sin incidencias reportadas actualmente.";
+
+        if (modalVerReporteInstance) {
+            modalVerReporteInstance.show();
+        }
+    }
+
+    function cerrarModalVerReporte() {
+        if (modalVerReporteInstance) {
+            modalVerReporteInstance.hide();
+        }
     }
 </script>
 </body>

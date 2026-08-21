@@ -6,6 +6,8 @@ public class CasilleroDto {
     private String edificio;
     private String piso;
     private String estado; // EJ: DISPONIBLE, OCUPADO, MANTENIMIENTO
+    private String nombreAlumno;     // <-- Nuevo atributo
+    private String matriculaAlumno;  // <-- Nuevo atributo
 
     public CasilleroDto() {}
 
@@ -55,5 +57,22 @@ public class CasilleroDto {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    // --- GETTERS Y SETTERS NUEVOS REQUERIDOS POR EL JSP ---
+    public String getNombreAlumno() {
+        return nombreAlumno;
+    }
+
+    public void setNombreAlumno(String nombreAlumno) {
+        this.nombreAlumno = nombreAlumno;
+    }
+
+    public String getMatriculaAlumno() {
+        return matriculaAlumno;
+    }
+
+    public void setMatriculaAlumno(String matriculaAlumno) {
+        this.matriculaAlumno = matriculaAlumno;
     }
 }

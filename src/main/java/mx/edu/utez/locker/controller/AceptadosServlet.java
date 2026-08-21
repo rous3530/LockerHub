@@ -43,8 +43,44 @@ public class AceptadosServlet extends HttpServlet {
 
         request.setAttribute("listaAceptados", listaAceptados);
         request.setAttribute("totalAceptados", listaAceptados.size());
-        request.setAttribute("porcentajeUso", "85%"); // O el cálculo real que tengas
+        request.setAttribute("porcentajeUso", "85%");
 
         request.getRequestDispatcher("/views/admin/aceptados.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        Administrador admin = (session != null) ? (Administrador) session.getAttribute("usuario") : null;
+
+        if (admin == null || !"ADMIN".equalsIgnoreCase(admin.getRol())) {
+            response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp");
+            return;
+        }
+
+        String idEstudiante = request.getParameter("estudianteId"); // idSolicitud
+        String textoReporte = request.getParameter("reporte");
+
+        System.out.println("==========================================");
+        System.out.println("[ACEPTADOS-SERVLET] Procesando guardado de reporte...");
+        System.out.println(" - ID Estudiante/Solicitud: " + idEstudiante);
+        System.out.println(" - Descripción: " + textoReporte);
+        System.out.println("==========================================");
+
+        try {
+            DaoSolicitud dao = new DaoSolicitud();
+
+            // Método que deberás tener en tu DaoSolicitud para insertar en la tabla REPORTE
+            boolean guardado = dao.guardarReporte(idEstudiante, textoReporte);
+
+            if (guardado) {
+                response.sendRedirect(request.getContextPath() + "/views/admin/aceptados?exito=reporte_guardado");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/views/admin/aceptados?error=error_guardar");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/views/admin/aceptados?error=excepcion");
+        }
     }
 }

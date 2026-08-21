@@ -10,14 +10,21 @@
         response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
         return;
     }
-
-    if (request.getAttribute("solicitudes") == null && request.getParameter("redirected") == null) {
-        response.sendRedirect(request.getContextPath() + "/views/admin/inicio?redirected=true");
-        return;
-    }
     // Validar que la sesión exista y que el usuario esté logueado
     if (sesion == null || sesion.getAttribute("usuario") == null) {
         response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
+        return;
+    }
+
+    // Capturar el filtro de estatus actual (por defecto PENDIENTE) antes de evaluar redirecciones
+    String estatusSeleccionado = request.getParameter("estatus");
+    if (estatusSeleccionado == null || estatusSeleccionado.isEmpty()) {
+        estatusSeleccionado = "PENDIENTE";
+    }
+
+    // Si no hay atributos cargados, redirigir al Servlet pasando el estatus actual para no perder la pestaña
+    if (request.getAttribute("solicitudes") == null && request.getParameter("redirected") == null) {
+        response.sendRedirect(request.getContextPath() + "/views/admin/inicio?estatus=" + estatusSeleccionado + "&redirected=true");
         return;
     }
 
@@ -26,12 +33,6 @@
     Integer totalLockers = (Integer) request.getAttribute("totalLockers");
     Integer disponibles = (Integer) request.getAttribute("lockersDisponibles");
     Integer pendientes = (Integer) request.getAttribute("pendientesCount");
-
-    // Capturar el filtro de estatus actual (por defecto PENDIENTE)
-    String estatusSeleccionado = request.getParameter("estatus");
-    if (estatusSeleccionado == null || estatusSeleccionado.isEmpty()) {
-        estatusSeleccionado = "PENDIENTE";
-    }
 
     if (totalLockers == null) totalLockers = 0;
     if (disponibles == null) disponibles = 0;
@@ -202,8 +203,9 @@
     <a class="navbar-brand fw-bold fs-4 m-0 text-white text-decoration-none" href="#">LockerHub</a>
 
     <div class="nav-links-center">
-        <a href="${pageContext.request.contextPath}/views/admin/inicio.jsp" class="nav-link active">SOLICITUDES</a>
-        <a href="${pageContext.request.contextPath}/views/admin/pre-aceptacion.jsp" class="nav-link ">PRE-ACEPTADOS</a>
+        <!-- Apuntando al Servlet y manteniendo el estatus -->
+        <a href="${pageContext.request.contextPath}/views/admin/inicio?estatus=<%= estatusSeleccionado %>" class="nav-link active">SOLICITUDES</a>
+        <a href="${pageContext.request.contextPath}/views/admin/pre-aceptacion.jsp" class="nav-link">PRE-ACEPTADOS</a>
         <a href="${pageContext.request.contextPath}/views/admin/aceptados" class="nav-link">ACEPTADOS</a>
         <a href="${pageContext.request.contextPath}/admin/gestionLocker" class="nav-link">GESTION LOCKER</a>
     </div>
@@ -303,12 +305,12 @@
             </div>
 
             <div class="d-flex align-items-center gap-3 flex-wrap">
-                <!-- SELECT DE FILTRO (PENDIENTE / RECHAZADO) -->
-                <form method="GET" action="${pageContext.request.contextPath}/views/admin/inicio.jsp" class="d-flex align-items-center gap-2">
+                <!-- SELECT DE FILTRO (PENDIENTE / RECHAZADO) apuntando al Servlet -->
+                <form method="GET" action="${pageContext.request.contextPath}/views/admin/inicio" class="d-flex align-items-center gap-2">
                     <label for="estatus" class="small fw-bold text-secondary">Estatus:</label>
                     <select name="estatus" id="estatus" class="form-select form-select-sm" onchange="this.form.submit()">
                         <option value="PENDIENTE" <%= "PENDIENTE".equals(estatusSeleccionado) ? "selected" : "" %>>Pendientes</option>
-                        <option value="RECHAZADO" <%= "RECHAZADO".equals(estatusSeleccionado) ? "selected" : "" %>>Rechazados</option>
+                        <option value="RECHAZADA" <%= "RECHAZADA".equals(estatusSeleccionado) ? "selected" : "" %>>Rechazados</option>
                     </select>
                 </form>
 
@@ -347,8 +349,8 @@
                 </div>
                 <div class="col-2 text-center text-secondary small fw-semibold"><%= sol.getGrupo() %></div>
                 <div class="col-2 text-center d-flex justify-content-center gap-2">
-                    <% if ("RECHAZADO".equals(estatusSeleccionado)) { %>
-                    <!-- Botón para Reincorporar cuando está en rechazados -->
+                    <% if ("RECHAZADA".equals(estatusSeleccionado)) { %>
+                    <!-- Botón para Reincorporar enviando la acción pendiente para regresar a la lista de solicitudes -->
                     <button class="btn btn-reincorporar d-flex align-items-center gap-1" onclick="ejecutarAccion('<%= sol.getMatricula() %>', 'reincorporar')">
                         <i class="bi bi-arrow-counterclockwise"></i> Reincorporar
                     </button>
@@ -356,9 +358,6 @@
                     <!-- Botones estándar para pendientes -->
                     <button class="btn btn-preaprobar d-flex align-items-center gap-1" onclick="ejecutarAccion('<%= sol.getMatricula() %>', 'preaprobar')">
                         <i class="bi bi-check-circle"></i> Pre-aprobar
-                    </button>
-                    <button class="btn btn-rechazar d-flex align-items-center gap-1" onclick="abrirModalRechazo('<%= sol.getMatricula() %>', '<%= sol.getNombreCompleto() %>')">
-                        <i class="bi bi-x-circle"></i> Rechazar
                     </button>
                     <% } %>
                 </div>

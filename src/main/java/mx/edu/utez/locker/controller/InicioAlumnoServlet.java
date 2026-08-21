@@ -18,25 +18,27 @@ import java.util.List;
 public class InicioAlumnoServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
-        Alumno usuario = (session != null) ? (Alumno) session.getAttribute("usuario") : null;
+        Alumno alumno = (session != null) ? (Alumno) session.getAttribute("usuario") : null;
 
-        // Validar que el usuario sea alumno autenticado
-        if (usuario == null) {
-            response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp");
+        if (alumno == null) {
+            response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
             return;
         }
 
-        DaoAlumnoPortal dao = new DaoAlumnoPortal();
-        AlumnoDashboardDto dashboard = dao.obtenerDashboardAlumno(usuario.getIdAlumno());
-        List<SolicitudDto> historial = dao.obtenerHistorialReciente(usuario.getIdAlumno());
+        DaoAlumnoPortal daoPortal = new DaoAlumnoPortal();
 
+        // 1. Obtener datos del Locker y Perfil
+        AlumnoDashboardDto dashboard = daoPortal.obtenerDashboardAlumno(alumno.getIdAlumno());
+
+        // 2. Obtener historial reciente de solicitudes
+        List<SolicitudDto> historial = daoPortal.obtenerHistorialReciente(alumno.getIdAlumno());
+
+        // 3. Enviar ambas variables a la vista JSP
         request.setAttribute("dashboard", dashboard);
         request.setAttribute("historial", historial);
 
-        request.getRequestDispatcher("/views/alumno/inicioAlumno.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/alumno/inicio.jsp").forward(request, response);
     }
 }

@@ -11,11 +11,6 @@
         response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
         return;
     }
-    // Validar que la sesión exista y que el usuario esté logueado
-    if (sesion == null || sesion.getAttribute("usuario") == null) {
-        response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
-        return;
-    }
 
     AlumnoDashboardDto dashboard = (AlumnoDashboardDto) request.getAttribute("dashboard");
     List<SolicitudDto> historial = (List<SolicitudDto>) request.getAttribute("historial");
@@ -23,6 +18,17 @@
     String nombre = (dashboard != null && dashboard.getNombreCompleto() != null) ? dashboard.getNombreCompleto() : alumnoSesion.getNombres();
     String matricula = (dashboard != null && dashboard.getMatricula() != null) ? dashboard.getMatricula() : alumnoSesion.getMatricula();
     String carrera = (dashboard != null && dashboard.getCarrera() != null) ? dashboard.getCarrera() : "Carrera no asignada";
+
+    // Variables dinámicas para la tarjeta de Locker
+    boolean tieneLocker = (dashboard != null && dashboard.getIdLocker() != null && !dashboard.getIdLocker().trim().isEmpty());
+    String estatusLocker = (dashboard != null && dashboard.getEstatusLocker() != null) ? dashboard.getEstatusLocker().toUpperCase() : "SIN ASIGNAR";
+
+    String badgeClass = "bg-status-gray text-status-gray";
+    if ("ASIGNADO".equals(estatusLocker) || "ACEPTADO".equals(estatusLocker)) {
+        badgeClass = "bg-status-success text-status-success";
+    } else if ("PENDIENTE".equals(estatusLocker)) {
+        badgeClass = "bg-status-indigo text-status-indigo";
+    }
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -98,8 +104,8 @@
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4 class="fw-bold text-navy-title m-0 fs-5">Mi Locker Actual</h4>
-                            <span class="badge badge-status <%= (dashboard != null && "ASIGNADO".equalsIgnoreCase(dashboard.getEstatusLocker())) ? "bg-status-success text-status-success" : "bg-status-gray text-status-gray" %>">
-                                <%= (dashboard != null && dashboard.getEstatusLocker() != null) ? dashboard.getEstatusLocker() : "SIN ASIGNAR" %>
+                            <span class="badge badge-status <%= badgeClass %>">
+                                <%= estatusLocker %>
                             </span>
                         </div>
 
@@ -110,9 +116,11 @@
                             <div>
                                 <span class="text-muted-light text-micro text-uppercase d-block fw-semibold tracking-wider mb-1">ID DEL LOCKER</span>
                                 <span class="fw-bold text-navy-title fs-4 d-block lh-1 mb-1">
-                                    <%= (dashboard != null && dashboard.getIdLocker() != null) ? dashboard.getIdLocker() : "N/A" %>
+                                    <%= tieneLocker ? dashboard.getIdLocker() : "N/A" %>
                                 </span>
-                                <span class="text-muted small">Ubicación Asignada</span>
+                                <span class="text-muted small">
+                                    <%= tieneLocker ? "Ubicación Asignada" : "Sin Asignación" %>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -157,14 +165,22 @@
                                 </thead>
                                 <tbody>
                                 <% if (historial != null && !historial.isEmpty()) {
-                                    for (SolicitudDto sol : historial) { %>
+                                    for (SolicitudDto sol : historial) {
+                                        String estatusTabla = (sol.getEstado() != null) ? sol.getEstado().toUpperCase() : "";
+                                        String badgeTabla = "bg-status-gray text-status-gray";
+                                        if ("ASIGNADO".equals(estatusTabla) || "ACEPTADO".equals(estatusTabla)) {
+                                            badgeTabla = "bg-status-success text-status-success";
+                                        } else if ("PENDIENTE".equals(estatusTabla)) {
+                                            badgeTabla = "bg-status-indigo text-status-indigo";
+                                        }
+                                %>
                                 <tr>
                                     <td>
                                         <div class="fw-bold text-navy-title">Solicitud #<%= sol.getIdSolicitud() %></div>
                                     </td>
                                     <td class="fw-bold text-navy-title"><%= (sol.getGrupo() != null) ? sol.getGrupo() : "Pendiente" %></td>
                                     <td>
-                                        <span class="badge badge-status <%= "ASIGNADO".equalsIgnoreCase(sol.getEstado()) ? "bg-status-success text-status-success" : "bg-status-indigo text-status-indigo" %>">
+                                        <span class="badge badge-status <%= badgeTabla %>">
                                             <%= sol.getEstado() %>
                                         </span>
                                     </td>
@@ -229,7 +245,7 @@
     </div>
 </div>
 
-<footer class="bg-white border-top py-3  " style="margin-top: 6.25rem">
+<footer class="bg-white border-top py-3" style="margin-top: 6.25rem">
     <div class="container-fluid px-4 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
         <span class="text-muted-light text-micro">© 2026 LockerHub - Portal Universitario</span>
         <div class="d-flex gap-4 text-micro">

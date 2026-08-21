@@ -17,15 +17,14 @@ public class DaoAlumnoPortal {
     public AlumnoDashboardDto obtenerDashboardAlumno(int idAlumno) {
         AlumnoDashboardDto dto = null;
 
-        // Consulta corregida con la tabla ALUMNO (singular) y JOIN con CARRERA
         String query = "SELECT a.ID_ALUMNO, a.MATRICULA, " +
                 "a.NOMBRES || ' ' || a.APELLIDO_PATERNO || ' ' || NVL(a.APELLIDO_MATERNO, '') AS NOMBRE_COMPLETO, " +
-                "c.NOMBRE AS NOMBRE_CARRERA, " + // <-- Traemos el nombre real de la carrera
+                "c.NOMBRE AS NOMBRE_CARRERA, " +
                 "s.CUATRI_ACTUAL, s.GRUPO_ACTUAL, " +
                 "l.NUMERO AS CODIGO_LOCKER, e.NOMBRE_EDIFICIO, l.PLANTA AS PISO, p.NOMBRE_PERIODO, s.ESTATUS_SOLICITUD " +
-                "FROM ALUMNO a " + // <-- Corregido: ALUMNO en singular
-                "LEFT JOIN CARRERA c ON a.ID_CARRERA = c.ID_CARRERA " + // <-- JOIN a la tabla CARRERA
-                "LEFT JOIN SOLICITUD s ON a.ID_ALUMNO = s.ID_ALUMNO AND s.ESTATUS_SOLICITUD IN ('ASIGNADO', 'ACEPTADO', 'PENDIENTE') " +
+                "FROM ALUMNO a " +
+                "LEFT JOIN CARRERA c ON a.ID_CARRERA = c.ID_CARRERA " +
+                "LEFT JOIN SOLICITUD s ON a.ID_ALUMNO = s.ID_ALUMNO AND UPPER(s.ESTATUS_SOLICITUD) IN ('ASIGNADO', 'ACEPTADO', 'PENDIENTE') " +
                 "LEFT JOIN ASIGNACION_LOCKER al ON s.ID_SOLICITUD = al.ID_SOLICITUD " +
                 "LEFT JOIN LOCKER l ON al.ID_LOCKER = l.ID_LOCKER " +
                 "LEFT JOIN EDIFICIO e ON s.ID_EDIFICIO = e.ID_EDIFICIO " +
@@ -42,7 +41,7 @@ public class DaoAlumnoPortal {
                     dto.setIdAlumno(rs.getInt("ID_ALUMNO"));
                     dto.setMatricula(rs.getString("MATRICULA"));
                     dto.setNombreCompleto(rs.getString("NOMBRE_COMPLETO"));
-                    dto.setCarrera(rs.getString("NOMBRE_CARRERA")); // <-- Mapeamos el alias NOMBRE_CARRERA
+                    dto.setCarrera(rs.getString("NOMBRE_CARRERA"));
                     dto.setCuatrimestreActual(rs.getString("CUATRI_ACTUAL"));
                     dto.setGrupoActual(rs.getString("GRUPO_ACTUAL"));
 
@@ -62,14 +61,15 @@ public class DaoAlumnoPortal {
     // 2. OBTENER RECIENTES SOLICITUDES DEL ALUMNO (ÚLTIMAS 3 PARA LA TABLA)
     public List<SolicitudDto> obtenerHistorialReciente(int idAlumno) {
         List<SolicitudDto> lista = new ArrayList<>();
+        // Corrección: l.NUMERO en vez de l.CODIGO_LOCKER y LOCKER en vez de LOCKERS
         String query = "SELECT * FROM (" +
-                "    SELECT s.ID_SOLICITUD, l.CODIGO_LOCKER, s.ESTATUS_SOLICITUD, p.NOMBRE_PERIODO " +
+                "    SELECT s.ID_SOLICITUD, l.NUMERO AS CODIGO_LOCKER, s.ESTATUS_SOLICITUD, p.NOMBRE_PERIODO " +
                 "    FROM SOLICITUD s " +
                 "    LEFT JOIN ASIGNACION_LOCKER al ON s.ID_SOLICITUD = al.ID_SOLICITUD " +
-                "    LEFT JOIN LOCKERS l ON al.ID_LOCKER = l.ID_LOCKER " +
+                "    LEFT JOIN LOCKER l ON al.ID_LOCKER = l.ID_LOCKER " +
                 "    LEFT JOIN PERIODO_CUATRI p ON s.ID_PERIODO_CUATRI = p.ID_PERIODO_CUATRI " +
                 "    WHERE s.ID_ALUMNO = ? " +
-                "    ORDER BY s.FECHA_SOLICITUD DESC" +
+                "    ORDER BY s.ID_SOLICITUD DESC" +
                 ") WHERE ROWNUM <= 3";
 
         try (Connection con = ConnectionOracle.getConnection();
@@ -80,9 +80,9 @@ public class DaoAlumnoPortal {
                 while (rs.next()) {
                     SolicitudDto dto = new SolicitudDto();
                     dto.setIdSolicitud(rs.getInt("ID_SOLICITUD"));
-                    dto.setGrupo(rs.getString("CODIGO_LOCKER")); // Usamos atributo como ref de Locker
+                    dto.setGrupo(rs.getString("CODIGO_LOCKER"));
                     dto.setEstado(rs.getString("ESTATUS_SOLICITUD"));
-                    dto.setCuatrimestre(rs.getString("NOMBRE_PERIODO")); // Usamos atributo como periodo
+                    dto.setCuatrimestre(rs.getString("NOMBRE_PERIODO"));
                     lista.add(dto);
                 }
             }

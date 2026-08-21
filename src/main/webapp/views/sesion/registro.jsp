@@ -42,15 +42,24 @@
         </div>
         <% } %>
 
-        <form action="${pageContext.request.contextPath}/registro-alumno" method="POST" novalidate>
+        <form action="${pageContext.request.contextPath}/registro-alumno" method="POST" id="formRegistro" novalidate>
 
             <!-- Matrícula -->
             <div class="text-start mb-3">
                 <label class="form-label text-secondary small fw-semibold mb-1">Matrícula</label>
                 <div class="input-group custom-input-group">
                     <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                    <input type="text" name="matricula" class="form-control" placeholder="Ej. 20253ds091" required>
-                    <div class="invalid-feedback">La matrícula es obligatoria.</div>
+                    <input type="text"
+                           name="matricula"
+                           id="inputMatricula"
+                           class="form-control"
+                           placeholder="Ej. 20253ds001"
+                           maxlength="10"
+                           minlength="10"
+                           pattern="^[a-zA-Z0-9]{10}$"
+                           title="La matrícula debe contener exactamente 10 caracteres alfanuméricos"
+                           required>
+                    <div class="invalid-feedback">La matrícula debe tener exactamente 10 caracteres alfanuméricos (sin símbolos ni espacios).</div>
                 </div>
             </div>
 
@@ -59,8 +68,15 @@
                 <label class="form-label text-secondary small fw-semibold mb-1">Nombre(s)</label>
                 <div class="input-group custom-input-group">
                     <span class="input-group-text"><i class="bi bi-person"></i></span>
-                    <input type="text" name="nombres" class="form-control" placeholder="Ej. Juan" required>
-                    <div class="invalid-feedback">Este campo es obligatorio.</div>
+                    <input type="text"
+                           name="nombres"
+                           id="inputNombres"
+                           class="form-control solo-letras"
+                           placeholder="Ej. Juan"
+                           pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"
+                           title="Ingresa solo letras y espacios"
+                           required>
+                    <div class="invalid-feedback">Solo se permiten letras y espacios en este campo.</div>
                 </div>
             </div>
 
@@ -69,8 +85,15 @@
                 <label class="form-label text-secondary small fw-semibold mb-1">Apellido Paterno</label>
                 <div class="input-group custom-input-group">
                     <span class="input-group-text"><i class="bi bi-person"></i></span>
-                    <input type="text" name="apellidoPaterno" class="form-control" placeholder="Pérez" required>
-                    <div class="invalid-feedback">Este campo es obligatorio.</div>
+                    <input type="text"
+                           name="apellidoPaterno"
+                           id="inputApellidoPaterno"
+                           class="form-control solo-letras"
+                           placeholder="Pérez"
+                           pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"
+                           title="Ingresa solo letras y espacios"
+                           required>
+                    <div class="invalid-feedback">Solo se permiten letras y espacios en este campo.</div>
                 </div>
             </div>
 
@@ -79,11 +102,18 @@
                 <label class="form-label text-secondary small fw-semibold mb-1">Apellido Materno</label>
                 <div class="input-group custom-input-group">
                     <span class="input-group-text"><i class="bi bi-person"></i></span>
-                    <input type="text" name="apellidoMaterno" class="form-control" placeholder="Gómez">
+                    <input type="text"
+                           name="apellidoMaterno"
+                           id="inputApellidoMaterno"
+                           class="form-control solo-letras"
+                           placeholder="Gómez"
+                           pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$"
+                           title="Ingresa solo letras y espacios">
+                    <div class="invalid-feedback">Solo se permiten letras y espacios en este campo.</div>
                 </div>
             </div>
 
-            <!-- Carrera (Cargada dinámicamente desde Oracle) -->
+            <!-- Carrera -->
             <div class="text-start mb-3">
                 <label class="form-label text-secondary small fw-semibold mb-1">Carrera</label>
                 <div class="input-group custom-input-group">
@@ -112,7 +142,7 @@
                            pattern="^[a-zA-Z0-9._%+-]+@utez\.edu\.mx$"
                            title="Debe ser un correo institucional que termine en @utez.edu.mx"
                            required>
-                    <div class="invalid-feedback">El correo debe terminar estrictamente con @utez.edu.mx.</div>
+                    <div class="invalid-feedback">El correo debe terminar strictly con @utez.edu.mx.</div>
                 </div>
             </div>
 
@@ -121,9 +151,8 @@
                 <label class="form-label text-secondary small fw-semibold mb-1">Contraseña</label>
                 <div class="input-group custom-input-group">
                     <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                    <!-- Agregamos el pattern para exigir letras y números, y minlength para los 8 caracteres -->
-                    <input type="password" name="contrasena" class="form-control has-end-icon" placeholder="••••••••" required minlength="8" pattern="(?=.*\d)(?=.*[A-Za-z]).{8,}" title="Debe contener al menos 8 caracteres, una letra y un número">
-                    <span class="input-group-text end-icon" style="cursor: pointer;"><i class="bi bi-eye"></i></span>
+                    <input type="password" id="inputContrasena" name="contrasena" class="form-control has-end-icon" placeholder="••••••••" required minlength="8" pattern="(?=.*\d)(?=.*[A-Za-z]).{8,}" title="Debe contener al menos 8 caracteres, una letra y un número">
+                    <span class="input-group-text end-icon" id="togglePassword" style="cursor: pointer;"><i class="bi bi-eye"></i></span>
                     <div class="invalid-feedback">La contraseña debe tener al menos 8 caracteres, incluir letras y números.</div>
                 </div>
             </div>
@@ -149,13 +178,12 @@
                 <span class="fw-semibold text-dark">LockerHub</span> &nbsp; | &nbsp; <a href="#" class="text-muted text-decoration-none">Privacy Policy</a> &nbsp; <a href="#" class="text-muted text-decoration-none">Terms of Service</a> &nbsp; <a href="#" class="text-muted text-decoration-none">Help Center</a>
             </div>
             <div class="col-md-6 text-center text-md-end">
-                © 2024 LockerHub University Services
+                © 2026 LockerHub University Services
             </div>
         </div>
     </div>
 </footer>
 
-<!-- Coloca esto en tu vista de IniciarSesion.jsp donde quieras mostrar la alerta -->
 <%
     String error = request.getParameter("error");
     if ("sin_permiso".equals(error)) {
@@ -170,5 +198,18 @@
 
 <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
 <script src="${pageContext.request.contextPath}/js/sesion/registro.js"></script>
+
+<!-- Script de filtrado dinámico para Matrícula -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputMatricula = document.getElementById('inputMatricula');
+        if (inputMatricula) {
+            inputMatricula.addEventListener('input', function () {
+                // Elimina símbolos/espacios y restringe a un máximo de 10 caracteres
+                this.value = this.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
+            });
+        }
+    });
+</script>
 </body>
 </html>

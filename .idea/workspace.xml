@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="Locker:war" />
-      <artifact name="Locker:war exploded" />
+      <artifact name="Locker (1):war" />
+      <artifact name="Locker (1):war exploded" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -12,15 +12,7 @@
   <component name="ChangeListManager">
     <list default="true" id="6e3a30cd-90d3-4b00-9fe4-ded8c356d096" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/AceptadosServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/AceptadosServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/GestionLockerServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/GestionLockerServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoSolicitud.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/dao/DaoSolicitud.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/model/Administrador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/model/Administrador.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/model/CasilleroDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/model/CasilleroDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/js/admin/gestionLocker.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/js/admin/gestionLocker.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/admin/aceptados.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/admin/aceptados.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/views/admin/gestionLocker.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/admin/gestionLocker.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/admin/pre-aceptacion.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/admin/pre-aceptacion.jsp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +32,18 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "MISA-BB"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/rous3530/LockerHub.git",
+    "accountId": "1e5891ba-c1f4-464a-8044-433a7784f655"
+  }
+}]]></component>
   <component name="LogFilters">
     <option name="FILTER_ERRORS" value="false" />
     <option name="FILTER_WARNINGS" value="false" />
@@ -74,6 +78,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "Tomcat Server.Tomcat 10.1.55.executor": "Run",
     "Tomcat Server.Tomcat 10.1.56.executor": "Run",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
@@ -165,17 +170,17 @@
       </MavenSettings>
       <method v="2" />
     </configuration>
-    <configuration name="Tomcat 10.1.55" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 10.1.56" ALTERNATIVE_JRE_ENABLED="false" nameIsGenerated="true">
+    <configuration name="Tomcat 10.1.55" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 10.1.55" ALTERNATIVE_JRE_ENABLED="false" nameIsGenerated="true">
       <option name="UPDATING_POLICY" value="restart-server" />
       <deployment>
-        <artifact name="Locker:war exploded">
+        <artifact name="Locker (1):war exploded">
           <settings>
-            <option name="CONTEXT_PATH" value="/Locker_war_exploded" />
+            <option name="CONTEXT_PATH" value="/Locker__1__war_exploded" />
           </settings>
         </artifact>
-        <artifact name="Locker:war">
+        <artifact name="Locker (1):war">
           <settings>
-            <option name="CONTEXT_PATH" value="/Locker_war" />
+            <option name="CONTEXT_PATH" value="/Locker__1__war" />
           </settings>
         </artifact>
       </deployment>
@@ -255,6 +260,8 @@
         <option name="BuildArtifacts" enabled="true">
           <artifact name="Locker:war exploded" />
           <artifact name="Locker:war" />
+          <artifact name="Locker (1):war exploded" />
+          <artifact name="Locker (1):war" />
         </option>
       </method>
     </configuration>
@@ -273,8 +280,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.27397.103" />
-        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.27397.103" />
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.33514.17" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.33514.17" />
       </set>
     </attachedChunks>
   </component>
@@ -294,6 +301,7 @@
       <workItem from="1787019570818" duration="22723000" />
       <workItem from="1787128702385" duration="38176000" />
       <workItem from="1787278713143" duration="31115000" />
+      <workItem from="1787322498721" duration="1771000" />
     </task>
     <servers />
   </component>

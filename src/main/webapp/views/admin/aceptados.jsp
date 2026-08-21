@@ -142,12 +142,13 @@
         <a href="${pageContext.request.contextPath}/views/admin/inicio.jsp" class="nav-link">SOLICITUDES</a>
         <a href="${pageContext.request.contextPath}/views/admin/pre-aceptacion.jsp" class="nav-link">PRE-ACEPTADOS</a>
         <a href="${pageContext.request.contextPath}/views/admin/aceptados" class="nav-link active">ACEPTADOS</a>
+        <a href="${pageContext.request.contextPath}/admin/gestion-lockers" class="nav-link">GESTION LOCKER</a>
     </div>
 
     <div class="nav-actions-right d-flex align-items-center gap-3 text-white">
-        <i class="bi bi-bell" style="cursor: pointer;"></i>
-        <i class="bi bi-gear" style="cursor: pointer;"></i>
-        <i class="bi bi-question-circle" style="cursor: pointer;"></i>
+        <a href="${pageContext.request.contextPath}/cerrar-sesion" class="btn btn-link text-muted p-1 border-end pe-3">
+            <i class="bi bi-box-arrow-right fs-5"></i>
+        </a>
         <div class="user-avatar-nav d-flex align-items-center">
             <img src="https://ui-avatars.com/api/?name=Admin+User&background=3b82f6&color=fff" alt="Perfil" style="width: 32px; height: 32px; border-radius: 50%;">
         </div>

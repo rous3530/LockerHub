@@ -409,31 +409,25 @@
         }
     }
 
-    function adjuntarReporte(event) {
-        event.preventDefault();
-
-        const id = document.getElementById('modalEstudianteId').value;
-        const reporteTexto = document.getElementById('textoReporte').value.trim();
-
-        if (!reporteTexto) {
-            alert('Por favor, escribe un motivo o detalle para el reporte.');
-            return;
-        }
-
-        cerrarModalReporte();
-        alert(`Reporte adjuntado con éxito a ${estudianteSeleccionado.nombre}.`);
-    }
-
-    // Nuevas funciones para ver el reporte existente
+    // Función para ver el reporte existente cargado de forma dinámica mediante fetch
     function abrirModalVerReporte(idEstudiante, nombreEstudiante) {
         document.getElementById('verEstudianteNombre').innerText = nombreEstudiante;
-
-        // Aquí puedes personalizar el texto predeterminado o cargarlo según requieras
-        document.getElementById('contenidoReporteTexto').innerText = "Sin incidencias reportadas actualmente.";
+        document.getElementById('contenidoReporteTexto').innerText = "Cargando información del reporte...";
 
         if (modalVerReporteInstance) {
             modalVerReporteInstance.show();
         }
+
+        // Petición asíncrona hacia el servlet con el parámetro de acción e ID
+        fetch(`${pageContext.request.contextPath}/views/admin/aceptados?accion=verReporte&idSolicitud=` + idEstudiante)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('contenidoReporteTexto').innerText = data;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('contenidoReporteTexto').innerText = "Error al conectar con el servidor para cargar el reporte.";
+            });
     }
 
     function cerrarModalVerReporte() {

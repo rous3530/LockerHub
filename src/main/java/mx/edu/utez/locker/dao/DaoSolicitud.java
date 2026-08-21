@@ -1,6 +1,7 @@
 package mx.edu.utez.locker.dao;
 
 import mx.edu.utez.locker.model.EdificioDto;
+import mx.edu.utez.locker.model.ReporteDto;
 import mx.edu.utez.locker.model.SolicitudDto;
 import mx.edu.utez.locker.model.CasilleroDto;
 import mx.edu.utez.locker.ConnectionOracle;
@@ -591,10 +592,10 @@ public class DaoSolicitud {
         System.out.println(" - ID Solicitud: " + idSolicitudStr);
         System.out.println(" - Descripción: " + descripcion);
 
-        String sql = "INSERT INTO REPORTE (DESCRIPCION, FECHA, APLICA_SANCION, ID_LOCKER, ID_ASIGNACION) " +
-                "VALUES (?, SYSDATE, 'NO', " +
-                "(SELECT ID_LOCKER FROM ASIGNACION WHERE ID_SOLICITUD = ? AND ROWNUM = 1), " +
-                "(SELECT ID_ASIGNACION FROM ASIGNACION WHERE ID_SOLICITUD = ? AND ROWNUM = 1))";
+        // Consulta ajustada a las columnas reales: DESCRIPCION, FECHA, ID_LOCKER
+        String sql = "INSERT INTO REPORTE (DESCRIPCION, FECHA, ID_LOCKER) " +
+                "VALUES (?, SYSDATE, " +
+                "(SELECT ID_LOCKER FROM SOLICITUD WHERE ID_SOLICITUD = ?))";
 
         try (Connection conn = ConnectionOracle.getConnection()) {
             if (conn == null) {
@@ -603,11 +604,10 @@ public class DaoSolicitud {
             }
 
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                long idSolicitud = Long.parseLong(idSolicitudStr); // Convertimos a número para evitar el conflicto ORA-01722
+                long idSolicitud = Long.parseLong(idSolicitudStr); // Convertimos el ID de solicitud a número
 
                 ps.setString(1, descripcion);
-                ps.setLong(2, idSolicitud);
-                ps.setLong(3, idSolicitud);
+                ps.setInt(2, (int) idSolicitud); // El ID de solicitud pasa como entero a la subconsulta
 
                 int filasAfectadas = ps.executeUpdate();
                 System.out.println("[DAO-REPORTE] ✔️ Reporte guardado con éxito. Filas afectadas: " + filasAfectadas);
@@ -623,5 +623,36 @@ public class DaoSolicitud {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public ReporteDto obtenerReportePorSolicitud(int idSolicitud) {
+        ReporteDto reporte = null;
+        String query = "SELECT r.ID_REPORTE, r.DESCRIPCION, TO_CHAR(r.FECHA, 'YYYY-MM-DD HH24:MI:SS') AS FECHA_CREACION, " +
+                "s.ID_SOLICITUD, a.NOMBRES || ' ' || a.APELLIDO_PATERNO || ' ' || NVL(a.APELLIDO_MATERNO, '') AS NOMBRE_ESTUDIANTE " +
+                "FROM REPORTE r " +
+                "JOIN SOLICITUD s ON r.ID_LOCKER = s.ID_LOCKER " +
+                "JOIN ALUMNO a ON s.ID_ALUMNO = a.ID_ALUMNO " +
+                "WHERE s.ID_SOLICITUD = ? " +
+                "ORDER BY r.FECHA DESC FETCH FIRST 1 ROWS ONLY";
+
+        try (Connection con = ConnectionOracle.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+
+            ps.setInt(1, idSolicitud);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    reporte = new ReporteDto();
+                    reporte.setIdReporte(rs.getInt("ID_REPORTE"));
+                    reporte.setIdSolicitud(rs.getInt("ID_SOLICITUD"));
+                    reporte.setDescripcion(rs.getString("DESCRIPCION"));
+                    reporte.setFechaCreacion(rs.getString("FECHA_CREACION"));
+                    reporte.setNombreEstudiante(rs.getString("NOMBRE_ESTUDIANTE"));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error en obtenerReportePorSolicitud: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return reporte;
     }
 }

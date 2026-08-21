@@ -81,6 +81,14 @@
             gap: 10px;
             flex-wrap: wrap;
         }
+
+        /* CORRECCIÓN DE Z-INDEX PARA ELIMINAR EL VELO OSCURO SOBRE EL MODAL */
+        .modal {
+            z-index: 1060 !important;
+        }
+        .modal-backdrop {
+            z-index: 1050 !important;
+        }
     </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -238,7 +246,6 @@
                                     </div>
 
                                     <div>
-                                        <!-- CORRECTO: Solo llama a tu función de JavaScript -->
                                         <button type="button" class="btn btn-outline-primary btn-sm w-100 fw-semibold py-1"
                                                 onclick="abrirModalGestion('${casillero.codigo}', '${casillero.edificio}', '${casillero.piso}', '${casillero.estado}', '${casillero.nombreAlumno}', '${casillero.matriculaAlumno}')">
                                             Gestionar
@@ -261,7 +268,7 @@
 
 </main>
 
-<!-- Modal Único de Gestión Interactivo -->
+<!-- Modal Único de Gestión Interactivo (FUERA DE MAIN) -->
 <div class="modal fade" id="modalGestionCasillero" tabindex="-1" aria-labelledby="modalGestionLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow" style="border-radius: 14px;">
@@ -273,7 +280,6 @@
                 </div>
 
                 <div class="modal-body p-4">
-                    <!-- Campo oculto para enviar el código del casillero -->
                     <input type="hidden" name="codigoCasillero" id="inputCodigoCasillero">
 
                     <!-- Información de Ubicación -->
@@ -282,14 +288,14 @@
                         <p class="mb-0 small text-muted"><strong>Piso:</strong> <span id="modalPiso">---</span></p>
                     </div>
 
-                    <!-- Sección de Alumno Asignado (Detalle extendido que se muestra si está ocupado) -->
+                    <!-- Sección Alumno Asignado -->
                     <div id="seccionAlumno" class="mb-4 p-3 rounded-3 border border-danger bg-danger bg-opacity-10 d-none">
                         <h6 class="text-danger fw-bold small mb-2"><i class="bi bi-person-fill"></i> Alumno Asignado</h6>
                         <p class="mb-1 small text-dark"><strong>Nombre:</strong> <span id="modalNombreAlumno">---</span></p>
                         <p class="mb-0 small text-dark"><strong>Matrícula:</strong> <span id="modalMatriculaAlumno">---</span></p>
                     </div>
 
-                    <!-- Selector para cambiar el estado del casillero -->
+                    <!-- Selector de Estado -->
                     <div class="mb-3">
                         <label for="selectNuevoEstado" class="form-label fw-bold text-navy small">Cambiar Estado del Casillero</label>
                         <select class="form-select form-select-sm" name="nuevoEstado" id="selectNuevoEstado" required>
@@ -300,7 +306,6 @@
                     </div>
                 </div>
 
-                <!-- FOOTER DEL MODAL ACTUALIZADO CON EL BOTÓN DE LIBERAR CASILLERO -->
                 <div class="modal-footer bg-light px-4 py-3 d-flex justify-content-between" style="border-bottom-left-radius: 14px; border-bottom-right-radius: 14px;">
                     <button type="button" class="btn btn-outline-danger btn-sm px-3" onclick="liberarCasilleroAlumno()">
                         <i class="bi bi-unlock"></i> Liberar Casillero
@@ -334,51 +339,39 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="${pageContext.request.contextPath}/js/admin/gestionLocker.js"></script>
 <script>
-    function abrirModalGestion(codigo, edificio, piso, estado, nombreAlumno, matriculaAlumno) {
-        console.log("--- ABRIENDO MODAL ---");
-        console.log("Código:", codigo);
-        console.log("Estado:", estado);
-        console.log("Nombre Alumno:", nombreAlumno);
-        console.log("Matrícula Alumno:", matriculaAlumno);
+    let modalGestionInstancia = null;
 
-        // 1. Asignar textos básicos
+    document.addEventListener('DOMContentLoaded', function () {
+        const modalElement = document.getElementById('modalGestionCasillero');
+        if (modalElement) {
+            // Mover físicamente el modal a la raíz del <body> para evitar conflictos de apilamiento CSS
+            document.body.appendChild(modalElement);
+            modalGestionInstancia = bootstrap.Modal.getOrCreateInstance(modalElement);
+        }
+    });
+
+    function abrirModalGestion(codigo, edificio, piso, estado, nombreAlumno, matriculaAlumno) {
         document.getElementById("modalCodigoCasillero").innerText = codigo;
         document.getElementById("inputCodigoCasillero").value = codigo;
         document.getElementById("modalEdificio").innerText = edificio;
         document.getElementById("modalPiso").innerText = piso;
 
-        // 2. Gestionar la sección del alumno asignado
         const seccionAlumno = document.getElementById("seccionAlumno");
 
         if (estado && estado.toUpperCase() === "OCUPADO" && nombreAlumno && nombreAlumno !== "null" && nombreAlumno !== "Sin asignar" && nombreAlumno.trim() !== "") {
             document.getElementById("modalNombreAlumno").innerText = nombreAlumno;
             document.getElementById("modalMatriculaAlumno").innerText = matriculaAlumno;
-            seccionAlumno.classList.remove("d-none"); // Muestra el cuadro
+            seccionAlumno.classList.remove("d-none");
         } else {
-            seccionAlumno.classList.add("d-none");    // Oculta el cuadro
+            seccionAlumno.classList.add("d-none");
         }
 
         document.getElementById("selectNuevoEstado").value = estado;
 
-        // 3. Abrir el modal limpiando cualquier backdrop duplicado
-        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-        var modalElement = document.getElementById('modalGestionCasillero');
-        var myModal = bootstrap.Modal.getOrCreateInstance(modalElement);
-        myModal.show();
-    }
-
-    // Limpieza automática al cerrar
-    document.addEventListener('DOMContentLoaded', function () {
-        const modalEl = document.getElementById('modalGestionCasillero');
-        if (modalEl) {
-            modalEl.addEventListener('hidden.bs.modal', function () {
-                document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
-                document.body.classList.remove('modal-open');
-                document.body.style.removeProperty('overflow');
-                document.body.style.removeProperty('padding-right');
-            });
+        if (modalGestionInstancia) {
+            modalGestionInstancia.show();
         }
-    });
+    }
 </script>
 </body>
 </html>

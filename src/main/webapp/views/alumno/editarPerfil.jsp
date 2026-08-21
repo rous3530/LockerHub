@@ -112,28 +112,50 @@
 
             <form action="${pageContext.request.contextPath}/alumno/actualizarPerfil" method="POST">
                 <div class="row g-4 mb-4">
-                    <!-- Nombre Completo -->
+                    <!-- Nombre Completo (Solo letras y espacios) -->
                     <div class="col-md-6">
                         <div class="d-flex flex-column">
                             <label class="form-label-profile">Nombre completo</label>
-                            <input type="text" class="form-control-profile" name="nombre" value="<%= nombre != null ? nombre : "" %>" required>
+                            <input type="text"
+                                   class="form-control-profile"
+                                   id="inputNombre"
+                                   name="nombre"
+                                   value="<%= nombre != null ? nombre : "" %>"
+                                   pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"
+                                   title="Solo se permiten letras y espacios"
+                                   required>
                         </div>
                     </div>
 
-                    <!-- Matrícula -->
+                    <!-- Matrícula (Solo alfanumérico, exactamente 10 caracteres) -->
                     <div class="col-md-6">
                         <div class="d-flex flex-column">
                             <label class="form-label-profile">Matrícula</label>
-                            <input type="text" class="form-control-profile" name="matricula" value="<%= matricula != null ? matricula : "" %>" readonly style="background-color: #f1f5f9; cursor: not-allowed;" title="La matrícula no se puede cambiar">
+                            <input type="text"
+                                   class="form-control-profile"
+                                   id="inputMatricula"
+                                   name="matricula"
+                                   value="<%= matricula != null ? matricula : "" %>"
+                                   maxlength="10"
+                                   minlength="10"
+                                   pattern="^[a-zA-Z0-9]{10}$"
+                                   title="La matrícula debe contener exactamente 10 caracteres alfanuméricos"
+                                   required>
                         </div>
                     </div>
 
-                    <!-- Carrera -->
+                    <!-- Carrera (Solo letras y espacios) -->
                     <div class="col-md-12">
                         <div class="d-flex flex-column">
                             <label class="form-label-profile">Carrera</label>
-                            <!-- Sustituye getCarrera() por el método real de tu clase Alumno si se llama distinto -->
-                            <input type="text" class="form-control-profile" name="carrera1" value="Ingeniería de Software">
+                            <input type="text"
+                                   class="form-control-profile"
+                                   id="inputCarrera"
+                                   name="carrera1"
+                                   value="Ingeniería de Software"
+                                   pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"
+                                   title="Solo se permiten letras y espacios"
+                                   required>
                         </div>
                     </div>
 
@@ -178,5 +200,35 @@
 </footer>
 
 <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
+
+<!-- Limpieza dinámica de campos en tiempo real -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputNombre = document.getElementById('inputNombre');
+        const inputMatricula = document.getElementById('inputMatricula');
+        const inputCarrera = document.getElementById('inputCarrera');
+
+        // Nombre: Remueve números y caracteres especiales inmediatamente
+        if (inputNombre) {
+            inputNombre.addEventListener('input', function () {
+                this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+            });
+        }
+
+        // Matrícula: Remueve caracteres especiales/espacios y restringe a 10 caracteres
+        if (inputMatricula) {
+            inputMatricula.addEventListener('input', function () {
+                this.value = this.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
+            });
+        }
+
+        // Carrera: Remueve números y caracteres especiales inmediatamente
+        if (inputCarrera) {
+            inputCarrera.addEventListener('input', function () {
+                this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+            });
+        }
+    });
+</script>
 </body>
 </html>

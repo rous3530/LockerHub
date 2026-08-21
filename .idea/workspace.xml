@@ -10,11 +10,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6e3a30cd-90d3-4b00-9fe4-ded8c356d096" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/edu/utez/locker/controller/ActualizarPerfilServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/alumno/editarPerfil.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/alumno/editarPerfil.jsp" afterDir="false" />
-    </list>
+    <list default="true" id="6e3a30cd-90d3-4b00-9fe4-ded8c356d096" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -73,7 +69,7 @@
     "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/josef/OneDrive/Escritorio/LockerHub/Locker/src/main/resources/wallet",
+    "last_opened_file_path": "C:/Users/josef/OneDrive/Escritorio/LockerHub",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -158,7 +154,7 @@
       </MavenSettings>
       <method v="2" />
     </configuration>
-    <configuration name="Tomcat 10.1.55" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 10.1.55" ALTERNATIVE_JRE_ENABLED="false" nameIsGenerated="true">
+    <configuration name="Tomcat 10.1.55" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 10.1.56" ALTERNATIVE_JRE_ENABLED="false" nameIsGenerated="true">
       <option name="UPDATING_POLICY" value="restart-server" />
       <deployment>
         <artifact name="Locker:war exploded">
@@ -286,6 +282,7 @@
       <workItem from="1786633511829" duration="4245000" />
       <workItem from="1787019570818" duration="22723000" />
       <workItem from="1787128702385" duration="38176000" />
+      <workItem from="1787278713143" duration="308000" />
     </task>
     <servers />
   </component>

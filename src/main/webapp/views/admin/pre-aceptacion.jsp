@@ -52,7 +52,7 @@
     <div class="nav-links-center">
         <a href="${pageContext.request.contextPath}/views/admin/inicio.jsp" class="nav-link">SOLICITUDES</a>
         <a href="${pageContext.request.contextPath}/views/admin/pre-aceptacion.jsp" class="nav-link active">PRE-ACEPTADOS</a>
-        <a href="${pageContext.request.contextPath}/views/admin/aceptados.jsp" class="nav-link">ACEPTADOS</a>
+        <a href="${pageContext.request.contextPath}/views/admin/aceptados" class="nav-link">ACEPTADOS</a>
     </div>
 
     <div class="nav-actions-right d-flex align-items-center gap-3 text-white">

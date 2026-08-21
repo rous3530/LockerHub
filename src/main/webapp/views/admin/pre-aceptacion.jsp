@@ -53,7 +53,7 @@
         <a href="${pageContext.request.contextPath}/views/admin/inicio.jsp" class="nav-link">SOLICITUDES</a>
         <a href="${pageContext.request.contextPath}/views/admin/pre-aceptacion.jsp" class="nav-link active">PRE-ACEPTADOS</a>
         <a href="${pageContext.request.contextPath}/views/admin/aceptados" class="nav-link">ACEPTADOS</a>
-        <a href="${pageContext.request.contextPath}/views/admin/gestionLocker.jsp" class="nav-link">GESTION LOCKER</a>
+        <a href="${pageContext.request.contextPath}/views/admin/gestionLocker" class="nav-link">GESTION LOCKER</a>
     </div>
     </div>
 
@@ -171,19 +171,6 @@
                 </c:choose>
                 </tbody>
             </table>
-        </div>
-
-        <div class="card-footer bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
-            <span class="text-muted small">Mostrando ${listaPreAceptados != null ? listaPreAceptados.size() : 0} pre-aceptados</span>
-            <ul class="pagination pagination-sm m-0 gap-1 align-items-center">
-                <li class="page-item disabled"><a class="page-link rounded-2 text-secondary" href="#"><i class="bi bi-chevron-left"></i></a></li>
-                <li class="page-item active"><a class="page-link rounded-2 text-white" href="#" style="background-color: #1a365d; border-color: #1a365d;">1</a></li>
-                <li class="page-item"><a class="page-link rounded-2 text-dark" href="#">2</a></li>
-                <li class="page-item"><a class="page-link rounded-2 text-dark" href="#">3</a></li>
-                <li class="page-item disabled"><span class="page-link border-0 text-secondary">...</span></li>
-                <li class="page-item"><a class="page-link rounded-2 text-dark" href="#">29</a></li>
-                <li class="page-item"><a class="page-link rounded-2 text-dark" href="#"><i class="bi bi-chevron-right"></i></a></li>
-            </ul>
         </div>
     </div>
 

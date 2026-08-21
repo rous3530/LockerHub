@@ -2,6 +2,7 @@ package mx.edu.utez.locker.dao;
 
 import mx.edu.utez.locker.model.EdificioDto;
 import mx.edu.utez.locker.model.SolicitudDto;
+import mx.edu.utez.locker.model.CasilleroDto;
 import mx.edu.utez.locker.ConnectionOracle;
 
 import java.sql.Connection;
@@ -520,5 +521,31 @@ public class DaoSolicitud {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public List<CasilleroDto> obtenerTodosLosCasilleros() {
+        List<CasilleroDto> lista = new ArrayList<>();
+        // Ajustado a los nombres reales de tus tablas: LOCKER y EDIFICIO
+        String sql = "SELECT l.ID_LOCKER, l.NUMERO, l.PLANTA, l.ESTATUS, e.NOMBRE AS NOMBRE_EDIFICIO " +
+                "FROM LOCKER l JOIN EDIFICIO e ON l.ID_EDIFICIO = e.ID_EDIFICIO";
+
+        // Usamos ConnectionOracle.getConnection() al igual que en tus otros métodos
+        try (Connection conn = ConnectionOracle.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                CasilleroDto casillero = new CasilleroDto();
+                casillero.setCodigo(rs.getString("ID_LOCKER"));         // Ej: PBG10-02
+                casillero.setPiso(rs.getString("PLANTA"));             // Ej: PLANTA BAJA
+                casillero.setEstado(rs.getString("ESTATUS"));          // Ej: DISPONIBLE
+                casillero.setEdificio(rs.getString("NOMBRE_EDIFICIO")); // Nombre del edificio
+                lista.add(casillero);
+            }
+        } catch (Exception e) {
+            System.err.println("Error en obtenerTodosLosCasilleros: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return lista;
     }
 }

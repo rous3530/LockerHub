@@ -27,6 +27,12 @@
     Integer disponibles = (Integer) request.getAttribute("lockersDisponibles");
     Integer pendientes = (Integer) request.getAttribute("pendientesCount");
 
+    // Capturar el filtro de estatus actual (por defecto PENDIENTE)
+    String estatusSeleccionado = request.getParameter("estatus");
+    if (estatusSeleccionado == null || estatusSeleccionado.isEmpty()) {
+        estatusSeleccionado = "PENDIENTE";
+    }
+
     if (totalLockers == null) totalLockers = 0;
     if (disponibles == null) disponibles = 0;
     if (pendientes == null) pendientes = (solicitudes != null) ? solicitudes.size() : 0;
@@ -155,6 +161,17 @@
         }
         .btn-rechazar:hover { background-color: #6a0000; color: white; }
 
+        .btn-reincorporar {
+            background-color: #0284c7;
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            border: none;
+            padding: 6px 14px;
+        }
+        .btn-reincorporar:hover { background-color: #0369a1; color: white; }
+
         .search-box {
             border: 1px solid #cbd5e1;
             border-radius: 8px;
@@ -169,12 +186,10 @@
             width: 100%;
         }
 
-        /* Fuerza la desactivación de backdrops dinámicos duplicados */
         .modal-backdrop {
             display: none !important;
         }
 
-        /* Asegura que el modal de customer.css se encargue del fondo sin acumular z-index */
         .modal.show {
             background-color: rgba(0, 0, 0, 0.5) !important;
         }
@@ -190,7 +205,7 @@
         <a href="${pageContext.request.contextPath}/views/admin/inicio.jsp" class="nav-link active">SOLICITUDES</a>
         <a href="${pageContext.request.contextPath}/views/admin/pre-aceptacion.jsp" class="nav-link ">PRE-ACEPTADOS</a>
         <a href="${pageContext.request.contextPath}/views/admin/aceptados" class="nav-link">ACEPTADOS</a>
-        <a href="${pageContext.request.contextPath}/views/admin/gestionLocker.jsp" class="nav-link">GESTION LOCKER</a>
+        <a href="${pageContext.request.contextPath}/admin/gestionLocker" class="nav-link">GESTION LOCKER</a>
     </div>
 
     <div class="nav-actions-right d-flex align-items-center gap-3 text-white">
@@ -212,6 +227,8 @@
         <div>
             <% if ("preaprobar".equals(request.getParameter("action"))) { %>
             Estudiante pre-aprobado exitosamente.
+            <% } else if ("reincorporar".equals(request.getParameter("action"))) { %>
+            La solicitud ha sido reincorporada a pendientes.
             <% } else { %>
             La solicitud ha sido rechazada.
             <% } %>
@@ -277,16 +294,29 @@
         </div>
     </div>
 
-    <!-- TABLA -->
+    <!-- TABLA Y FILTROS -->
     <div class="table-container shadow-sm mb-4">
         <div class="p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
                 <h3 class="h5 fw-bold text-navy mb-1">Listado de Solicitudes</h3>
-                <p class="text-muted small mb-0">Gestión de trámites pendientes de asignación</p>
+                <p class="text-muted small mb-0">Gestión de trámites y asignación de casilleros</p>
             </div>
-            <div class="search-box d-flex align-items-center gap-2">
-                <i class="bi bi-search text-muted"></i>
-                <input type="text" id="searchInput" placeholder="Buscar estudiante..." onkeyup="filtrarTabla()">
+
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <!-- SELECT DE FILTRO (PENDIENTE / RECHAZADO) -->
+                <form method="GET" action="${pageContext.request.contextPath}/views/admin/inicio.jsp" class="d-flex align-items-center gap-2">
+                    <label for="estatus" class="small fw-bold text-secondary">Estatus:</label>
+                    <select name="estatus" id="estatus" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="PENDIENTE" <%= "PENDIENTE".equals(estatusSeleccionado) ? "selected" : "" %>>Pendientes</option>
+                        <option value="RECHAZADO" <%= "RECHAZADO".equals(estatusSeleccionado) ? "selected" : "" %>>Rechazados</option>
+                    </select>
+                </form>
+
+                <!-- BUSCADOR -->
+                <div class="search-box d-flex align-items-center gap-2">
+                    <i class="bi bi-search text-muted"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar estudiante..." onkeyup="filtrarTabla()">
+                </div>
             </div>
         </div>
 
@@ -317,12 +347,20 @@
                 </div>
                 <div class="col-2 text-center text-secondary small fw-semibold"><%= sol.getGrupo() %></div>
                 <div class="col-2 text-center d-flex justify-content-center gap-2">
+                    <% if ("RECHAZADO".equals(estatusSeleccionado)) { %>
+                    <!-- Botón para Reincorporar cuando está en rechazados -->
+                    <button class="btn btn-reincorporar d-flex align-items-center gap-1" onclick="ejecutarAccion('<%= sol.getMatricula() %>', 'reincorporar')">
+                        <i class="bi bi-arrow-counterclockwise"></i> Reincorporar
+                    </button>
+                    <% } else { %>
+                    <!-- Botones estándar para pendientes -->
                     <button class="btn btn-preaprobar d-flex align-items-center gap-1" onclick="ejecutarAccion('<%= sol.getMatricula() %>', 'preaprobar')">
                         <i class="bi bi-check-circle"></i> Pre-aprobar
                     </button>
                     <button class="btn btn-rechazar d-flex align-items-center gap-1" onclick="abrirModalRechazo('<%= sol.getMatricula() %>', '<%= sol.getNombreCompleto() %>')">
                         <i class="bi bi-x-circle"></i> Rechazar
                     </button>
+                    <% } %>
                 </div>
             </div>
             <%   }
@@ -333,7 +371,7 @@
             <div class="mb-2">
                 <i class="bi bi-check-circle text-secondary fs-2"></i>
             </div>
-            <p class="mb-0 text-secondary fw-semibold small">Ya no tiene pendientes de pre-aceptados</p>
+            <p class="mb-0 text-secondary fw-semibold small">No hay solicitudes registradas en este estatus</p>
         </div>
 
     </div>
@@ -355,7 +393,7 @@
                     ¿Estás seguro de RECHAZAR esta solicitud?
                 </h4>
                 <p class="text-muted small mb-4">
-                    Al rechazar esta solicitud ya no se visualizará en el listado de solicitudes pendientes.
+                    Al rechazar esta solicitud pasará al apartado de rechazados.
                 </p>
                 <div class="d-flex justify-content-center gap-3">
                     <button type="button" class="btn btn-navy px-4 py-2 text-white fw-semibold" style="background-color: var(--lh-navy); border-radius: 8px;" data-bs-dismiss="modal">
@@ -393,7 +431,6 @@
     document.addEventListener('DOMContentLoaded', function () {
         const modalElement = document.getElementById('modalRechazar');
         if (modalElement) {
-            // backdrop: false evita que Bootstrap inserte su propia capa .modal-backdrop extra
             modalRechazarInstance = new bootstrap.Modal(modalElement, {
                 backdrop: false,
                 keyboard: true

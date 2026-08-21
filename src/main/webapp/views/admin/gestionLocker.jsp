@@ -1,20 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.util.List" %>
-<%@ page import="mx.edu.utez.locker.model.Administrador" %>
-<%@ page import="mx.edu.utez.locker.dao.DaoSolicitud" %>
-<%@ page import="mx.edu.utez.locker.model.EdificioDto" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
-
-    DaoSolicitud daoEdificio = new DaoSolicitud();
-    List<EdificioDto> listaEdificios = daoEdificio.obtenerEdificios();
+    // Validación rápida de seguridad por si intentan entrar directo
     HttpSession sesion = request.getSession(false);
-    Administrador admin = (sesion != null) ? (Administrador) sesion.getAttribute("usuario") : null;
-
-    if (admin == null || !"ADMIN".equalsIgnoreCase(admin.getRol())) {
-        response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
-        return;
-    }
     if (sesion == null || sesion.getAttribute("usuario") == null) {
         response.sendRedirect(request.getContextPath() + "/views/sesion/IniciarSesion.jsp?error=sin_permiso");
         return;
@@ -106,7 +94,7 @@
         <a href="${pageContext.request.contextPath}/views/admin/inicio.jsp" class="nav-link">SOLICITUDES</a>
         <a href="${pageContext.request.contextPath}/views/admin/pre-aceptacion.jsp" class="nav-link">PRE-ACEPTADOS</a>
         <a href="${pageContext.request.contextPath}/views/admin/aceptados" class="nav-link">ACEPTADOS</a>
-        <a href="${pageContext.request.contextPath}/views/admin/gestionLocker.jsp" class="nav-link active">GESTION LOCKER</a>
+        <a href="${pageContext.request.contextPath}admin/gestionLocker.jsp" class="nav-link active">GESTION LOCKER</a>
     </div>
 
     <div class="nav-actions-right d-flex align-items-center gap-3 text-white">
@@ -191,17 +179,9 @@
         <div class="filter-controls-custom">
             <select id="selectEdificio" class="form-select form-select-sm" style="width: 160px;" onchange="aplicarFiltros()">
                 <option value="">Edificio (Todos)</option>
-                <%
-                    // Asegúrate de importar la lista y el DTO correspondiente arriba en tu JSP si es necesario
-                    List<EdificioDto> listaEdificios = (List<EdificioDto>) request.getAttribute("listaEdificios");
-                    if (listaEdificios != null) {
-                        for (EdificioDto ed : listaEdificios) {
-                %>
-                <option value="<%= ed.getNombre() %>"><%= ed.getNombre() %></option>
-                <%
-                        }
-                    }
-                %>
+                <c:forEach var="ed" items="${listaEdificios}">
+                    <option value="${ed.nombre}">${ed.nombre}</option>
+                </c:forEach>
             </select>
 
             <select id="selectPiso" class="form-select form-select-sm" style="width: 140px;" onchange="aplicarFiltros()">

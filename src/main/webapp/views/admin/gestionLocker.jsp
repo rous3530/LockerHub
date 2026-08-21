@@ -106,7 +106,7 @@
         <a href="${pageContext.request.contextPath}/views/admin/inicio.jsp" class="nav-link">SOLICITUDES</a>
         <a href="${pageContext.request.contextPath}/views/admin/pre-aceptacion.jsp" class="nav-link">PRE-ACEPTADOS</a>
         <a href="${pageContext.request.contextPath}/views/admin/aceptados" class="nav-link">ACEPTADOS</a>
-        <a href="${pageContext.request.contextPath}/views/admin/gestionLocker" class="nav-link active">GESTION LOCKER</a>
+        <a href="${pageContext.request.contextPath}/views/admin/gestionLocker.jsp" class="nav-link active">GESTION LOCKER</a>
     </div>
 
     <div class="nav-actions-right d-flex align-items-center gap-3 text-white">
